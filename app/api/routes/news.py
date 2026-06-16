@@ -63,6 +63,7 @@ def save_news_item_with_pipeline(payload: NewsItemCreate, db: Session) -> NewsIt
         news_id=news_item.id,
         db_sync="success",
         obsidian_sync=obsidian_result_status,
+        obsidian_path=obsidian_path,
         git_sync=git_sync,
     )
 
@@ -104,6 +105,7 @@ def create_test_news_item(db: Session = Depends(get_db)) -> dict[str, str]:
     return {
         "status": result.status,
         "obsidian_sync": result.obsidian_sync,
+        "obsidian_path": result.obsidian_path or "",
     }
 
 

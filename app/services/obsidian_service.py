@@ -26,6 +26,13 @@ def _format_markdown_list(values: list[str] | None) -> str:
     return "\n".join(f"- {value}" for value in values)
 
 
+def _format_frontmatter_list(values: list[str] | None) -> str:
+    values = values or []
+    if not values:
+        return "[]"
+    return "\n".join(f"  - {value}" for value in values)
+
+
 def _collect_companies(news_item: NewsItem) -> list[str]:
     companies = list(news_item.companies or [])
     for event in news_item.events or []:
@@ -97,16 +104,19 @@ def render_daily_report_markdown(news_item: NewsItem) -> str:
     report_date = news_item.date.isoformat()
     companies = _collect_companies(news_item)
     tags = _collect_tags(news_item)
+    ecosystem = news_item.ecosystem or "综合"
 
     return f"""⸻
 
 type: daily_intelligence
-source: platform
+source: coze
+status: inbox
 date: {report_date}
+ecosystem: {ecosystem}
+companies:
+{_format_frontmatter_list(companies)}
 tags:
-
-* 科技投资
-* AI
+{_format_frontmatter_list(tags or ["科技投资", "AI"])}
 
 ⸻
 
@@ -144,10 +154,14 @@ def write_daily_report_to_obsidian(
     if not vault.is_dir():
         return SyncResult(status="failed", detail=f"Obsidian vault path is not a directory: {vault}")
 
-    target_dir = vault / (daily_report_dir or settings.daily_report_obsidian_dir)
+    report_date = news_item.date.isoformat()
+    report_year = f"{news_item.date.year:04d}"
+    report_month = f"{news_item.date.year:04d}-{news_item.date.month:02d}"
+    filename = f"{report_date}_科技投资日报.md"
+    relative_path = Path(daily_report_dir or settings.daily_report_obsidian_dir) / report_year / report_month / filename
+    target_dir = vault / relative_path.parent
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    filename = f"{news_item.date.isoformat()}_科技投资日报.md"
-    target_file = target_dir / filename
+    target_file = vault / relative_path
     target_file.write_text(render_daily_report_markdown(news_item), encoding="utf-8")
-    return SyncResult(status="success", path=str(target_file))
+    return SyncResult(status="success", path=relative_path.as_posix())

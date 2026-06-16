@@ -60,4 +60,5 @@ class NewsItemCreateResponse(BaseModel):
     news_id: int
     db_sync: str
     obsidian_sync: str
+    obsidian_path: str | None = None
     git_sync: str

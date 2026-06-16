@@ -56,6 +56,7 @@ def test_post_news() -> None:
     assert body["status"] == "ok"
     assert body["db_sync"] == "success"
     assert body["obsidian_sync"] in {"skipped_not_configured", "success", "failed"}
+    assert "obsidian_path" in body
 
 
 def test_get_news() -> None:
@@ -98,12 +99,21 @@ def test_obsidian_path_configured_generates_markdown(monkeypatch, tmp_path: Path
     assert body["obsidian_sync"] == "success"
     assert body["git_sync"] == "skipped_disabled"
 
-    markdown_file = tmp_path / "31_Inbox" / "Daily_Intelligence" / "2026-06-16_科技投资日报.md"
+    markdown_file = (
+        tmp_path
+        / "31_Inbox"
+        / "Daily_Intelligence"
+        / "2026"
+        / "2026-06"
+        / "2026-06-16_科技投资日报.md"
+    )
     assert markdown_file.exists()
     content = markdown_file.read_text(encoding="utf-8")
     assert "2026-06-16 科技投资日报" in content
     assert "AI 算力基础设施继续扩张" in content
-    assert "source: platform" in content
+    assert "source: coze" in content
+    assert "status: inbox" in content
+    assert body["obsidian_path"] == "31_Inbox/Daily_Intelligence/2026/2026-06/2026-06-16_科技投资日报.md"
 
 
 def test_news_test_endpoint_generates_daily_report(monkeypatch, tmp_path: Path) -> None:
@@ -116,9 +126,11 @@ def test_news_test_endpoint_generates_daily_report(monkeypatch, tmp_path: Path) 
 
     assert response.status_code == 200
     body = response.json()
-    assert body == {"status": "ok", "obsidian_sync": "success"}
+    assert body["status"] == "ok"
+    assert body["obsidian_sync"] == "success"
+    assert body["obsidian_path"]
 
-    files = list((tmp_path / "31_Inbox" / "Daily_Intelligence").glob("*_科技投资日报.md"))
+    files = list((tmp_path / "31_Inbox" / "Daily_Intelligence").glob("**/*_科技投资日报.md"))
     assert files
     content = files[0].read_text(encoding="utf-8")
     assert "OpenAI 发布新一代 Agent SDK" in content

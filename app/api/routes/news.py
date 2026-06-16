@@ -2,11 +2,11 @@ from datetime import date
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import settings
 from app.db.session import get_db
-from app.models.news import NewsItem
+from app.models.news import NewsEvent, NewsItem
 from app.schemas.news import NewsItemCreate, NewsItemRead
 
 router = APIRouter(prefix="/api/news", tags=["Daily Intelligence"])
@@ -26,10 +26,12 @@ def create_news_item(
     _: None = Depends(verify_coze_secret),
     db: Session = Depends(get_db),
 ) -> NewsItem:
-    news_item = NewsItem(**payload.model_dump())
+    news_item = NewsItem(**payload.model_dump(exclude={"events"}))
+    news_item.events = [NewsEvent(**event.model_dump()) for event in payload.events]
     db.add(news_item)
     db.commit()
     db.refresh(news_item)
+    news_item.events
     return news_item
 
 
@@ -41,18 +43,37 @@ def list_news_items(
     ecosystem: str | None = None,
     company: str | None = None,
 ) -> list[NewsItem]:
-    statement = select(NewsItem).order_by(NewsItem.date.desc(), NewsItem.created_at.desc()).limit(limit)
+    statement = (
+        select(NewsItem)
+        .options(selectinload(NewsItem.events))
+        .order_by(NewsItem.date.desc(), NewsItem.created_at.desc())
+        .limit(limit)
+    )
     if news_date is not None:
         statement = statement.where(NewsItem.date == news_date)
-    if ecosystem:
-        statement = statement.where(NewsItem.ecosystem == ecosystem)
 
     items = list(db.scalars(statement).all())
+    if ecosystem:
+        ecosystem_lower = ecosystem.lower()
+        items = [
+            item
+            for item in items
+            if (item.ecosystem and ecosystem_lower in item.ecosystem.lower())
+            or any(
+                event.ecosystem and ecosystem_lower in event.ecosystem.lower()
+                for event in (item.events or [])
+            )
+        ]
     if company:
         company_lower = company.lower()
         items = [
             item
             for item in items
             if any(company_lower in company_name.lower() for company_name in (item.companies or []))
+            or any(
+                company_lower in company_name.lower()
+                for event in (item.events or [])
+                for company_name in (event.companies or [])
+            )
         ]
     return items

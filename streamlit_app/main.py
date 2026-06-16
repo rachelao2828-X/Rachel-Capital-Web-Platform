@@ -17,6 +17,40 @@ def fetch_news() -> list[dict]:
         return []
 
 
+def item_companies(item: dict) -> set[str]:
+    companies = set(item.get("companies") or [])
+    for event in item.get("events") or []:
+        companies.update(event.get("companies") or [])
+    return companies
+
+
+def item_ecosystems(item: dict) -> set[str]:
+    ecosystems = set()
+    if item.get("ecosystem"):
+        ecosystems.add(item["ecosystem"])
+    for event in item.get("events") or []:
+        if event.get("ecosystem"):
+            ecosystems.add(event["ecosystem"])
+    return ecosystems
+
+
+def item_events(item: dict) -> list[dict]:
+    events = item.get("events") or []
+    if events:
+        return events
+    return [
+        {
+            "title": item["title"],
+            "summary": item["summary"],
+            "ecosystem": item.get("ecosystem"),
+            "companies": item.get("companies") or [],
+            "impact": None,
+            "importance": item.get("importance"),
+            "tags": item.get("tags") or [],
+        }
+    ]
+
+
 st.set_page_config(
     page_title=APP_NAME,
     layout="wide",
@@ -30,50 +64,54 @@ news_items = fetch_news()
 if not news_items:
     st.info("暂无日报数据，请通过 /api/news 接入 Coze 日报。")
 else:
+    latest_date = max(item["date"] for item in news_items)
+    today_items = [item for item in news_items if item["date"] == latest_date]
+    today_events = [event for item in today_items for event in item_events(item)]
+    associated_companies = sorted({company for item in today_items for company in item_companies(item)})
+    associated_ecosystems = sorted({ecosystem for item in today_items for ecosystem in item_ecosystems(item)})
     latest_update = max(item.get("updated_at", "") for item in news_items)
+
     col_a, col_b, col_c, col_d = st.columns(4)
-    col_a.metric("Daily Intelligence", len(news_items))
-    col_b.metric("生态数量", len({item.get("ecosystem") for item in news_items if item.get("ecosystem")}))
-    col_c.metric(
-        "重点公司",
-        len({company for item in news_items for company in item.get("companies", [])}),
-    )
+    col_a.metric("今日日报", len(today_items))
+    col_b.metric("今日事件", len(today_events))
+    col_c.metric("关联公司", len(associated_companies))
     col_d.metric("最近更新时间", latest_update[:19].replace("T", " ") if latest_update else "N/A")
 
-    st.subheader("今日十大科技投资事件")
-    for item in news_items[:10]:
+    st.subheader("今日日报摘要")
+    for item in today_items:
         with st.container(border=True):
             st.markdown(f"**{item['title']}**")
             st.caption(
                 f"{item['date']} | {item.get('importance', 'N/A')} | "
-                f"{item.get('category') or '未分类'} | {item.get('ecosystem') or '未归属生态'}"
+                f"{item.get('category') or '未分类'} | {item.get('source') or 'unknown'}"
             )
             st.write(item["summary"])
-            companies = item.get("companies") or []
-            tags = item.get("tags") or []
+
+    st.subheader("今日十大科技投资事件")
+    for event in today_events[:10]:
+        with st.container(border=True):
+            st.markdown(f"**{event['title']}**")
+            st.caption(
+                f"{event.get('importance', 'N/A')} | {event.get('ecosystem') or '未归属生态'}"
+            )
+            st.write(event["summary"])
+            if event.get("impact"):
+                st.write("影响：" + event["impact"])
+            companies = event.get("companies") or []
+            tags = event.get("tags") or []
             if companies:
-                st.write("重点公司：" + "、".join(companies))
+                st.write("关联公司：" + "、".join(companies))
             if tags:
                 st.write("标签：" + "、".join(tags))
 
-    st.subheader("按生态分类")
-    ecosystems: dict[str, list[dict]] = {}
-    for item in news_items:
-        ecosystems.setdefault(item.get("ecosystem") or "未归属生态", []).append(item)
-    for ecosystem, items in ecosystems.items():
-        with st.expander(f"{ecosystem} ({len(items)})"):
-            for item in items:
-                st.write(f"- {item['date']} | {item['title']}")
+    st.subheader("关联公司")
+    if associated_companies:
+        st.write("、".join(associated_companies))
+    else:
+        st.write("暂无关联公司")
 
-    st.subheader("重点公司")
-    company_counts: dict[str, int] = {}
-    for item in news_items:
-        for company in item.get("companies", []):
-            company_counts[company] = company_counts.get(company, 0) + 1
-    if company_counts:
-        st.write(
-            [
-                {"company": company, "news_count": count}
-                for company, count in sorted(company_counts.items(), key=lambda row: row[1], reverse=True)
-            ]
-        )
+    st.subheader("关联战略生态")
+    if associated_ecosystems:
+        st.write("、".join(associated_ecosystems))
+    else:
+        st.write("暂无关联战略生态")

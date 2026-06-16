@@ -3,7 +3,30 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class NewsItemCreate(BaseModel):
+class NewsEventBase(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
+    summary: str = Field(min_length=1)
+    ecosystem: str | None = None
+    companies: list[str] = Field(default_factory=list)
+    impact: str | None = None
+    importance: str = Field(default="medium", max_length=32)
+    tags: list[str] = Field(default_factory=list)
+
+
+class NewsEventCreate(NewsEventBase):
+    pass
+
+
+class NewsEventRead(NewsEventBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    news_item_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class NewsItemBase(BaseModel):
     date: date
     title: str = Field(min_length=1, max_length=255)
     summary: str = Field(min_length=1)
@@ -15,10 +38,14 @@ class NewsItemCreate(BaseModel):
     source: str = Field(default="coze", max_length=80)
 
 
-class NewsItemRead(NewsItemCreate):
+class NewsItemCreate(NewsItemBase):
+    events: list[NewsEventCreate] = Field(default_factory=list)
+
+
+class NewsItemRead(NewsItemBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     created_at: datetime
     updated_at: datetime
-
+    events: list[NewsEventRead] = Field(default_factory=list)

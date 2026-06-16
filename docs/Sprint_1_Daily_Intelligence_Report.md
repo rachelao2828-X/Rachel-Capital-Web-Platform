@@ -159,6 +159,32 @@ Expected UI after posting sample data:
 - Authentication and authorization are not implemented.
 - Production deployment is not implemented.
 
+## Verification
+
+Commands completed successfully:
+
+- `.venv/bin/python -m compileall app streamlit_app tests alembic`
+- `.venv/bin/pytest -q`
+- `.venv/bin/alembic current`
+- `uvicorn app.api.main:app --host 127.0.0.1 --port 8000`
+- `curl http://127.0.0.1:8000/health`
+- `curl http://127.0.0.1:8000/openapi.json`
+- `curl -X POST http://127.0.0.1:8000/api/news ...`
+- `curl http://127.0.0.1:8000/api/news`
+- `streamlit run streamlit_app/main.py --server.address 127.0.0.1 --server.port 8501 --server.headless true`
+- `curl -I http://127.0.0.1:8501`
+- `curl -I http://127.0.0.1:8501/News`
+- `curl -I http://127.0.0.1:8501/Settings`
+
+Verification notes:
+
+- FastAPI OpenAPI includes `POST /api/news` and `GET /api/news`.
+- Sample Daily Intelligence item was inserted successfully.
+- `GET /api/news` returned the inserted item.
+- Streamlit Home, News, and Settings routes returned HTTP 200.
+- Browser screenshot verification was not performed because no callable Browser tool was exposed in this session.
+- Pytest passed with Python 3.14 deprecation warnings from FastAPI/Starlette dependencies.
+
 ## Next Recommendations
 
 1. Connect Coze to `POST /api/news` and confirm the exact payload contract.
@@ -167,4 +193,3 @@ Expected UI after posting sample data:
 4. Add Alembic execution to deployment or startup procedure.
 5. Add an Obsidian Service boundary for future vault writes without changing the vault structure.
 6. Add UI screenshots to future release reports after Browser verification is available.
-

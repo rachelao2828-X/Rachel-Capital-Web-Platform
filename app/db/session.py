@@ -36,8 +36,30 @@ def init_db() -> None:
     from app.models import news  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    _ensure_sqlite_sync_columns()
+
+
+def _ensure_sqlite_sync_columns() -> None:
+    if not settings.database_url.startswith("sqlite"):
+        return
+
+    required_columns = {
+        "obsidian_sync": "VARCHAR(50) NOT NULL DEFAULT 'skipped'",
+        "git_sync": "VARCHAR(50) NOT NULL DEFAULT 'skipped'",
+        "obsidian_path": "TEXT",
+        "last_synced_at": "DATETIME",
+    }
+    with engine.begin() as connection:
+        existing_columns = {
+            row[1]
+            for row in connection.exec_driver_sql("PRAGMA table_info(news_items)").fetchall()
+        }
+        for column_name, column_type in required_columns.items():
+            if column_name not in existing_columns:
+                connection.exec_driver_sql(
+                    f"ALTER TABLE news_items ADD COLUMN {column_name} {column_type}"
+                )
 
 
 def session_scope() -> Session:
     return SessionLocal()
-

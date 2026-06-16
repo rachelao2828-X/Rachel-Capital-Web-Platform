@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy import select
@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session, selectinload
 from app.core.config import settings
 from app.db.session import get_db
 from app.models.news import NewsEvent, NewsItem
-from app.schemas.news import NewsItemCreate, NewsItemRead
+from app.schemas.news import NewsItemCreate, NewsItemCreateResponse, NewsItemRead
+from app.services.git_service import sync_obsidian_vault_to_git
+from app.services.obsidian_service import write_daily_report_to_obsidian
 
 router = APIRouter(prefix="/api/news", tags=["Daily Intelligence"])
 
@@ -20,19 +22,54 @@ def verify_coze_secret(x_coze_secret: str | None = Header(default=None)) -> None
         )
 
 
-@router.post("", response_model=NewsItemRead, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=NewsItemCreateResponse, status_code=status.HTTP_201_CREATED)
 def create_news_item(
     payload: NewsItemCreate,
     _: None = Depends(verify_coze_secret),
     db: Session = Depends(get_db),
-) -> NewsItem:
+) -> NewsItemCreateResponse:
     news_item = NewsItem(**payload.model_dump(exclude={"events"}))
     news_item.events = [NewsEvent(**event.model_dump()) for event in payload.events]
     db.add(news_item)
     db.commit()
     db.refresh(news_item)
     news_item.events
-    return news_item
+
+    try:
+        obsidian_result = write_daily_report_to_obsidian(news_item)
+    except Exception as exc:
+        obsidian_result_status = "failed"
+        obsidian_path = None
+        obsidian_detail = str(exc)
+    else:
+        obsidian_result_status = obsidian_result.status
+        obsidian_path = obsidian_result.path
+        obsidian_detail = obsidian_result.detail
+
+    if obsidian_result_status == "success":
+        try:
+            git_result = sync_obsidian_vault_to_git(report_date=news_item.date.isoformat())
+            git_sync = git_result.status
+        except Exception as exc:
+            git_sync = "failed"
+            obsidian_detail = obsidian_detail or str(exc)
+    else:
+        git_sync = "skipped"
+
+    news_item.obsidian_sync = obsidian_result_status
+    news_item.git_sync = git_sync
+    news_item.obsidian_path = obsidian_path or obsidian_detail
+    news_item.last_synced_at = datetime.now(timezone.utc)
+    db.add(news_item)
+    db.commit()
+
+    return NewsItemCreateResponse(
+        status="ok",
+        news_id=news_item.id,
+        db_sync="success",
+        obsidian_sync=obsidian_result_status,
+        git_sync=git_sync,
+    )
 
 
 @router.get("", response_model=list[NewsItemRead])

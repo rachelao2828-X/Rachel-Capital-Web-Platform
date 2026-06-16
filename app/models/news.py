@@ -23,6 +23,10 @@ class NewsItem(Base):
     companies = Column(JSON, default=list, nullable=False)
     tags = Column(JSON, default=list, nullable=False)
     source = Column(String(80), index=True, nullable=False, default="coze")
+    obsidian_sync = Column(String(50), nullable=False, default="skipped")
+    git_sync = Column(String(50), nullable=False, default="skipped")
+    obsidian_path = Column(Text, nullable=True)
+    last_synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=utc_now, nullable=False)
     updated_at = Column(
         DateTime(timezone=True),

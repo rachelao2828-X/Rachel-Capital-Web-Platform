@@ -48,4 +48,16 @@ class NewsItemRead(NewsItemBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    obsidian_sync: str = "skipped"
+    git_sync: str = "skipped"
+    obsidian_path: str | None = None
+    last_synced_at: datetime | None = None
     events: list[NewsEventRead] = Field(default_factory=list)
+
+
+class NewsItemCreateResponse(BaseModel):
+    status: str
+    news_id: int
+    db_sync: str
+    obsidian_sync: str
+    git_sync: str

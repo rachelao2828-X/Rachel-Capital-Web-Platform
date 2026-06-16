@@ -1,6 +1,17 @@
+from pathlib import Path
+import subprocess
+
 from fastapi.testclient import TestClient
+import pytest
 
 from app.api.main import app
+from app.core.config import settings
+from app.services.git_service import sync_obsidian_vault_to_git
+
+
+@pytest.fixture(autouse=True)
+def local_dev_settings(monkeypatch):
+    monkeypatch.setattr(settings, "coze_webhook_secret", None)
 
 
 def sample_payload(title: str = "今日科技投资日报") -> dict:
@@ -42,10 +53,9 @@ def test_post_news() -> None:
 
     assert response.status_code == 201
     body = response.json()
-    assert body["title"] == "今日科技投资日报"
-    assert body["source"] == "coze"
-    assert body["companies"] == ["OpenAI", "NVIDIA", "中际旭创"]
-    assert body["events"][0]["title"] == "AI 算力基础设施继续扩张"
+    assert body["status"] == "ok"
+    assert body["db_sync"] == "success"
+    assert body["obsidian_sync"] in {"skipped_not_configured", "success", "failed"}
 
 
 def test_get_news() -> None:
@@ -59,3 +69,61 @@ def test_get_news() -> None:
     assert isinstance(body, list)
     assert any(item["title"] == title for item in body)
     assert any(item["events"] for item in body if item["title"] == title)
+
+
+def test_obsidian_path_unconfigured_api_does_not_crash(monkeypatch) -> None:
+    monkeypatch.setattr(settings, "obsidian_vault_path", "")
+    monkeypatch.setattr(settings, "git_auto_commit", True)
+
+    with TestClient(app) as client:
+        response = client.post("/api/news", json=sample_payload(title="未配置 Obsidian 测试"))
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["status"] == "ok"
+    assert body["obsidian_sync"] == "skipped_not_configured"
+    assert body["git_sync"] == "skipped"
+
+
+def test_obsidian_path_configured_generates_markdown(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(settings, "obsidian_vault_path", str(tmp_path))
+    monkeypatch.setattr(settings, "daily_report_obsidian_dir", "31_Inbox/Daily_Intelligence")
+    monkeypatch.setattr(settings, "git_auto_commit", False)
+
+    with TestClient(app) as client:
+        response = client.post("/api/news", json=sample_payload(title="生成 Markdown 测试"))
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["obsidian_sync"] == "success"
+    assert body["git_sync"] == "skipped_disabled"
+
+    markdown_file = tmp_path / "31_Inbox" / "Daily_Intelligence" / "2026-06-16_科技投资日报.md"
+    assert markdown_file.exists()
+    content = markdown_file.read_text(encoding="utf-8")
+    assert "# 2026-06-16 科技投资日报" in content
+    assert "AI 算力基础设施继续扩张" in content
+
+
+def test_git_non_repo_skips(tmp_path: Path) -> None:
+    result = sync_obsidian_vault_to_git(
+        report_date="2026-06-16",
+        vault_path=str(tmp_path),
+        auto_commit=True,
+        branch="develop",
+    )
+
+    assert result.status == "skipped_not_git_repo"
+
+
+def test_git_no_changes_skips_commit(tmp_path: Path) -> None:
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True, text=True)
+
+    result = sync_obsidian_vault_to_git(
+        report_date="2026-06-16",
+        vault_path=str(tmp_path),
+        auto_commit=True,
+        branch="develop",
+    )
+
+    assert result.status == "skipped_no_changes"

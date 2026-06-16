@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     database_url: str = Field(default="sqlite:///./data/rachel_capital.db")
 
     obsidian_vault_path: str | None = None
+    daily_report_obsidian_dir: str = "31_Inbox/Daily_Intelligence"
+    git_auto_commit: bool = True
+    git_branch: str = "develop"
     coze_webhook_secret: str | None = None
     feishu_webhook_url: str | None = None
     github_token: str | None = None

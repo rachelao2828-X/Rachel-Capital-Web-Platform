@@ -22,12 +22,7 @@ def verify_coze_secret(x_coze_secret: str | None = Header(default=None)) -> None
         )
 
 
-@router.post("", response_model=NewsItemCreateResponse, status_code=status.HTTP_201_CREATED)
-def create_news_item(
-    payload: NewsItemCreate,
-    _: None = Depends(verify_coze_secret),
-    db: Session = Depends(get_db),
-) -> NewsItemCreateResponse:
+def save_news_item_with_pipeline(payload: NewsItemCreate, db: Session) -> NewsItemCreateResponse:
     news_item = NewsItem(**payload.model_dump(exclude={"events"}))
     news_item.events = [NewsEvent(**event.model_dump()) for event in payload.events]
     db.add(news_item)
@@ -70,6 +65,46 @@ def create_news_item(
         obsidian_sync=obsidian_result_status,
         git_sync=git_sync,
     )
+
+
+@router.post("", response_model=NewsItemCreateResponse, status_code=status.HTTP_201_CREATED)
+def create_news_item(
+    payload: NewsItemCreate,
+    _: None = Depends(verify_coze_secret),
+    db: Session = Depends(get_db),
+) -> NewsItemCreateResponse:
+    return save_news_item_with_pipeline(payload=payload, db=db)
+
+
+@router.get("/test")
+def create_test_news_item(db: Session = Depends(get_db)) -> dict[str, str]:
+    payload = NewsItemCreate(
+        date=date.today(),
+        title="OpenAI 发布新一代 Agent SDK",
+        summary="OpenAI 发布新一代 Agent SDK，进一步降低智能体应用开发门槛。",
+        importance="high",
+        category="AI",
+        ecosystem="AI基础设施生态",
+        companies=["OpenAI", "NVIDIA", "微软"],
+        tags=["科技投资", "AI", "Agent"],
+        source="platform",
+        events=[
+            {
+                "title": "OpenAI 发布新一代 Agent SDK",
+                "summary": "OpenAI 发布新一代 Agent SDK，可能加速 Agent 应用开发和企业级落地。",
+                "ecosystem": "AI基础设施生态",
+                "companies": ["OpenAI", "NVIDIA", "微软"],
+                "impact": "可能进一步提升推理算力需求和 Agent 应用渗透率。",
+                "importance": "high",
+                "tags": ["AI", "Agent", "推理算力"],
+            }
+        ],
+    )
+    result = save_news_item_with_pipeline(payload=payload, db=db)
+    return {
+        "status": result.status,
+        "obsidian_sync": result.obsidian_sync,
+    }
 
 
 @router.get("", response_model=list[NewsItemRead])

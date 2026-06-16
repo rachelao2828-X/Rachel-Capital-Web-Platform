@@ -101,8 +101,28 @@ def test_obsidian_path_configured_generates_markdown(monkeypatch, tmp_path: Path
     markdown_file = tmp_path / "31_Inbox" / "Daily_Intelligence" / "2026-06-16_科技投资日报.md"
     assert markdown_file.exists()
     content = markdown_file.read_text(encoding="utf-8")
-    assert "# 2026-06-16 科技投资日报" in content
+    assert "2026-06-16 科技投资日报" in content
     assert "AI 算力基础设施继续扩张" in content
+    assert "source: platform" in content
+
+
+def test_news_test_endpoint_generates_daily_report(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(settings, "obsidian_vault_path", str(tmp_path))
+    monkeypatch.setattr(settings, "daily_report_obsidian_dir", "31_Inbox/Daily_Intelligence")
+    monkeypatch.setattr(settings, "git_auto_commit", False)
+
+    with TestClient(app) as client:
+        response = client.get("/api/news/test")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body == {"status": "ok", "obsidian_sync": "success"}
+
+    files = list((tmp_path / "31_Inbox" / "Daily_Intelligence").glob("*_科技投资日报.md"))
+    assert files
+    content = files[0].read_text(encoding="utf-8")
+    assert "OpenAI 发布新一代 Agent SDK" in content
+    assert "可能进一步提升推理算力需求和 Agent 应用渗透率。" in content
 
 
 def test_git_non_repo_skips(tmp_path: Path) -> None:

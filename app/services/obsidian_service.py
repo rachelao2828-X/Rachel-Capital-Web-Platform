@@ -19,6 +19,13 @@ def _format_list(values: list[str] | None) -> str:
     return "、".join(values)
 
 
+def _format_markdown_list(values: list[str] | None) -> str:
+    values = values or []
+    if not values:
+        return "无"
+    return "\n".join(f"- {value}" for value in values)
+
+
 def _collect_companies(news_item: NewsItem) -> list[str]:
     companies = list(news_item.companies or [])
     for event in news_item.events or []:
@@ -39,19 +46,24 @@ def _collect_tags(news_item: NewsItem) -> list[str]:
 
 def _event_markdown(news_item: NewsItem) -> str:
     lines: list[str] = []
-    for index, event in enumerate(news_item.events or [], start=1):
+    for event in news_item.events or []:
         lines.extend(
             [
-                f"### {index}. {event.title}",
+                event.title,
                 "",
-                f"- 生态：{event.ecosystem or '综合'}",
-                f"- 公司：{_format_list(event.companies)}",
-                f"- 重要性：{event.importance}",
+                "生态：",
+                event.ecosystem or "综合",
                 "",
+                "公司：",
+                _format_list(event.companies),
+                "",
+                "重要性：",
+                event.importance,
+                "",
+                "摘要：",
                 event.summary,
                 "",
                 "影响：",
-                "",
                 event.impact or "暂无",
                 "",
             ]
@@ -59,16 +71,21 @@ def _event_markdown(news_item: NewsItem) -> str:
     if not lines:
         lines.extend(
             [
-                f"### 1. {news_item.title}",
+                news_item.title,
                 "",
-                f"- 生态：{news_item.ecosystem or '综合'}",
-                f"- 公司：{_format_list(news_item.companies)}",
-                f"- 重要性：{news_item.importance}",
+                "生态：",
+                news_item.ecosystem or "综合",
                 "",
+                "公司：",
+                _format_list(news_item.companies),
+                "",
+                "重要性：",
+                news_item.importance,
+                "",
+                "摘要：",
                 news_item.summary,
                 "",
                 "影响：",
-                "",
                 "暂无",
                 "",
             ]
@@ -80,36 +97,36 @@ def render_daily_report_markdown(news_item: NewsItem) -> str:
     report_date = news_item.date.isoformat()
     companies = _collect_companies(news_item)
     tags = _collect_tags(news_item)
-    ecosystem = news_item.ecosystem or "综合"
 
-    return f"""---
+    return f"""⸻
+
 type: daily_intelligence
-source: {news_item.source}
+source: platform
 date: {report_date}
-category: daily_intelligence
-ecosystem: {ecosystem}
 tags:
-  - 科技投资
-  - AI
----
 
-# {report_date} 科技投资日报
+* 科技投资
+* AI
 
-## 摘要
+⸻
+
+{report_date} 科技投资日报
+
+摘要
 
 {news_item.summary}
 
-## 重点事件
+重点事件
 
 {_event_markdown(news_item)}
 
-## 关联公司
+关联公司
 
 {_format_list(companies)}
 
-## 标签
+标签
 
-{_format_list(tags)}
+{_format_markdown_list(tags)}
 """
 
 
@@ -123,8 +140,9 @@ def write_daily_report_to_obsidian(
         return SyncResult(status="skipped_not_configured", detail="OBSIDIAN_VAULT_PATH is not configured.")
 
     vault = Path(configured_vault_path).expanduser()
-    if not vault.exists() or not vault.is_dir():
-        return SyncResult(status="failed", detail=f"Obsidian vault path does not exist: {vault}")
+    vault.mkdir(parents=True, exist_ok=True)
+    if not vault.is_dir():
+        return SyncResult(status="failed", detail=f"Obsidian vault path is not a directory: {vault}")
 
     target_dir = vault / (daily_report_dir or settings.daily_report_obsidian_dir)
     target_dir.mkdir(parents=True, exist_ok=True)

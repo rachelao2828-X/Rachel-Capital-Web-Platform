@@ -29,7 +29,7 @@ class Settings(BaseSettings):
 
     database_url: str = Field(default="sqlite:///./data/rachel_capital.db")
 
-    obsidian_vault_path: str | None = None
+    obsidian_vault_path: str | None = "/Users/rachelao/Documents/Rachel Capital"
     daily_report_obsidian_dir: str = "31_Inbox/Daily_Intelligence"
     git_auto_commit: bool = True
     git_branch: str = "develop"

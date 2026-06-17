@@ -11,3 +11,5 @@ postgres_data/
 data/*.db
 data/*.db-*
 .env
+cloudflared
+cloudflared.tgz

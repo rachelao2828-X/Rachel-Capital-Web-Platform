@@ -1,20 +1,18 @@
 {
-  "generated_at": "2026-06-17T08:51:23.673711+00:00",
-  "source_vault": "/Users/rachelao/Documents/Rachel Capital",
+  "generated_at": "2026-06-17T18:49:04.745938+08:00",
   "items": [
     {
-      "date": "2026-06-17",
-      "title": "2026-06-17 科技动向日报",
+      "public": true,
       "type": "daily_intelligence",
+      "title": "2026-06-17 科技动向日报",
+      "date": "2026-06-17",
+      "summary": "【一句话摘要】道指创新高纳指回落，科技股轮动半导体爆发；美伊协议推动油价大跌超5%；人形机器人量产加速，15分钟下线一台；DeepSeek首轮融资敲定，创始人出资200亿；玻璃基板成先进封装核心赛道；科创板扩容支持AI硬科技上市。",
       "source": "coze",
+      "ecosystem": "",
+      "companies": "",
+      "tags": "",
       "path": "daily/2026/2026-06/2026-06-17_科技动向日报.md",
-      "ecosystem": "综合",
-      "tags": [
-        "科技投资",
-        "AI"
-      ],
-      "summary": "DeepSeek完成500亿元首轮融资，SpaceX收购Anysphere，A股创业板站上4100点，美伊停战备忘录签署，京津冀万台具身机器人工厂投产",
-      "public": true
+      "excerpt": "【一句话摘要】道指创新高纳指回落，科技股轮动半导体爆发；美伊协议推动油价大跌超5%；人形机器人量产加速，15分钟下线一台；DeepSeek首轮融资敲定，创始人出资200亿；玻璃基板成先进封装核心赛道；科创板扩容支持AI硬科技上市。"
     }
   ]
 }

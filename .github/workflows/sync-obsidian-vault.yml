@@ -1,0 +1,66 @@
+name: Sync Daily Intelligence to Obsidian Vault
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "public_site/daily/**"
+      - ".github/workflows/sync-obsidian-vault.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      DEFAULT_VAULT_REPO: rachelao2828-X/Rachel-Capital-OS-Vault
+      TARGET_DIR: 31_Inbox/Daily_Intelligence
+    steps:
+      - name: Check vault sync token
+        run: |
+          if [ -z "${{ secrets.VAULT_SYNC_TOKEN }}" ]; then
+            echo "Missing repository secret: VAULT_SYNC_TOKEN"
+            echo "Create a fine-grained GitHub token with Contents read/write access to the private Obsidian vault repo."
+            exit 1
+          fi
+
+      - name: Checkout web platform
+        uses: actions/checkout@v4
+        with:
+          path: web-platform
+
+      - name: Checkout Obsidian vault repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.OBSIDIAN_VAULT_REPO || env.DEFAULT_VAULT_REPO }}
+          token: ${{ secrets.VAULT_SYNC_TOKEN }}
+          path: obsidian-vault
+          ref: main
+
+      - name: Copy daily intelligence Markdown
+        run: |
+          mkdir -p "obsidian-vault/${TARGET_DIR}"
+          rsync -av \
+            --include='*/' \
+            --include='*.md' \
+            --exclude='*' \
+            web-platform/public_site/daily/ \
+            "obsidian-vault/${TARGET_DIR}/"
+
+      - name: Commit and push vault changes
+        working-directory: obsidian-vault
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -z "$(git status --porcelain -- "${TARGET_DIR}")" ]; then
+            echo "No daily intelligence changes to sync."
+            exit 0
+          fi
+
+          git add "${TARGET_DIR}"
+          git commit -m "Sync daily intelligence reports"
+          git push

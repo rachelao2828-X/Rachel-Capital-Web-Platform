@@ -222,6 +222,24 @@ h4 {
   font-size: 18px;
 }
 
+.about-section {
+  margin-bottom: 16px;
+}
+
+.about-section h3 {
+  margin-bottom: 12px;
+}
+
+.about-section p,
+.about-section li {
+  line-height: 1.75;
+}
+
+.about-section ul {
+  margin: 0;
+  padding-left: 22px;
+}
+
 details {
   margin-top: 10px;
 }
@@ -300,8 +318,18 @@ footer {
   border-top: 1px solid var(--line);
   color: var(--muted);
   display: flex;
+  gap: 18px;
   justify-content: space-between;
   padding: 20px 40px;
+}
+
+.footer-main {
+  display: grid;
+  gap: 4px;
+}
+
+.footer-main p {
+  margin: 0;
 }
 
 @media (max-width: 780px) {

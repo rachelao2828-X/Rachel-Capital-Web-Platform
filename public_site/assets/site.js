@@ -330,7 +330,8 @@ function renderReports() {
 function navigate() {
   const rawHash = decodeURIComponent(location.hash || "#home");
   const dailyDetailMatch = rawHash.match(/^#\/daily\/([^/]+)$/);
-  const route = dailyDetailMatch ? "daily" : rawHash.replace("#", "") || "home";
+  const hashRoute = rawHash.replace("#", "") || "home";
+  const route = dailyDetailMatch ? "daily" : hashRoute === "disclaimer" ? "about" : hashRoute;
 
   document.querySelectorAll(".view").forEach((view) => {
     view.classList.toggle("is-active", view.dataset.route === route);

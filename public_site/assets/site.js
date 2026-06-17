@@ -32,6 +32,31 @@ function asArray(value) {
   return Array.isArray(value) ? value : [value];
 }
 
+function formatMetaValue(value) {
+  return asArray(value).filter(Boolean).join("、");
+}
+
+function displaySource(value) {
+  if (!value) return "未标明";
+  if (String(value).toLowerCase() === "coze") return "Coze";
+  return value;
+}
+
+function displayType(value) {
+  const labels = {
+    daily_intelligence: "科技动向日报",
+    company: "公司观察",
+    ecosystem: "战略生态",
+    report: "研究报告",
+    knowledge_graph: "知识图谱",
+  };
+  return labels[value] || value || "";
+}
+
+function dailyUrl(item) {
+  return item?.date ? `#/daily/${encodeURIComponent(item.date)}` : "#daily";
+}
+
 function formatTags(values) {
   const tags = asArray(values);
   if (!tags.length) return "";
@@ -39,9 +64,9 @@ function formatTags(values) {
 }
 
 function itemCard(item, options = {}) {
-  const title = escapeHtml(item.title || "Untitled");
+  const title = escapeHtml(item.title || "未命名内容");
   const date = escapeHtml(item.date || "");
-  const ecosystem = escapeHtml(item.ecosystem || "");
+  const ecosystem = escapeHtml(formatMetaValue(item.ecosystem));
   const summary = escapeHtml(item.summary || item.excerpt || "");
   const tags = formatTags(item.tags);
   const detail = options.detail && item.body
@@ -54,7 +79,7 @@ function itemCard(item, options = {}) {
       <div class="meta">
         ${date ? `<span>${date}</span>` : ""}
         ${ecosystem ? `<span>${ecosystem}</span>` : ""}
-        ${item.type ? `<span>${escapeHtml(item.type)}</span>` : ""}
+        ${item.type ? `<span>${escapeHtml(displayType(item.type))}</span>` : ""}
       </div>
       ${summary ? `<p>${summary}</p>` : ""}
       ${tags}
@@ -64,24 +89,44 @@ function itemCard(item, options = {}) {
 }
 
 function dailyCard(item) {
-  const title = escapeHtml(item.title || "Untitled");
+  const title = escapeHtml(item.title || "未命名日报");
   const date = escapeHtml(item.date || "");
   const summary = escapeHtml(item.summary || item.excerpt || "");
   const tags = formatTags(item.tags);
+  const url = dailyUrl(item);
+  const ecosystem = escapeHtml(formatMetaValue(item.ecosystem));
 
   return `
     <article class="card">
-      <h3>${title}</h3>
+      <h3><a href="${url}">${title}</a></h3>
       <div class="meta">
         ${date ? `<span>${date}</span>` : ""}
-        ${item.ecosystem ? `<span>${escapeHtml(item.ecosystem)}</span>` : ""}
+        ${ecosystem ? `<span>${ecosystem}</span>` : ""}
       </div>
-      ${summary ? `<p>${summary}</p>` : ""}
+      ${summary ? `<p><a href="${url}">${summary}</a></p>` : ""}
       ${tags}
-      <button class="text-button" type="button" data-daily-path="${escapeHtml(item.path || "")}">
+      <a class="text-button" href="${url}">
         阅读全文
-      </button>
+      </a>
     </article>
+  `;
+}
+
+function homeDailyCard(item) {
+  const title = escapeHtml(item.title || "未命名日报");
+  const date = escapeHtml(item.date || "");
+  const summary = escapeHtml(item.summary || item.excerpt || "");
+  const url = dailyUrl(item);
+
+  return `
+    <a class="card card-link" href="${url}">
+      <article>
+        <h3>${title}</h3>
+        ${date ? `<div class="meta"><span>${date}</span></div>` : ""}
+        ${summary ? `<p>${summary}</p>` : ""}
+        <span class="text-button">阅读全文</span>
+      </article>
+    </a>
   `;
 }
 
@@ -102,7 +147,7 @@ function renderHome() {
   const latestCompanies = state.grouped.companies.slice(0, 4);
 
   document.querySelector("#home-daily").innerHTML = latestDaily.length
-    ? latestDaily.map((item) => itemCard(item)).join("")
+    ? latestDaily.map((item) => homeDailyCard(item)).join("")
     : emptyState("暂无公开日报。请在 Obsidian 中将可公开日报标记为 public: true 后导出。");
 
   document.querySelector("#home-ecosystems").innerHTML = ECOSYSTEMS
@@ -121,11 +166,8 @@ function renderHome() {
 function renderDaily() {
   document.querySelector("#daily-list").innerHTML = state.grouped.daily.length
     ? state.grouped.daily.map((item) => dailyCard(item)).join("")
-    : emptyState("暂无公开 Daily Intelligence。");
+    : emptyState("暂无公开科技动向日报。");
   document.querySelector("#daily-detail").innerHTML = "";
-  document.querySelectorAll("[data-daily-path]").forEach((button) => {
-    button.addEventListener("click", () => openDailyDetail(button.dataset.dailyPath));
-  });
 }
 
 function stripFrontmatter(markdown) {
@@ -176,6 +218,12 @@ function renderMarkdown(markdown) {
       continue;
     }
 
+    if (trimmed.startsWith("### ")) {
+      closeList();
+      html.push(`<h3>${renderInlineMarkdown(trimmed.slice(4))}</h3>`);
+      continue;
+    }
+
     if (/^[-*]\s+/.test(trimmed)) {
       if (!inList) {
         html.push("<ul>");
@@ -193,30 +241,61 @@ function renderMarkdown(markdown) {
   return html.join("");
 }
 
-async function openDailyDetail(path) {
+function findDailyByDate(date) {
+  return state.grouped.daily.find((item) => item.date === date);
+}
+
+async function openDailyDetail(item) {
   const detail = document.querySelector("#daily-detail");
-  if (!path) {
-    detail.innerHTML = `<section class="panel"><p>该日报缺少 Markdown 路径。</p></section>`;
+  const listView = document.querySelector("#daily-list-view");
+  listView.hidden = true;
+
+  if (!item) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+        <p>未找到对应日期的科技动向日报。</p>
+      </section>
+    `;
+    return;
+  }
+
+  if (!item.path) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+        <p>该日报缺少 Markdown 路径。</p>
+      </section>
+    `;
     return;
   }
 
   detail.innerHTML = `<section class="panel"><p>正在加载全文...</p></section>`;
   try {
-    const response = await fetch(path, { cache: "no-cache" });
+    const response = await fetch(item.path, { cache: "no-cache" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const markdown = await response.text();
     detail.innerHTML = `
       <section class="panel markdown-body">
-        <button class="text-button secondary" type="button" id="close-daily-detail">关闭全文</button>
+        <div class="daily-detail-header">
+          <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+          <h2>科技动向日报</h2>
+          <div class="meta">
+            <span>日期：${escapeHtml(item.date || "未标明")}</span>
+            <span>来源：${escapeHtml(displaySource(item.source))}</span>
+          </div>
+        </div>
         ${renderMarkdown(markdown)}
       </section>
     `;
-    document.querySelector("#close-daily-detail").addEventListener("click", () => {
-      detail.innerHTML = "";
-    });
     detail.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
-    detail.innerHTML = `<section class="panel"><p>无法加载 Markdown 全文：${escapeHtml(error.message)}</p></section>`;
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+        <p>无法加载 Markdown 全文：${escapeHtml(error.message)}</p>
+      </section>
+    `;
   }
 }
 
@@ -249,13 +328,32 @@ function renderReports() {
 }
 
 function navigate() {
-  const route = (location.hash || "#home").replace("#", "");
+  const rawHash = decodeURIComponent(location.hash || "#home");
+  const dailyDetailMatch = rawHash.match(/^#\/daily\/([^/]+)$/);
+  const route = dailyDetailMatch ? "daily" : rawHash.replace("#", "") || "home";
+
   document.querySelectorAll(".view").forEach((view) => {
     view.classList.toggle("is-active", view.dataset.route === route);
   });
   document.querySelectorAll("nav a").forEach((link) => {
-    link.classList.toggle("is-active", link.getAttribute("href") === `#${route}`);
+    const navRoute = route === "daily" ? "#daily" : `#${route}`;
+    link.classList.toggle("is-active", link.getAttribute("href") === navRoute);
   });
+
+  const listView = document.querySelector("#daily-list-view");
+  const detail = document.querySelector("#daily-detail");
+  if (route !== "daily") {
+    listView.hidden = false;
+    detail.innerHTML = "";
+    return;
+  }
+
+  if (dailyDetailMatch) {
+    openDailyDetail(findDailyByDate(dailyDetailMatch[1]));
+  } else {
+    listView.hidden = false;
+    detail.innerHTML = "";
+  }
 }
 
 async function loadContent() {
@@ -265,11 +363,11 @@ async function loadContent() {
     const payload = await response.json();
     state.content = Array.isArray(payload.items) ? payload.items : [];
     document.querySelector("#last-updated").textContent = payload.generated_at
-      ? `Data updated: ${payload.generated_at}`
-      : "Public data loaded";
+      ? `公开数据更新时间：${payload.generated_at}`
+      : "公开数据已加载";
   } catch (error) {
     state.content = [];
-    document.querySelector("#last-updated").textContent = "No public data exported yet";
+    document.querySelector("#last-updated").textContent = "尚未导出公开数据";
   }
 
   groupContent(state.content);

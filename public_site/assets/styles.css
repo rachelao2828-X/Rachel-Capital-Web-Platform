@@ -169,6 +169,16 @@ h4 {
   padding: 16px;
 }
 
+.card-link {
+  color: var(--text);
+  display: block;
+}
+
+.card-link:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
 .card h3,
 .card h4 {
   margin-bottom: 8px;
@@ -247,6 +257,16 @@ button {
   margin-top: 20px;
 }
 
+.daily-detail-header {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+}
+
+.daily-detail-header h2 {
+  margin: 16px 0 8px;
+}
+
 .markdown-body {
   line-height: 1.75;
 }
@@ -261,6 +281,11 @@ button {
   font-size: 22px;
   margin: 24px 0 12px;
   padding-bottom: 8px;
+}
+
+.markdown-body h3 {
+  font-size: 18px;
+  margin: 20px 0 10px;
 }
 
 .markdown-body p {

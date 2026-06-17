@@ -1,20 +1,16 @@
-{
-  "generated_at": "2026-06-17T08:51:23.673711+00:00",
-  "source_vault": "/Users/rachelao/Documents/Rachel Capital",
-  "items": [
-    {
-      "date": "2026-06-17",
-      "title": "2026-06-17 科技动向日报",
-      "type": "daily_intelligence",
-      "source": "coze",
-      "path": "daily/2026/2026-06/2026-06-17_科技动向日报.md",
-      "ecosystem": "综合",
-      "tags": [
-        "科技投资",
-        "AI"
-      ],
-      "summary": "DeepSeek完成500亿元首轮融资，SpaceX收购Anysphere，A股创业板站上4100点，美伊停战备忘录签署，京津冀万台具身机器人工厂投产",
-      "public": true
-    }
-  ]
-}
+[
+  {
+    "date": "2026-06-17",
+    "title": "2026-06-17 科技动向日报",
+    "summary": "DeepSeek完成500亿元首轮融资，创中国AI行业单轮融资纪录；SpaceX 600亿美元收购AI编程工具Cursor母公司；创业板指站上4100点；美伊停战谅解备忘录签署；京津冀万台级具身智能机器人超级工厂投产。",
+    "path": "daily/2026/2026-06/2026-06-17_科技动向日报.md",
+    "type": "daily_intelligence",
+    "source": "coze",
+    "public": true,
+    "tags": [
+      "科技动向",
+      "AI",
+      "投资"
+    ]
+  }
+]

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rachel Capital Research Portal</title>
+    <meta
+      name="description"
+      content="Rachel Capital public technology investment and industry research portal."
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Rachel Capital OS</p>
+        <h1>Public Research Portal</h1>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="#home">Home</a>
+        <a href="#daily">Daily Intelligence</a>
+        <a href="#ecosystems">Ecosystems</a>
+        <a href="#companies">Companies</a>
+        <a href="#reports">Reports</a>
+        <a href="#disclaimer">Disclaimer</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="home" class="view is-active" data-route="home">
+        <div class="hero">
+          <p class="eyebrow">公开研究展示</p>
+          <h2>科技投资与产业研究观察</h2>
+          <p>
+            展示经过筛选、可公开发布的科技产业研究内容。本地 Web App 仍作为 Rachel
+            的私人研究驾驶舱，内部持仓、决策日志和完整估值模型不会在此展示。
+          </p>
+        </div>
+
+        <div class="grid two">
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>今日科技投资日报</h3>
+              <a href="#daily">查看全部</a>
+            </div>
+            <div id="home-daily" class="stack"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>七大战略生态</h3>
+              <a href="#ecosystems">查看生态</a>
+            </div>
+            <div id="home-ecosystems" class="tag-grid"></div>
+          </section>
+        </div>
+
+        <div class="grid two">
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>最新研究</h3>
+              <a href="#reports">查看报告</a>
+            </div>
+            <div id="home-reports" class="stack"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>精选公司观察</h3>
+              <a href="#companies">查看公司</a>
+            </div>
+            <div id="home-companies" class="stack"></div>
+          </section>
+        </div>
+
+        <section class="notice">
+          文中涉及公司、行业、标的仅为信息整理与研究观察，不构成任何投资建议。投资有风险，决策需谨慎。
+        </section>
+      </section>
+
+      <section id="daily" class="view" data-route="daily">
+        <div class="section-heading">
+          <h2>Daily Intelligence</h2>
+          <p>每日科技投资日报列表与详情。</p>
+        </div>
+        <div id="daily-list" class="stack"></div>
+      </section>
+
+      <section id="ecosystems" class="view" data-route="ecosystems">
+        <div class="section-heading">
+          <h2>Ecosystems</h2>
+          <p>七大战略生态公开观察。</p>
+        </div>
+        <div id="ecosystem-list" class="ecosystem-grid"></div>
+      </section>
+
+      <section id="companies" class="view" data-route="companies">
+        <div class="section-heading">
+          <h2>Companies</h2>
+          <p>公开公司研究摘要。不展示内部评分、仓位或完整估值模型。</p>
+        </div>
+        <div id="company-list" class="stack"></div>
+      </section>
+
+      <section id="reports" class="view" data-route="reports">
+        <div class="section-heading">
+          <h2>Reports</h2>
+          <p>月度产业权力迁移报告与精选知识图谱。</p>
+        </div>
+        <div id="report-list" class="stack"></div>
+      </section>
+
+      <section id="disclaimer" class="view" data-route="disclaimer">
+        <div class="section-heading">
+          <h2>Disclaimer</h2>
+        </div>
+        <section class="notice large">
+          文中涉及公司、行业、标的仅为信息整理与研究观察，不构成任何投资建议。投资有风险，决策需谨慎。
+        </section>
+        <section class="panel">
+          <h3>公开边界</h3>
+          <ul>
+            <li>不展示真实持仓。</li>
+            <li>不展示私人决策日志。</li>
+            <li>不展示完整内部估值模型。</li>
+            <li>不暴露 API Key、Token、Webhook Secret 或任何私人配置。</li>
+          </ul>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <span>Rachel Capital Research Portal</span>
+      <span id="last-updated">Loading public data...</span>
+    </footer>
+
+    <script src="assets/site.js"></script>
+  </body>
+</html>

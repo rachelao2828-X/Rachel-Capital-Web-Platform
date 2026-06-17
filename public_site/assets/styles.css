@@ -222,6 +222,55 @@ summary {
   font-weight: 700;
 }
 
+button {
+  font: inherit;
+}
+
+.text-button {
+  background: var(--accent);
+  border: 1px solid var(--accent-dark);
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 8px 12px;
+}
+
+.text-button.secondary {
+  background: var(--surface);
+  color: var(--accent-dark);
+}
+
+.daily-detail {
+  margin-top: 20px;
+}
+
+.markdown-body {
+  line-height: 1.75;
+}
+
+.markdown-body h1 {
+  font-size: 30px;
+  margin: 0 0 18px;
+}
+
+.markdown-body h2 {
+  border-bottom: 1px solid var(--line);
+  font-size: 22px;
+  margin: 24px 0 12px;
+  padding-bottom: 8px;
+}
+
+.markdown-body p {
+  color: var(--text);
+}
+
+.markdown-body ul {
+  padding-left: 24px;
+}
+
 footer {
   border-top: 1px solid var(--line);
   color: var(--muted);

@@ -9,11 +9,13 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 from typing import Any
 
 
 DEFAULT_VAULT_PATH = "/Users/rachelao/Documents/Rachel Capital"
 DEFAULT_OUTPUT_PATH = "public_site/data/public_content.json"
+PUBLIC_SITE_ROOT = Path("public_site")
 EXCLUDED_DIRS = {".git", ".obsidian", ".trash", "__pycache__"}
 PRIVATE_KEYS = {
     "api_key",
@@ -157,6 +159,24 @@ def excerpt(body: str, length: int = 220) -> str:
     return compact[: length - 1].rstrip() + "..."
 
 
+def public_markdown_path(item_type: str, metadata: dict[str, Any], source_path: Path) -> Path:
+    if item_type == "daily_intelligence":
+        date_value = str(metadata.get("date") or source_path.stem[:10])
+        year = date_value[:4] if len(date_value) >= 4 else "undated"
+        month = date_value[:7] if len(date_value) >= 7 else year
+        filename = f"{date_value}_科技动向日报.md"
+        return Path("daily") / year / month / filename
+
+    slug = re.sub(r"[^A-Za-z0-9\u4e00-\u9fff_-]+", "-", source_path.stem).strip("-") or "note"
+    if item_type == "company":
+        return Path("companies") / f"{slug}.md"
+    if item_type == "ecosystem":
+        return Path("ecosystems") / f"{slug}.md"
+    if item_type in {"report", "knowledge_graph"}:
+        return Path("reports") / f"{slug}.md"
+    return Path("reports") / f"{slug}.md"
+
+
 def iter_markdown_files(vault: Path):
     for root, dirs, files in os.walk(vault):
         dirs[:] = sorted([directory for directory in dirs if directory not in EXCLUDED_DIRS and not directory.startswith(".")])
@@ -165,7 +185,7 @@ def iter_markdown_files(vault: Path):
                 yield Path(root) / filename
 
 
-def export_public_content(vault: Path) -> list[dict[str, Any]]:
+def export_public_content(vault: Path, site_root: Path) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
     for path in iter_markdown_files(vault):
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -176,15 +196,18 @@ def export_public_content(vault: Path) -> list[dict[str, Any]]:
         metadata = public_metadata(frontmatter)
         title = metadata.get("title") or path.stem
         item_type = metadata.get("type") or "note"
-        relative_path = path.relative_to(vault).as_posix()
+        relative_path = public_markdown_path(item_type, metadata, path)
+        target_path = site_root / relative_path
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, target_path)
+
         items.append(
             {
                 **metadata,
                 "title": title,
                 "type": item_type,
-                "path": relative_path,
+                "path": relative_path.as_posix(),
                 "excerpt": metadata.get("summary") or excerpt(body),
-                "body": body,
             }
         )
 
@@ -195,6 +218,7 @@ def main() -> int:
     args = parse_args()
     vault = Path(args.vault).expanduser()
     output = Path(args.output)
+    site_root = PUBLIC_SITE_ROOT
 
     if not vault.exists() or not vault.is_dir():
         raise SystemExit(f"Obsidian vault path does not exist: {vault}")
@@ -203,7 +227,7 @@ def main() -> int:
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_vault": str(vault),
-        "items": export_public_content(vault),
+        "items": export_public_content(vault, site_root),
     }
     output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Exported {len(payload['items'])} public items to {output}")

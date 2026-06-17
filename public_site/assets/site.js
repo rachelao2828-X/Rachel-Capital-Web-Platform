@@ -45,7 +45,7 @@ function itemCard(item, options = {}) {
   const summary = escapeHtml(item.summary || item.excerpt || "");
   const tags = formatTags(item.tags);
   const detail = options.detail && item.body
-    ? `<details><summary>阅读全文</summary><p>${escapeHtml(item.body).replaceAll("\n", "<br />")}</p></details>`
+    ? `<details><summary>查看详情</summary><p>${escapeHtml(item.body).replaceAll("\n", "<br />")}</p></details>`
     : "";
 
   return `
@@ -59,6 +59,28 @@ function itemCard(item, options = {}) {
       ${summary ? `<p>${summary}</p>` : ""}
       ${tags}
       ${detail}
+    </article>
+  `;
+}
+
+function dailyCard(item) {
+  const title = escapeHtml(item.title || "Untitled");
+  const date = escapeHtml(item.date || "");
+  const summary = escapeHtml(item.summary || item.excerpt || "");
+  const tags = formatTags(item.tags);
+
+  return `
+    <article class="card">
+      <h3>${title}</h3>
+      <div class="meta">
+        ${date ? `<span>${date}</span>` : ""}
+        ${item.ecosystem ? `<span>${escapeHtml(item.ecosystem)}</span>` : ""}
+      </div>
+      ${summary ? `<p>${summary}</p>` : ""}
+      ${tags}
+      <button class="text-button" type="button" data-daily-path="${escapeHtml(item.path || "")}">
+        阅读全文
+      </button>
     </article>
   `;
 }
@@ -98,8 +120,104 @@ function renderHome() {
 
 function renderDaily() {
   document.querySelector("#daily-list").innerHTML = state.grouped.daily.length
-    ? state.grouped.daily.map((item) => itemCard(item, { detail: true })).join("")
+    ? state.grouped.daily.map((item) => dailyCard(item)).join("")
     : emptyState("暂无公开 Daily Intelligence。");
+  document.querySelector("#daily-detail").innerHTML = "";
+  document.querySelectorAll("[data-daily-path]").forEach((button) => {
+    button.addEventListener("click", () => openDailyDetail(button.dataset.dailyPath));
+  });
+}
+
+function stripFrontmatter(markdown) {
+  const trimmed = markdown.replace(/^\uFEFF/, "").trimStart();
+  const delimiter = trimmed.startsWith("---") ? "---" : trimmed.startsWith("⸻") ? "⸻" : null;
+  if (!delimiter) return markdown;
+
+  const lines = trimmed.split(/\r?\n/);
+  if (lines[0].trim() !== delimiter) return markdown;
+  const endIndex = lines.slice(1).findIndex((line) => line.trim() === delimiter);
+  if (endIndex === -1) return markdown;
+  return lines.slice(endIndex + 2).join("\n").trim();
+}
+
+function renderInlineMarkdown(text) {
+  return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+function renderMarkdown(markdown) {
+  const body = stripFrontmatter(markdown);
+  const lines = body.split(/\r?\n/);
+  const html = [];
+  let inList = false;
+
+  function closeList() {
+    if (inList) {
+      html.push("</ul>");
+      inList = false;
+    }
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      closeList();
+      continue;
+    }
+
+    if (trimmed.startsWith("# ")) {
+      closeList();
+      html.push(`<h1>${renderInlineMarkdown(trimmed.slice(2))}</h1>`);
+      continue;
+    }
+
+    if (trimmed.startsWith("## ")) {
+      closeList();
+      html.push(`<h2>${renderInlineMarkdown(trimmed.slice(3))}</h2>`);
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(trimmed)) {
+      if (!inList) {
+        html.push("<ul>");
+        inList = true;
+      }
+      html.push(`<li>${renderInlineMarkdown(trimmed.replace(/^[-*]\s+/, ""))}</li>`);
+      continue;
+    }
+
+    closeList();
+    html.push(`<p>${renderInlineMarkdown(trimmed)}</p>`);
+  }
+
+  closeList();
+  return html.join("");
+}
+
+async function openDailyDetail(path) {
+  const detail = document.querySelector("#daily-detail");
+  if (!path) {
+    detail.innerHTML = `<section class="panel"><p>该日报缺少 Markdown 路径。</p></section>`;
+    return;
+  }
+
+  detail.innerHTML = `<section class="panel"><p>正在加载全文...</p></section>`;
+  try {
+    const response = await fetch(path, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const markdown = await response.text();
+    detail.innerHTML = `
+      <section class="panel markdown-body">
+        <button class="text-button secondary" type="button" id="close-daily-detail">关闭全文</button>
+        ${renderMarkdown(markdown)}
+      </section>
+    `;
+    document.querySelector("#close-daily-detail").addEventListener("click", () => {
+      detail.innerHTML = "";
+    });
+    detail.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    detail.innerHTML = `<section class="panel"><p>无法加载 Markdown 全文：${escapeHtml(error.message)}</p></section>`;
+  }
 }
 
 function renderEcosystems() {

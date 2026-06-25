@@ -57,6 +57,10 @@ function dailyUrl(item) {
   return item?.date ? `#/daily/${encodeURIComponent(item.date)}` : "#daily";
 }
 
+function ecosystemUrl(item) {
+  return item?.title ? `#/ecosystems/${encodeURIComponent(item.title)}` : "#ecosystems";
+}
+
 function formatTags(values) {
   const tags = asArray(values);
   if (!tags.length) return "";
@@ -134,6 +138,29 @@ function emptyState(label) {
   return `<div class="card"><p>${label}</p></div>`;
 }
 
+function ecosystemCard(item, fallbackName) {
+  const title = escapeHtml(item?.title || fallbackName);
+  const summary = escapeHtml(item?.public_summary || item?.summary || item?.excerpt || "待发布公开生态观察。");
+  const tags = formatTags(item?.tags || []);
+  const companyCount = Number(item?.company_count ?? asArray(item?.linked_companies).length ?? 0);
+
+  return `
+    <article class="card ecosystem-card">
+      <h3>${title}</h3>
+      <p>${summary}</p>
+      ${tags}
+      <div class="meta">
+        <span>重点公司数量：${companyCount}</span>
+      </div>
+      ${
+        item
+          ? `<a class="text-button" href="${ecosystemUrl(item)}">查看详情</a>`
+          : `<span class="text-button secondary muted-button">待发布详情</span>`
+      }
+    </article>
+  `;
+}
+
 function groupContent(items) {
   state.grouped.daily = items.filter((item) => item.type === "daily_intelligence");
   state.grouped.companies = items.filter((item) => item.type === "company");
@@ -191,6 +218,9 @@ function renderMarkdown(markdown) {
   const lines = body.split(/\r?\n/);
   const html = [];
   let inList = false;
+  let inCode = false;
+  let codeLines = [];
+  let tableLines = [];
 
   function closeList() {
     if (inList) {
@@ -199,12 +229,74 @@ function renderMarkdown(markdown) {
     }
   }
 
+  function closeCode() {
+    if (inCode) {
+      html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+      codeLines = [];
+      inCode = false;
+    }
+  }
+
+  function closeTable() {
+    if (!tableLines.length) return;
+    const rows = tableLines
+      .filter((line) => !/^\|\s*-+/.test(line.trim()))
+      .map((line) =>
+        line
+          .trim()
+          .replace(/^\|/, "")
+          .replace(/\|$/, "")
+          .split("|")
+          .map((cell) => renderInlineMarkdown(cell.trim()))
+      );
+    if (rows.length) {
+      const [head, ...bodyRows] = rows;
+      html.push("<table>");
+      html.push(`<thead><tr>${head.map((cell) => `<th>${cell}</th>`).join("")}</tr></thead>`);
+      if (bodyRows.length) {
+        html.push("<tbody>");
+        bodyRows.forEach((row) => {
+          html.push(`<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`);
+        });
+        html.push("</tbody>");
+      }
+      html.push("</table>");
+    }
+    tableLines = [];
+  }
+
   for (const line of lines) {
     const trimmed = line.trim();
+    if (trimmed.startsWith("```")) {
+      closeTable();
+      closeList();
+      if (inCode) {
+        closeCode();
+      } else {
+        inCode = true;
+        codeLines = [];
+      }
+      continue;
+    }
+
+    if (inCode) {
+      codeLines.push(line);
+      continue;
+    }
+
     if (!trimmed) {
+      closeTable();
       closeList();
       continue;
     }
+
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      closeList();
+      tableLines.push(line);
+      continue;
+    }
+
+    closeTable();
 
     if (trimmed.startsWith("# ")) {
       closeList();
@@ -237,12 +329,18 @@ function renderMarkdown(markdown) {
     html.push(`<p>${renderInlineMarkdown(trimmed)}</p>`);
   }
 
+  closeTable();
+  closeCode();
   closeList();
   return html.join("");
 }
 
 function findDailyByDate(date) {
   return state.grouped.daily.find((item) => item.date === date);
+}
+
+function findEcosystemByTitle(title) {
+  return state.grouped.ecosystems.find((item) => item.title === title);
 }
 
 async function openDailyDetail(item) {
@@ -302,17 +400,58 @@ async function openDailyDetail(item) {
 function renderEcosystems() {
   const publicEcosystemMap = new Map(state.grouped.ecosystems.map((item) => [item.title || item.ecosystem, item]));
   document.querySelector("#ecosystem-list").innerHTML = ECOSYSTEMS
-    .map((name) => {
-      const item = publicEcosystemMap.get(name);
-      return `
-        <article class="card">
-          <h3>${escapeHtml(name)}</h3>
-          <p>${escapeHtml(item?.summary || "待发布公开生态观察。")}</p>
-          ${item?.body ? `<details><summary>查看详情</summary><p>${escapeHtml(item.body).replaceAll("\n", "<br />")}</p></details>` : ""}
-        </article>
-      `;
-    })
+    .map((name) => ecosystemCard(publicEcosystemMap.get(name), name))
     .join("");
+  document.querySelector("#ecosystem-detail").innerHTML = "";
+}
+
+function sectionBlock(title, markdown) {
+  if (!markdown) return "";
+  return `
+    <section class="ecosystem-section">
+      ${renderMarkdown(markdown)}
+    </section>
+  `;
+}
+
+function openEcosystemDetail(item) {
+  const detail = document.querySelector("#ecosystem-detail");
+  const listView = document.querySelector("#ecosystem-list-view");
+  listView.hidden = true;
+
+  if (!item) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#ecosystems">返回战略生态列表</a>
+        <p>未找到对应战略生态。</p>
+      </section>
+    `;
+    return;
+  }
+
+  const sections = item.sections || {};
+  detail.innerHTML = `
+    <section class="panel markdown-body ecosystem-detail">
+      <div class="daily-detail-header">
+        <a class="text-button secondary" href="#ecosystems">返回战略生态列表</a>
+        <h2>${escapeHtml(item.title || "战略生态")}</h2>
+        <div class="meta">
+          <span>重点公司数量：${Number(item.company_count ?? asArray(item.linked_companies).length ?? 0)}</span>
+          ${item.source_path ? `<span>来源：${escapeHtml(item.source_path)}</span>` : ""}
+        </div>
+        ${formatTags(item.tags)}
+      </div>
+      ${sectionBlock("生态定义", sections.ecosystem_definition)}
+      ${sectionBlock("产业链结构", sections.industry_chain)}
+      ${sectionBlock("核心价值链", sections.value_chain)}
+      ${sectionBlock("关键公司观察池", sections.company_pool)}
+      ${sectionBlock("长期跟踪指标", sections.tracking_indicators)}
+      ${sectionBlock("关键问题", sections.key_questions)}
+      ${sectionBlock("与其他生态的关系", sections.related_ecosystems)}
+      ${sectionBlock("下一步研究任务", sections.next_research_tasks || item.next_research_tasks)}
+    </section>
+  `;
+  detail.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderCompanies() {
@@ -330,30 +469,54 @@ function renderReports() {
 function navigate() {
   const rawHash = decodeURIComponent(location.hash || "#home");
   const dailyDetailMatch = rawHash.match(/^#\/daily\/([^/]+)$/);
+  const ecosystemDetailMatch = rawHash.match(/^#\/ecosystems\/([^/]+)$/);
   const hashRoute = rawHash.replace("#", "") || "home";
-  const route = dailyDetailMatch ? "daily" : hashRoute === "disclaimer" ? "about" : hashRoute;
+  const route = dailyDetailMatch
+    ? "daily"
+    : ecosystemDetailMatch
+      ? "ecosystems"
+      : hashRoute === "disclaimer"
+        ? "about"
+        : hashRoute;
 
   document.querySelectorAll(".view").forEach((view) => {
     view.classList.toggle("is-active", view.dataset.route === route);
   });
   document.querySelectorAll("nav a").forEach((link) => {
-    const navRoute = route === "daily" ? "#daily" : `#${route}`;
+    const navRoute = route === "daily" ? "#daily" : route === "ecosystems" ? "#ecosystems" : `#${route}`;
     link.classList.toggle("is-active", link.getAttribute("href") === navRoute);
   });
 
-  const listView = document.querySelector("#daily-list-view");
-  const detail = document.querySelector("#daily-detail");
+  const dailyListView = document.querySelector("#daily-list-view");
+  const dailyDetail = document.querySelector("#daily-detail");
+  const ecosystemListView = document.querySelector("#ecosystem-list-view");
+  const ecosystemDetail = document.querySelector("#ecosystem-detail");
   if (route !== "daily") {
-    listView.hidden = false;
-    detail.innerHTML = "";
-    return;
+    dailyListView.hidden = false;
+    dailyDetail.innerHTML = "";
   }
 
-  if (dailyDetailMatch) {
-    openDailyDetail(findDailyByDate(dailyDetailMatch[1]));
-  } else {
-    listView.hidden = false;
-    detail.innerHTML = "";
+  if (route !== "ecosystems") {
+    ecosystemListView.hidden = false;
+    ecosystemDetail.innerHTML = "";
+  }
+
+  if (route === "daily") {
+    if (dailyDetailMatch) {
+      openDailyDetail(findDailyByDate(dailyDetailMatch[1]));
+    } else {
+      dailyListView.hidden = false;
+      dailyDetail.innerHTML = "";
+    }
+  }
+
+  if (route === "ecosystems") {
+    if (ecosystemDetailMatch) {
+      openEcosystemDetail(findEcosystemByTitle(ecosystemDetailMatch[1]));
+    } else {
+      ecosystemListView.hidden = false;
+      ecosystemDetail.innerHTML = "";
+    }
   }
 }
 

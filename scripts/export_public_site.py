@@ -34,16 +34,24 @@ PRIVATE_KEYS = {
     "valuation_model",
 }
 ALLOWED_FRONTMATTER_KEYS = {
+    "id",
     "public",
+    "publish_scope",
     "type",
     "title",
+    "status",
+    "created",
+    "updated",
     "date",
     "summary",
     "ecosystem",
     "companies",
+    "linked_companies",
     "tags",
     "source",
 }
+
+ECOSYSTEMS_SOURCE_DIR = "02_战略生态"
 
 
 def parse_args() -> argparse.Namespace:
@@ -159,6 +167,61 @@ def excerpt(body: str, length: int = 220) -> str:
     return compact[: length - 1].rstrip() + "..."
 
 
+def section_map(body: str) -> dict[str, str]:
+    sections: dict[str, list[str]] = {}
+    current: str | None = None
+    for line in body.splitlines():
+      match = re.match(r"^##\s+(?:\d+\.\s*)?(.+?)\s*$", line)
+      if match:
+          current = match.group(1).strip()
+          sections[current] = [line]
+          continue
+      if current:
+          sections[current].append(line)
+    return {key: "\n".join(value).strip() for key, value in sections.items()}
+
+
+def strip_heading(markdown: str) -> str:
+    lines = markdown.splitlines()
+    if lines and lines[0].startswith("## "):
+        return "\n".join(lines[1:]).strip()
+    return markdown.strip()
+
+
+def ecosystem_payload(body: str, metadata: dict[str, Any], path: Path, vault: Path) -> dict[str, Any]:
+    sections = section_map(body)
+    public_summary = strip_heading(sections.get("公开展示摘要", ""))
+    next_research_tasks = strip_heading(sections.get("下一步研究任务", ""))
+    linked_companies = as_list(metadata.get("linked_companies"))
+    return {
+        "public_summary": public_summary or metadata.get("summary") or excerpt(body),
+        "next_research_tasks": next_research_tasks,
+        "source_path": str(path.relative_to(vault)),
+        "linked_companies": linked_companies,
+        "company_count": len(linked_companies),
+        "sections": {
+            "ecosystem_definition": sections.get("生态定义", ""),
+            "industry_chain": sections.get("产业链结构", ""),
+            "value_chain": sections.get("核心价值链", ""),
+            "company_pool": sections.get("关键公司观察池", ""),
+            "tracking_indicators": sections.get("长期跟踪指标", ""),
+            "key_questions": sections.get("关键问题", ""),
+            "related_ecosystems": sections.get("与其他生态的关系", ""),
+            "next_research_tasks": sections.get("下一步研究任务", ""),
+        },
+    }
+
+
+def as_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if str(item).strip()]
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    return []
+
+
 def public_markdown_path(item_type: str, metadata: dict[str, Any], source_path: Path) -> Path:
     if item_type == "daily_intelligence":
         date_value = str(metadata.get("date") or source_path.stem[:10])
@@ -201,9 +264,14 @@ def export_public_content(vault: Path, site_root: Path) -> list[dict[str, Any]]:
         target_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, target_path)
 
+        item_payload: dict[str, Any] = {}
+        if item_type == "ecosystem" and ECOSYSTEMS_SOURCE_DIR in path.relative_to(vault).parts:
+            item_payload = ecosystem_payload(body=body, metadata=metadata, path=path, vault=vault)
+
         items.append(
             {
                 **metadata,
+                **item_payload,
                 "title": title,
                 "type": item_type,
                 "path": relative_path.as_posix(),

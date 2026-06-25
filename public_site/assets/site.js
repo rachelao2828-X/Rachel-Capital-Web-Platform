@@ -10,6 +10,7 @@ const ECOSYSTEMS = [
 
 const state = {
   content: [],
+  ecosystems: [],
   grouped: {
     daily: [],
     companies: [],
@@ -140,7 +141,7 @@ function emptyState(label) {
 
 function ecosystemCard(item, fallbackName) {
   const title = escapeHtml(item?.title || fallbackName);
-  const summary = escapeHtml(item?.public_summary || item?.summary || item?.excerpt || "待发布公开生态观察。");
+  const summary = escapeHtml(item?.summary || item?.public_summary || item?.excerpt || "待发布公开生态观察。");
   const tags = formatTags(item?.tags || []);
   const companyCount = Number(item?.company_count ?? asArray(item?.linked_companies).length ?? 0);
 
@@ -157,6 +158,18 @@ function ecosystemCard(item, fallbackName) {
           ? `<a class="text-button" href="${ecosystemUrl(item)}">查看详情</a>`
           : `<span class="text-button secondary muted-button">待发布详情</span>`
       }
+    </article>
+  `;
+}
+
+function homeEcosystemCard(item) {
+  const title = escapeHtml(item?.title || "未命名生态");
+  const summary = escapeHtml(item?.summary || item?.public_summary || item?.excerpt || "待发布公开生态观察。");
+  return `
+    <article class="mini-card">
+      <h4>${title}</h4>
+      <p>${summary}</p>
+      <a href="${ecosystemUrl(item)}">查看生态</a>
     </article>
   `;
 }
@@ -178,8 +191,10 @@ function renderHome() {
     : emptyState("暂无公开日报。请在 Obsidian 中将可公开日报标记为 public: true 后导出。");
 
   document.querySelector("#home-ecosystems").innerHTML = ECOSYSTEMS
-    .map((name) => `<span class="tag">${escapeHtml(name)}</span>`)
-    .join("");
+    .map((name) => state.ecosystems.find((item) => item.title === name))
+    .filter(Boolean)
+    .map((item) => homeEcosystemCard(item))
+    .join("") || emptyState("暂无公开战略生态。");
 
   document.querySelector("#home-reports").innerHTML = latestReports.length
     ? latestReports.map((item) => itemCard(item)).join("")
@@ -340,7 +355,7 @@ function findDailyByDate(date) {
 }
 
 function findEcosystemByTitle(title) {
-  return state.grouped.ecosystems.find((item) => item.title === title);
+  return state.ecosystems.find((item) => item.title === title);
 }
 
 async function openDailyDetail(item) {
@@ -398,7 +413,7 @@ async function openDailyDetail(item) {
 }
 
 function renderEcosystems() {
-  const publicEcosystemMap = new Map(state.grouped.ecosystems.map((item) => [item.title || item.ecosystem, item]));
+  const publicEcosystemMap = new Map(state.ecosystems.map((item) => [item.title || item.ecosystem, item]));
   document.querySelector("#ecosystem-list").innerHTML = ECOSYSTEMS
     .map((name) => ecosystemCard(publicEcosystemMap.get(name), name))
     .join("");
@@ -430,6 +445,16 @@ function openEcosystemDetail(item) {
   }
 
   const sections = item.sections || {};
+  const detailSections = {
+    ecosystem_definition: sections.definition || sections.ecosystem_definition,
+    industry_chain: sections.industry_chain,
+    value_chain: sections.value_chain,
+    company_pool: sections.companies || sections.company_pool,
+    tracking_indicators: sections.indicators || sections.tracking_indicators,
+    key_questions: sections.questions || sections.key_questions,
+    related_ecosystems: sections.relations || sections.related_ecosystems,
+    next_research_tasks: sections.next_tasks || sections.next_research_tasks || item.next_research_tasks,
+  };
   detail.innerHTML = `
     <section class="panel markdown-body ecosystem-detail">
       <div class="daily-detail-header">
@@ -441,14 +466,14 @@ function openEcosystemDetail(item) {
         </div>
         ${formatTags(item.tags)}
       </div>
-      ${sectionBlock("生态定义", sections.ecosystem_definition)}
-      ${sectionBlock("产业链结构", sections.industry_chain)}
-      ${sectionBlock("核心价值链", sections.value_chain)}
-      ${sectionBlock("关键公司观察池", sections.company_pool)}
-      ${sectionBlock("长期跟踪指标", sections.tracking_indicators)}
-      ${sectionBlock("关键问题", sections.key_questions)}
-      ${sectionBlock("与其他生态的关系", sections.related_ecosystems)}
-      ${sectionBlock("下一步研究任务", sections.next_research_tasks || item.next_research_tasks)}
+      ${sectionBlock("生态定义", detailSections.ecosystem_definition)}
+      ${sectionBlock("产业链结构", detailSections.industry_chain)}
+      ${sectionBlock("核心价值链", detailSections.value_chain)}
+      ${sectionBlock("关键公司观察池", detailSections.company_pool)}
+      ${sectionBlock("长期跟踪指标", detailSections.tracking_indicators)}
+      ${sectionBlock("关键问题", detailSections.key_questions)}
+      ${sectionBlock("与其他生态的关系", detailSections.related_ecosystems)}
+      ${sectionBlock("下一步研究任务", detailSections.next_research_tasks)}
     </section>
   `;
   detail.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -522,19 +547,29 @@ function navigate() {
 
 async function loadContent() {
   try {
-    const response = await fetch("data/public_content.json", { cache: "no-cache" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const payload = await response.json();
+    const [contentResponse, ecosystemResponse] = await Promise.all([
+      fetch("data/public_content.json", { cache: "no-cache" }),
+      fetch("data/ecosystems.json", { cache: "no-cache" }),
+    ]);
+    if (!contentResponse.ok) throw new Error(`public_content HTTP ${contentResponse.status}`);
+    if (!ecosystemResponse.ok) throw new Error(`ecosystems HTTP ${ecosystemResponse.status}`);
+    const payload = await contentResponse.json();
+    const ecosystemsPayload = await ecosystemResponse.json();
     state.content = Array.isArray(payload.items) ? payload.items : [];
+    state.ecosystems = Array.isArray(ecosystemsPayload) ? ecosystemsPayload : [];
     document.querySelector("#last-updated").textContent = payload.generated_at
       ? `公开数据更新时间：${payload.generated_at}`
       : "公开数据已加载";
   } catch (error) {
     state.content = [];
+    state.ecosystems = [];
     document.querySelector("#last-updated").textContent = "尚未导出公开数据";
   }
 
   groupContent(state.content);
+  if (!state.ecosystems.length) {
+    state.ecosystems = state.grouped.ecosystems;
+  }
   renderHome();
   renderDaily();
   renderEcosystems();

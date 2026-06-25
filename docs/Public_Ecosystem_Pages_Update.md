@@ -14,7 +14,8 @@
 
 - 只导出 frontmatter 中 `public: true` 的 Markdown 文件。
 - 生态文件需为 `type: ecosystem`。
-- 导出内容写入 `public_site/data/public_content.json`。
+- 生态结构化数据写入 `public_site/data/ecosystems.json`。
+- 公开内容总索引仍写入 `public_site/data/public_content.json`，供日报、报告等页面使用。
 - 生态 Markdown 文件复制到 `public_site/ecosystems/`。
 
 ## 导出字段
@@ -22,25 +23,53 @@
 每个公开生态导出以下字段：
 
 - `title`
+- `id`
 - `tags`
 - `linked_companies`
 - `company_count`
-- `public_summary`
-- `next_research_tasks`
+- `publish_scope`
+- `summary`
 - `source_path`
 - `sections`
 - `path`
 
 `sections` 包括：
 
-- 生态定义
-- 产业链结构
-- 核心价值链
-- 关键公司观察池
-- 长期跟踪指标
-- 关键问题
-- 与其他生态的关系
-- 下一步研究任务
+- `definition`: 生态定义
+- `industry_chain`: 产业链结构
+- `value_chain`: 核心价值链
+- `companies`: 关键公司观察池
+- `indicators`: 长期跟踪指标
+- `questions`: 关键问题
+- `relations`: 与其他生态的关系
+- `next_tasks`: 下一步研究任务
+
+数据结构示例：
+
+```json
+[
+  {
+    "id": "ECO-AI-INFRA-001",
+    "title": "AI基础设施生态",
+    "tags": ["战略生态", "AI基础设施", "算力"],
+    "linked_companies": ["NVIDIA", "中际旭创"],
+    "company_count": 12,
+    "publish_scope": "public_summary",
+    "summary": "AI基础设施生态是 AI 时代最重要的底层能力体系之一。",
+    "source_path": "02_战略生态/AI基础设施生态.md",
+    "sections": {
+      "definition": "...",
+      "industry_chain": "...",
+      "value_chain": "...",
+      "companies": "...",
+      "indicators": "...",
+      "questions": "...",
+      "relations": "...",
+      "next_tasks": "..."
+    }
+  }
+]
+```
 
 ## 页面结构
 
@@ -84,6 +113,8 @@
 - 重点公司数量
 - 查看详情按钮
 
+首页“七大战略生态”模块也读取 `public_site/data/ecosystems.json`，不再使用硬编码占位内容。首页展示生态名称、一句话摘要和“查看生态”按钮。
+
 点击详情后显示：
 
 - 生态定义
@@ -101,10 +132,16 @@
 
 - `python3 -m py_compile scripts/export_public_site.py` 通过。
 - `node --check public_site/assets/site.js` 通过。
+- `python scripts/export_public_site.py` 在本机不可用，因为当前 shell 没有 `python` 命令。
+- 使用等效命令 `python3 scripts/export_public_site.py` 导出成功。
 - 从 Obsidian Vault 导出 `16` 个公开内容，其中 `7` 个为战略生态。
-- `public_site/data/public_content.json` 中 7 个生态均包含 `public: true`。
-- 7 个生态均包含 `source_path`、`public_summary`、`linked_companies` 和详情 `sections`。
+- 已生成 `public_site/data/ecosystems.json`。
+- `public_site/data/ecosystems.json` 中包含 7 个生态。
+- 7 个生态均包含 `id`、`title`、`tags`、`linked_companies`、`publish_scope`、`source_path`、`summary` 和详情 `sections`。
 - `public_site/ecosystems/` 下已生成 7 个生态 Markdown 文件。
+- 本地静态服务器验证首页返回 `HTTP 200`。
+- 本地访问 `public_site/data/ecosystems.json` 可读取 7 个生态。
+- 本地访问 `public_site/ecosystems/AI基础设施生态.md` 返回 `HTTP 200`。
 
 ## 后续建议
 

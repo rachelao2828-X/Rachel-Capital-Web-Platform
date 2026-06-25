@@ -8,6 +8,17 @@ const ECOSYSTEMS = [
   "医疗科技生态",
 ];
 
+const ecosystemSectionOrder = [
+  ["definition", "1. 生态定义"],
+  ["industry_chain", "2. 产业链结构"],
+  ["value_chain", "3. 核心价值链"],
+  ["companies", "4. 关键公司观察池"],
+  ["indicators", "5. 长期跟踪指标"],
+  ["questions", "6. 关键问题"],
+  ["relations", "7. 与其他生态的关系"],
+  ["next_tasks", "8. 下一步研究任务"],
+];
+
 const state = {
   content: [],
   ecosystems: [],
@@ -420,11 +431,20 @@ function renderEcosystems() {
   document.querySelector("#ecosystem-detail").innerHTML = "";
 }
 
+function stripSectionHeading(markdown) {
+  return String(markdown || "")
+    .replace(/^##\s+(?:\d+\.\s*)?.+?\s*\n+/, "")
+    .trim();
+}
+
 function sectionBlock(title, markdown) {
   if (!markdown) return "";
+  const body = stripSectionHeading(markdown);
+  if (!body) return "";
   return `
     <section class="ecosystem-section">
-      ${renderMarkdown(markdown)}
+      <h3 class="ecosystem-section-title">${escapeHtml(title)}</h3>
+      ${renderMarkdown(body)}
     </section>
   `;
 }
@@ -446,15 +466,18 @@ function openEcosystemDetail(item) {
 
   const sections = item.sections || {};
   const detailSections = {
-    ecosystem_definition: sections.definition || sections.ecosystem_definition,
+    definition: sections.definition || sections.ecosystem_definition,
     industry_chain: sections.industry_chain,
     value_chain: sections.value_chain,
-    company_pool: sections.companies || sections.company_pool,
-    tracking_indicators: sections.indicators || sections.tracking_indicators,
-    key_questions: sections.questions || sections.key_questions,
-    related_ecosystems: sections.relations || sections.related_ecosystems,
-    next_research_tasks: sections.next_tasks || sections.next_research_tasks || item.next_research_tasks,
+    companies: sections.companies || sections.company_pool,
+    indicators: sections.indicators || sections.tracking_indicators,
+    questions: sections.questions || sections.key_questions,
+    relations: sections.relations || sections.related_ecosystems,
+    next_tasks: sections.next_tasks || sections.next_research_tasks || item.next_research_tasks,
   };
+  const sectionHtml = ecosystemSectionOrder
+    .map(([key, title]) => sectionBlock(title, detailSections[key]))
+    .join("");
   detail.innerHTML = `
     <section class="panel markdown-body ecosystem-detail">
       <div class="daily-detail-header">
@@ -466,14 +489,7 @@ function openEcosystemDetail(item) {
         </div>
         ${formatTags(item.tags)}
       </div>
-      ${sectionBlock("生态定义", detailSections.ecosystem_definition)}
-      ${sectionBlock("产业链结构", detailSections.industry_chain)}
-      ${sectionBlock("核心价值链", detailSections.value_chain)}
-      ${sectionBlock("关键公司观察池", detailSections.company_pool)}
-      ${sectionBlock("长期跟踪指标", detailSections.tracking_indicators)}
-      ${sectionBlock("关键问题", detailSections.key_questions)}
-      ${sectionBlock("与其他生态的关系", detailSections.related_ecosystems)}
-      ${sectionBlock("下一步研究任务", detailSections.next_research_tasks)}
+      ${sectionHtml}
     </section>
   `;
   detail.scrollIntoView({ behavior: "smooth", block: "start" });

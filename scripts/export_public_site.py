@@ -180,7 +180,7 @@ def section_map(body: str) -> dict[str, str]:
         match = re.match(r"^##\s+(?:\d+\.\s*)?(.+?)\s*$", line)
         if match:
             current = match.group(1).strip()
-            sections[current] = [line]
+            sections[current] = []
             continue
         if current:
             sections[current].append(line)

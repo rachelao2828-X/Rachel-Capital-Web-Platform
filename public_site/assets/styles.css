@@ -199,8 +199,28 @@ h4 {
   gap: 10px;
 }
 
+.tag-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .ecosystem-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ecosystem-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.ecosystem-card .text-button {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.muted-button {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: default;
 }
 
 .tag {
@@ -210,6 +230,30 @@ h4 {
   color: var(--text);
   display: inline-block;
   padding: 8px 10px;
+}
+
+.mini-card {
+  background: #fbfcfd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.mini-card h4 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.mini-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+
+.mini-card a {
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .notice {
@@ -356,6 +400,42 @@ button {
   padding-left: 24px;
 }
 
+.markdown-body pre {
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  line-height: 1.65;
+  overflow-x: auto;
+  padding: 14px;
+  white-space: pre;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  display: block;
+  margin: 12px 0 18px;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--line);
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown-body th {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.ecosystem-section {
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+}
+
 footer {
   border-top: 1px solid var(--line);
   color: var(--muted);
@@ -392,6 +472,7 @@ footer {
   }
 
   .grid.two,
+  .tag-grid,
   .ecosystem-grid {
     grid-template-columns: 1fr;
   }

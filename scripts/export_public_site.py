@@ -237,10 +237,12 @@ def ecosystem_json_item(body: str, metadata: dict[str, Any], path: Path, vault: 
             "definition": sections.get("生态定义", ""),
             "industry_chain": sections.get("产业链结构", ""),
             "value_chain": sections.get("核心价值链", ""),
+            "sub_chains": sections.get("子链条拆解", ""),
             "companies": sections.get("关键公司观察池", ""),
             "indicators": sections.get("长期跟踪指标", ""),
             "questions": sections.get("关键问题", ""),
             "relations": sections.get("与其他生态的关系", ""),
+            "coze_rules": sections.get("Coze 日报自动关联规则", ""),
             "next_tasks": sections.get("下一步研究任务", ""),
         },
     }

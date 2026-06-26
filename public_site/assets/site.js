@@ -9,14 +9,16 @@ const ECOSYSTEMS = [
 ];
 
 const ecosystemSectionOrder = [
-  ["definition", "1. 生态定义"],
-  ["industry_chain", "2. 产业链结构"],
-  ["value_chain", "3. 核心价值链"],
-  ["companies", "4. 关键公司观察池"],
-  ["indicators", "5. 长期跟踪指标"],
-  ["questions", "6. 关键问题"],
-  ["relations", "7. 与其他生态的关系"],
-  ["next_tasks", "8. 下一步研究任务"],
+  ["definition", "生态定义"],
+  ["industry_chain", "产业链结构"],
+  ["value_chain", "核心价值链"],
+  ["sub_chains", "子链条拆解"],
+  ["companies", "关键公司观察池"],
+  ["indicators", "长期跟踪指标"],
+  ["questions", "关键问题"],
+  ["relations", "与其他生态的关系"],
+  ["coze_rules", "Coze 日报自动关联规则"],
+  ["next_tasks", "下一步研究任务"],
 ];
 
 const state = {
@@ -469,14 +471,17 @@ function openEcosystemDetail(item) {
     definition: sections.definition || sections.ecosystem_definition,
     industry_chain: sections.industry_chain,
     value_chain: sections.value_chain,
+    sub_chains: sections.sub_chains,
     companies: sections.companies || sections.company_pool,
     indicators: sections.indicators || sections.tracking_indicators,
     questions: sections.questions || sections.key_questions,
     relations: sections.relations || sections.related_ecosystems,
+    coze_rules: sections.coze_rules,
     next_tasks: sections.next_tasks || sections.next_research_tasks || item.next_research_tasks,
   };
   const sectionHtml = ecosystemSectionOrder
-    .map(([key, title]) => sectionBlock(title, detailSections[key]))
+    .filter(([key]) => stripSectionHeading(detailSections[key]).length > 0)
+    .map(([key, title], index) => sectionBlock(`${index + 1}. ${title}`, detailSections[key]))
     .join("");
   detail.innerHTML = `
     <section class="panel markdown-body ecosystem-detail">

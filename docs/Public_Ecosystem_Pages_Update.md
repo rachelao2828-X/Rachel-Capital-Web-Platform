@@ -148,3 +148,30 @@
 - 将 GitHub Pages 的“战略生态”卡片视觉进一步优化为更适合长摘要的研究页布局。
 - 在导出流程中增加公开字段白名单测试，避免未来误导出内部字段。
 - 将 Coze 日报中的生态标签与这些 Source of Truth 文件建立自动关联。
+
+## 2026-06-26 发布验收记录
+
+本次验收继续推进战略生态公开页面发布。
+
+检查结果：
+
+- 当前分支为 `develop`。
+- `develop` 已包含章节编号修复提交：`76eda42 Fix ecosystem detail section numbering`。
+- 关键文件均存在：
+  - `public_site/data/ecosystems.json`
+  - `docs/Public_Ecosystem_Section_Numbering_Fix.md`
+  - `docs/Public_Ecosystem_Pages_Update.md`
+- `python scripts/export_public_site.py` 在本机不可用，因为当前 shell 没有 `python` 命令。
+- 使用 `python3 scripts/export_public_site.py` 重新导出成功。
+- `public_site/data/ecosystems.json` 包含 7 个公开战略生态。
+- 每个生态均包含 `id`、`title`、`tags`、`linked_companies`、`company_count`、`publish_scope`、`summary`、`source_path` 和 `sections`。
+- 本地静态站使用 `http://127.0.0.1:8081` 验收，原因是 `8080` 已被占用。
+- 首页中文导航显示正常。
+- 首页“七大战略生态”显示 7 个生态卡片。
+- “战略生态”页面显示 7 个生态卡片，并包含“查看详情”入口。
+- 7 个生态详情页均可通过 hash route 打开，不出现 404。
+- 详情页统一显示连续章节编号 `1` 到 `8`。
+- 不再出现 `9. 下一步研究任务`。
+- 详情页不展示 `公开展示摘要`，该内容仅作为首页和卡片摘要使用。
+
+本地验收结论：通过。

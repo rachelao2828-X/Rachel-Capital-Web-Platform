@@ -24,6 +24,7 @@ const ecosystemSectionOrder = [
 const themeSectionOrder = [
   ["definition", "专题定义"],
   ["why_track", "为什么需要长期跟踪"],
+  ["pdf_fusion", "PDF融合后的核心结论"],
   ["categories", "一级分类"],
   ["ecosystem_relations", "与七大战略生态的关系"],
   ["tech_matrix_summary", "关键技术矩阵摘要"],

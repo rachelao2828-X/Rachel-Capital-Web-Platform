@@ -297,6 +297,7 @@ def theme_json_item(body: str, metadata: dict[str, Any], path: Path, vault: Path
         "sections": {
             "definition": sections.get("专题定义", ""),
             "why_track": sections.get("为什么需要长期跟踪", ""),
+            "pdf_fusion": sections.get("PDF融合后的核心结论", ""),
             "categories": sections.get("一级分类", ""),
             "ecosystem_relations": sections.get("与七大战略生态的关系", ""),
             "tech_matrix_summary": sections.get("关键技术矩阵摘要", ""),

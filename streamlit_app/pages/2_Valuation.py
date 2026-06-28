@@ -92,9 +92,14 @@ def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
     return rows
 
 
+def render_section_expander(title: str, section: dict, labels: dict[str, str], expanded: bool = False) -> None:
+    with st.expander(title, expanded=expanded):
+        st.dataframe(section_rows(section, labels), use_container_width=True, hide_index=True)
+
+
 def render_private_document_upload() -> None:
-    st.subheader("上传项目资料 / 商业计划书")
-    st.warning("商业计划书、融资材料和项目资料通常包含敏感信息。当前功能仅建议在本地可信环境使用；不会自动调用外部 API 上传文件内容。")
+    st.subheader("项目资料上传与解析")
+    st.warning("商业计划书、融资材料和项目资料通常包含敏感信息。当前功能仅建议在本地可信环境使用。上传文件只保存在本地私有目录，不进入 public_site。")
     uploaded_file = st.file_uploader(
         "上传 PDF、PPTX、DOCX 项目资料、商业计划书或可研报告",
         type=["pdf", "ppt", "pptx", "doc", "docx"],
@@ -135,17 +140,17 @@ def render_private_document_upload() -> None:
     for warning in parsed_document.get("warnings", []):
         st.warning(warning)
 
-    summary = extraction.get("project_summary", {})
+    summary = extraction.get("project_basic_info", {})
     readiness = extraction.get("valuation_readiness", {})
     financing = extraction.get("financing_info", {})
-    operating = extraction.get("operating_data", {})
     financial = extraction.get("financial_data", {})
     founder_team = extraction.get("founder_team", {})
-    commercial_model = extraction.get("commercial_model", {})
-    technology = extraction.get("technology_and_barriers", {})
-    product_and_customers = extraction.get("product_and_customers", {})
-    market = extraction.get("market_and_competition", {})
-    capacity_and_cost = extraction.get("capacity_and_cost", {})
+    commercial_model = extraction.get("business_model", {})
+    technology = extraction.get("technology_route", {})
+    product_and_customers = extraction.get("products_and_customers", {})
+    market = extraction.get("market_space", {})
+    capacity_data = extraction.get("capacity_data", {})
+    cost_structure = extraction.get("cost_structure", {})
     exit_path = extraction.get("exit_path", {})
     risks = extraction.get("risk_factors", {})
 
@@ -157,108 +162,89 @@ def render_private_document_upload() -> None:
     cols[3].metric("估值置信度", readiness.get("valuation_confidence_level") or "待确认")
     st.write(summary.get("one_sentence_summary") or "未提取到一句话摘要。")
 
-    st.subheader("创始团队信息")
-    st.dataframe(
-        section_rows(
-            founder_team,
-            {
-                "founders": "创始人",
-                "co_founders": "联合创始人",
-                "core_executives": "核心高管",
-                "technical_lead": "技术负责人",
-                "business_lead": "商业负责人",
-                "finance_lead": "财务负责人",
-                "advisors_or_board": "董事会 / 顾问",
-                "education_background": "高校 / 教育背景",
-                "industry_experience": "产业经验",
-                "entrepreneurial_experience": "创业经历",
-                "research_background": "科研 / 论文 / 专利背景",
-                "big_company_background": "大厂背景",
-                "industrial_resource_background": "产业资源背景",
-                "fundraising_experience": "融资经验",
-                "team_completeness": "团队完整度",
-                "team_gaps": "团队短板",
-                "key_person_dependency": "关键人依赖",
-                "team_risks": "团队风险",
-            },
-        ),
-        use_container_width=True,
-        hide_index=True,
+    render_section_expander(
+        "创始团队信息",
+        founder_team,
+        {
+            "founders": "创始人",
+            "co_founders": "联合创始人",
+            "core_executives": "核心高管",
+            "technical_lead": "技术负责人",
+            "business_lead": "商业负责人",
+            "finance_lead": "财务负责人",
+            "advisors_or_board": "董事会 / 顾问",
+            "education_background": "高校 / 教育背景",
+            "industry_experience": "产业经验",
+            "entrepreneurial_experience": "创业经历",
+            "research_background": "科研 / 论文 / 专利背景",
+            "big_company_background": "大厂背景",
+            "industrial_resource_background": "产业资源背景",
+            "fundraising_experience": "融资经验",
+            "team_completeness": "团队完整度",
+            "team_gaps": "团队短板",
+            "key_person_dependency": "关键人依赖",
+            "team_risks": "团队风险",
+        },
+        expanded=True,
     )
 
-    st.subheader("商业模式")
-    st.dataframe(
-        section_rows(
-            commercial_model,
-            {
-                "revenue_sources": "收入来源",
-                "customer_type": "客户类型",
-                "payment_model": "付费模式",
-                "delivery_model": "交付方式",
-                "is_project_based": "是否项目制",
-                "is_productized": "是否产品化",
-                "is_platform_based": "是否平台型",
-                "is_asset_or_resource_driven": "是否资源 / 资产驱动",
-                "depends_on_government_or_key_customers": "是否依赖政府订单或大客户",
-            },
-        ),
-        use_container_width=True,
-        hide_index=True,
+    render_section_expander(
+        "商业模式",
+        commercial_model,
+        {
+            "revenue_sources": "收入来源",
+            "customer_type": "客户类型",
+            "payment_model": "付费模式",
+            "delivery_model": "交付方式",
+            "is_project_based": "是否项目制",
+            "is_productized": "是否产品化",
+            "is_platform_based": "是否平台型",
+            "is_asset_or_resource_driven": "是否资源 / 资产驱动",
+            "depends_on_government_or_key_customers": "是否依赖政府订单或大客户",
+        },
     )
 
-    st.subheader("核心数据提取表")
-    st.dataframe(
-        section_rows(
-            product_and_customers,
-            {
-                "products": "主要产品",
-                "product_form": "产品形态",
-                "customer_type": "客户类型",
-                "signed_customers": "已签客户",
-                "intended_customers": "意向客户",
-                "orders": "订单情况",
-                "contracts": "合同情况",
-                "customer_concentration": "客户集中度",
-                "repurchase": "复购情况",
-                "channels": "渠道情况",
-            },
-        ),
-        use_container_width=True,
-        hide_index=True,
+    render_section_expander(
+        "产品与客户",
+        product_and_customers,
+        {
+            "products": "主要产品",
+            "product_form": "产品形态",
+            "customer_type": "客户类型",
+            "signed_customers": "已签客户",
+            "intended_customers": "意向客户",
+            "orders": "订单情况",
+            "contracts": "合同情况",
+            "customer_concentration": "客户集中度",
+            "repurchase": "复购情况",
+            "channels": "渠道情况",
+        },
     )
 
     col_tech, col_market = st.columns(2)
     with col_tech:
-        st.subheader("技术路线与壁垒")
-        st.dataframe(
-            section_rows(
-                technology,
-                {
-                    "core_technology": "核心技术",
-                    "patents": "专利",
-                    "technical_maturity": "技术成熟度",
-                    "competitive_advantage": "技术壁垒 / 竞争优势",
-                    "key_dependencies": "关键技术依赖",
-                },
-            ),
-            use_container_width=True,
-            hide_index=True,
+        render_section_expander(
+            "技术路线",
+            technology,
+            {
+                "core_technology": "核心技术",
+                "patents": "专利",
+                "technical_maturity": "技术成熟度",
+                "competitive_advantage": "技术壁垒 / 竞争优势",
+                "key_dependencies": "关键技术依赖",
+            },
         )
     with col_market:
-        st.subheader("市场与竞争信息")
-        st.dataframe(
-            section_rows(
-                market,
-                {
-                    "market_size": "市场空间",
-                    "market_growth": "市场增速 / 景气度",
-                    "competitors": "竞争格局",
-                    "comparable_listed_companies": "可比上市公司",
-                    "comparable_private_companies": "可比未上市公司",
-                },
-            ),
-            use_container_width=True,
-            hide_index=True,
+        render_section_expander(
+            "市场空间",
+            market,
+            {
+                "market_size": "市场空间",
+                "market_growth": "市场增速 / 景气度",
+                "competitors": "竞争格局",
+                "comparable_listed_companies": "可比上市公司",
+                "comparable_private_companies": "可比未上市公司",
+            },
         )
 
     col_financing, col_financial = st.columns(2)
@@ -304,16 +290,28 @@ def render_private_document_upload() -> None:
 
     col_cost, col_exit = st.columns(2)
     with col_cost:
-        st.subheader("产能与成本信息")
-        st.dataframe(
-            section_rows(
-                capacity_and_cost,
+        render_section_expander(
+            "产能数据",
+            capacity_data,
+            {
+                "designed_capacity": "设计产能",
+                "current_capacity": "当前产能",
+                "capacity_expansion_plan": "产能爬坡 / 扩产计划",
+                "capacity_utilization": "产能利用率",
+                "construction_period": "建设周期",
+                "unit_price": "单位售价",
+                "unit_cost": "单位成本",
+                "production_base": "生产基地",
+                "equipment_investment": "设备投入",
+                "production_lines": "产线数量",
+            },
+        )
+        render_section_expander(
+            "成本结构",
+            cost_structure,
                 {
-                    "designed_capacity": "设计产能",
-                    "current_capacity": "当前产能",
-                    "capacity_expansion_plan": "产能爬坡 / 扩产计划",
-                    "unit_price": "单位售价",
-                    "unit_cost": "单位成本",
+                    "capex": "CAPEX",
+                    "opex": "OPEX",
                     "raw_material_cost": "原材料成本",
                     "energy_cost": "能耗成本",
                     "labor_cost": "人工成本",
@@ -321,54 +319,60 @@ def render_private_document_upload() -> None:
                     "maintenance_cost": "运维成本",
                     "environmental_cost": "环保成本",
                     "compliance_cost": "合规成本",
+                    "unit_economics": "单位经济模型",
                 },
-            ),
-            use_container_width=True,
-            hide_index=True,
         )
     with col_exit:
-        st.subheader("退出路径提取表")
-        st.dataframe(
-            section_rows(
-                exit_path,
-                {
-                    "ipo": "IPO",
-                    "ma": "并购",
-                    "dividend_recovery": "分红回收",
-                    "asset_sale": "资产出售",
-                    "equity_transfer": "股权转让",
-                    "strategic_acquisition": "产业方收购",
-                    "expected_exit_time": "退出时间预期",
-                    "comparable_exit_cases": "可比退出案例",
-                },
-            ),
-            use_container_width=True,
-            hide_index=True,
+        render_section_expander(
+            "退出路径",
+            exit_path,
+            {
+                "ipo": "IPO",
+                "ma": "并购",
+                "dividend_recovery": "分红回收",
+                "asset_sale": "资产出售",
+                "equity_transfer": "股权转让",
+                "strategic_acquisition": "产业方收购",
+                "expected_exit_time": "退出时间预期",
+                "comparable_exit_cases": "可比退出案例",
+            },
         )
 
-    st.subheader("风险因素")
-    st.dataframe(
-        section_rows(
-            risks,
-            {
-                "technology_risk": "技术风险",
-                "market_risk": "市场风险",
-                "customer_risk": "客户风险",
-                "policy_risk": "政策风险",
-                "financing_risk": "融资风险",
-                "execution_risk": "执行 / 产能爬坡风险",
-                "team_risk": "团队风险",
-                "key_person_risk": "关键人风险",
-                "data_reliability_risk": "数据真实性风险",
-                "compliance_risk": "合规风险",
-            },
-        ),
-        use_container_width=True,
-        hide_index=True,
+    render_section_expander(
+        "风险因素",
+        risks,
+        {
+            "technology_risk": "技术风险",
+            "market_risk": "市场风险",
+            "customer_risk": "客户风险",
+            "policy_risk": "政策风险",
+            "financing_risk": "融资风险",
+            "execution_risk": "执行 / 产能爬坡风险",
+            "team_risk": "团队风险",
+            "key_person_risk": "关键人风险",
+            "data_reliability_risk": "数据真实性风险",
+            "compliance_risk": "合规风险",
+        },
     )
 
-    st.subheader("数据可信度标记")
-    st.dataframe(extraction.get("field_assessments", []), use_container_width=True, hide_index=True)
+    render_section_expander(
+        "估值可用性",
+        readiness,
+        {
+            "recommended_models": "推荐估值模型",
+            "usable_data": "当前可用数据",
+            "missing_data": "缺失数据清单",
+            "questions_for_company": "建议向项目方追问的问题",
+            "data_confidence_level": "数据可信度",
+            "valuation_confidence_level": "估值置信度",
+            "ready_for_preliminary_valuation": "是否适合进入初步估值",
+            "unavailable_models": "暂不可用模型",
+        },
+        expanded=True,
+    )
+
+    with st.expander("数据可信度标记", expanded=False):
+        st.dataframe(extraction.get("field_assessments", []), use_container_width=True, hide_index=True)
 
     col_models, col_missing, col_questions = st.columns(3)
     with col_models:

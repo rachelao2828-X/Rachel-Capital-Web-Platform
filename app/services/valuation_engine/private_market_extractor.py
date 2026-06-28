@@ -8,9 +8,9 @@ from app.services.valuation_engine.model_registry import dedupe
 
 
 MISSING = "缺失"
-DISCLOSED = "资料明确披露"
+DISCLOSED = "文件明确披露"
 INFERRED = "系统推断"
-CONFIRM = "用户需要确认"
+CONFIRM = "系统推断"
 
 
 def extract_private_market_document(parsed_document: dict[str, Any]) -> dict[str, Any]:
@@ -112,6 +112,30 @@ def extract_private_market_document(parsed_document: dict[str, Any]) -> dict[str
         "environmental_cost": first_match(text, [r"(?:环保成本|环保投入)[:：]?\s*([^\n，。；;]{2,60})"]),
         "compliance_cost": first_match(text, [r"(?:合规成本|认证成本)[:：]?\s*([^\n，。；;]{2,60})"]),
     }
+    capacity_data = {
+        "designed_capacity": capacity_and_cost["designed_capacity"],
+        "current_capacity": capacity_and_cost["current_capacity"],
+        "capacity_expansion_plan": capacity_and_cost["capacity_expansion_plan"],
+        "capacity_utilization": operating_data["capacity_utilization"],
+        "construction_period": operating_data["construction_period"],
+        "unit_price": capacity_and_cost["unit_price"],
+        "unit_cost": capacity_and_cost["unit_cost"],
+        "production_base": first_match(text, [r"(?:生产基地|建设地点|项目地点)[:：]?\s*([^\n，。；;]{2,80})"]),
+        "equipment_investment": first_match(text, [r"(?:设备投入|设备投资)[:：]?\s*([^\n，。；;]{2,80})"]),
+        "production_lines": first_match(text, [r"(?:产线数量|生产线)[:：]?\s*([^\n，。；;]{2,60})"]),
+    }
+    cost_structure = {
+        "capex": financial_data["capex"],
+        "opex": financial_data["opex"],
+        "raw_material_cost": capacity_and_cost["raw_material_cost"],
+        "energy_cost": capacity_and_cost["energy_cost"],
+        "labor_cost": capacity_and_cost["labor_cost"],
+        "depreciation": capacity_and_cost["depreciation"],
+        "maintenance_cost": capacity_and_cost["maintenance_cost"],
+        "environmental_cost": capacity_and_cost["environmental_cost"],
+        "compliance_cost": capacity_and_cost["compliance_cost"],
+        "unit_economics": snippet_after(text, ["单位经济模型", "单位经济", "单台毛利", "单柜收入"]),
+    }
     exit_path = {
         "ipo": snippet_after(text, ["IPO", "上市计划", "上市路径"]),
         "ma": snippet_after(text, ["并购退出", "收购退出", "产业并购"]),
@@ -144,21 +168,22 @@ def extract_private_market_document(parsed_document: dict[str, Any]) -> dict[str
         financial_data,
         technology_and_barriers,
         market_and_competition,
-        capacity_and_cost,
+        capacity_data,
+        cost_structure,
         exit_path,
         risk_factors,
     )
     extraction = {
-        "project_summary": project_summary,
+        "project_basic_info": project_summary,
         "founder_team": founder_team,
-        "commercial_model": commercial_model,
-        "technology_and_barriers": technology_and_barriers,
-        "product_and_customers": product_and_customers,
-        "market_and_competition": market_and_competition,
+        "business_model": commercial_model,
+        "technology_route": technology_and_barriers,
+        "products_and_customers": product_and_customers,
+        "market_space": market_and_competition,
         "financial_data": financial_data,
         "financing_info": financing_info,
-        "operating_data": operating_data,
-        "capacity_and_cost": capacity_and_cost,
+        "capacity_data": capacity_data,
+        "cost_structure": cost_structure,
         "exit_path": exit_path,
         "risk_factors": risk_factors,
         "valuation_readiness": valuation_readiness,
@@ -329,7 +354,7 @@ def build_field_assessments(extraction: dict[str, Any], text: str) -> list[dict[
                     "提取结果": display or "未披露",
                     "来源": source,
                     "可信度": confidence,
-                    "是否需要用户确认": "是" if needs_confirmation else "否",
+                    "是否需要确认": "是" if needs_confirmation else "否",
                 }
             )
     return rows

@@ -240,16 +240,16 @@ tags:
 
 
 def private_document_analysis_markdown(extraction: dict[str, Any], parsed_document: dict[str, Any], created: date) -> str:
-    summary = extraction.get("project_summary", {})
+    summary = extraction.get("project_basic_info", {})
     financing = extraction.get("financing_info", {})
     founder_team = extraction.get("founder_team", {})
-    commercial_model = extraction.get("commercial_model", {})
-    product_and_customers = extraction.get("product_and_customers", {})
-    operating = extraction.get("operating_data", {})
+    commercial_model = extraction.get("business_model", {})
+    product_and_customers = extraction.get("products_and_customers", {})
     financial = extraction.get("financial_data", {})
-    capacity_and_cost = extraction.get("capacity_and_cost", {})
-    technology = extraction.get("technology_and_barriers", {})
-    market = extraction.get("market_and_competition", {})
+    capacity_data = extraction.get("capacity_data", {})
+    cost_structure = extraction.get("cost_structure", {})
+    technology = extraction.get("technology_route", {})
+    market = extraction.get("market_space", {})
     risks = extraction.get("risk_factors", {})
     exit_path = extraction.get("exit_path", {})
     readiness = extraction.get("valuation_readiness", {})
@@ -320,27 +320,35 @@ tags:
 
 {dict_section(market)}
 
-## 9. 融资信息
-
-{dict_section(financing)}
-
-## 10. 经营与产能数据
-
-{dict_section(operating)}
-
-## 11. 财务数据
+## 9. 财务数据
 
 {dict_section(financial)}
 
+## 10. 融资信息
+
+{dict_section(financing)}
+
+## 11. 产能数据
+
+{dict_section(capacity_data)}
+
 ## 12. 成本结构
 
-{dict_section(capacity_and_cost)}
+{dict_section(cost_structure)}
 
 ## 13. 退出路径
 
 {dict_section(exit_path)}
 
-## 14. 推荐估值模型
+## 14. 风险因素
+
+{dict_section(risks)}
+
+## 15. 估值可用性
+
+{dict_section(readiness)}
+
+## 16. 推荐估值模型
 
 {bullet_list(readiness.get("recommended_models", [])) if readiness.get("recommended_models") else "- 待补充"}
 
@@ -348,23 +356,19 @@ tags:
 
 {bullet_list(readiness.get("unavailable_models", [])) if readiness.get("unavailable_models") else "- 暂无"}
 
-## 15. 数据可信度与缺失项
-
-{markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要用户确认"])}
-
-缺失项：
+## 17. 缺失数据清单
 
 {bullet_list(readiness.get("missing_data", [])) if readiness.get("missing_data") else "- 暂无"}
 
-## 16. 需要向项目方追问的问题
+数据可信度：
+
+{markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要确认"])}
+
+## 18. 需要向项目方追问的问题
 
 {bullet_list(readiness.get("questions_for_company", [])) if readiness.get("questions_for_company") else "- 暂无"}
 
-## 17. 初步风险提示
-
-{dict_section(risks)}
-
-## 18. 后续研究任务
+## 19. 后续研究任务
 
 - 核验创始团队履历、股权结构、核心人员稳定性和关键人依赖。
 - 核验项目主体、股权结构、融资条款和历史经营数据。
@@ -372,18 +376,18 @@ tags:
 - 对关键数据进行来源标注，区分披露、推断、待确认和缺失。
 - 建立乐观、中性、保守三种情景，不输出最终投资结论。
 
-## 19. 免责声明
+## 20. 免责声明
 
 本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
 
-## 20. 原始资料摘录
+## 21. 原始资料关键摘录
 
 {extraction.get("raw_excerpt") or "未能提取有效文本。"}
 """
 
 
 def private_document_valuation_markdown(extraction: dict[str, Any], parsed_document: dict[str, Any], created: date) -> str:
-    summary = extraction.get("project_summary", {})
+    summary = extraction.get("project_basic_info", {})
     readiness = extraction.get("valuation_readiness", {})
     risks = extraction.get("risk_factors", {})
     founder_team = extraction.get("founder_team", {})
@@ -406,7 +410,7 @@ tags:
 
 # {project_name}未上市 / 一级市场估值框架
 
-## 1. 项目摘要
+## 1. 标的基本信息
 
 - 项目名称：{project_name}
 - 公司名称：{summary.get("company_name") or "待补充"}
@@ -414,60 +418,60 @@ tags:
 - 行业：{summary.get("industry") or "待确认"}
 - Rachel 战略生态：{summary.get("rachel_ecosystem_guess") or "待确认"}
 
-## 2. 初判分类
+## 2. 主分类与辅助分类
 
-- 标的类型初判：{target_type}
-- 分类说明：基于上传资料关键词和已披露信息自动初判，需人工复核。
+- 主分类：{target_type}
+- 辅助分类：待后续人工确认。
 
-## 3. 创始团队与团队风险
+## 3. 判断理由
 
-{dict_section(founder_team)}
-
-团队风险引用：
-
-- {risks.get("team_risk") or "待补充"}
-- {risks.get("key_person_risk") or "待补充"}
+- 基于上传资料关键词和已披露信息自动初判，需人工复核。
+- 当前输出仅作为内部研究草稿，不构成投资建议。
 
 ## 4. 推荐估值模型
 
 {bullet_list(readiness.get("recommended_models", [])) if readiness.get("recommended_models") else "- 待补充"}
 
-暂不可用模型：
+## 5. 多模型适用性对比
 
-{bullet_list(readiness.get("unavailable_models", [])) if readiness.get("unavailable_models") else "- 暂无"}
+{markdown_table(model_rows_for_readiness(readiness), ["模型", "适用度", "适用原因", "必需数据", "输出结果", "权重建议"])}
 
-## 5. 可用数据
+## 6. 必须考虑的折扣或敏感性因素
 
-{bullet_list(readiness.get("usable_data", [])) if readiness.get("usable_data") else "- 暂无"}
+{bullet_list(readiness.get("unavailable_models", [])) if readiness.get("unavailable_models") else "- 需结合流动性、退出路径、技术成熟度、团队风险和数据可信度继续确认。"}
 
-## 6. 缺失数据
+## 7. 需要补充的数据
 
 {bullet_list(readiness.get("missing_data", [])) if readiness.get("missing_data") else "- 暂无"}
 
-## 7. 追问清单
-
-{bullet_list(readiness.get("questions_for_company", [])) if readiness.get("questions_for_company") else "- 暂无"}
-
-## 8. 风险提示
-
-{dict_section(risks)}
-
-## 9. 初步估值工作流
+## 8. 初步估值思路
 
 - 先核验资料中明确披露的数据，剔除无法确认的宣传性表述。
 - 按主分类选择估值模型，并为每个模型列出所需输入数据。
 - 建立可比交易、可比上市公司和退出路径假设。
-- 输出情景框架和数据缺口，不输出买入、卖出或推荐结论。
+- 输出情景框架和数据缺口，不输出买入、卖出、推荐、目标价或收益承诺。
 
-## 10. 数据可信度
+## 9. 风险与不确定性
 
-- 数据可信度：{readiness.get("data_confidence_level") or "待确认"}
-- 估值置信度：{readiness.get("valuation_confidence_level") or "待确认"}
-- 是否适合进入初步估值：{"是" if readiness.get("ready_for_preliminary_valuation") else "否"}
+{dict_section(risks)}
 
-{markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要用户确认"])}
+## 10. 创始团队对估值的影响
 
-## 11. 免责声明
+{dict_section(founder_team)}
+
+团队风险：
+
+- {risks.get("team_risk") or "待补充"}
+- {risks.get("key_person_risk") or "待补充"}
+
+## 11. 后续研究任务
+
+- 向项目方追问缺失数据和关键假设。
+- 核验创始团队履历、股权结构、核心人员稳定性和融资经验。
+- 建立可比公司、可比交易和退出路径数据库。
+- 明确折扣、敏感性和估值区间的输入条件。
+
+## 12. 免责声明
 
 本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
 """
@@ -497,7 +501,7 @@ def safe_filename(name: str) -> str:
 
 
 def project_name_from_extraction(extraction: dict[str, Any]) -> str:
-    summary = extraction.get("project_summary", {})
+    summary = extraction.get("project_basic_info", {})
     return summary.get("project_name") or summary.get("company_name") or "未命名项目"
 
 
@@ -522,3 +526,19 @@ def dict_section(values: dict[str, Any]) -> str:
             display = str(value)
         lines.append(f"- {key}：{display}")
     return "\n".join(lines) or "- 待补充"
+
+
+def model_rows_for_readiness(readiness: dict[str, Any]) -> list[dict[str, str]]:
+    rows = []
+    for model in readiness.get("recommended_models", []):
+        rows.append(
+            {
+                "模型": model,
+                "适用度": "待确认",
+                "适用原因": "由标的类型和已提取数据自动推荐，需人工复核。",
+                "必需数据": "详见缺失数据清单和追问清单",
+                "输出结果": "估值框架或估值区间输入",
+                "权重建议": "待人工确认",
+            }
+        )
+    return rows

@@ -95,16 +95,16 @@ app/services/valuation_engine/private_market_extractor.py
 
 输出包括：
 
-- `project_summary`
+- `project_basic_info`
 - `founder_team`
-- `commercial_model`
-- `technology_and_barriers`
-- `product_and_customers`
-- `market_and_competition`
+- `business_model`
+- `technology_route`
+- `products_and_customers`
+- `market_space`
 - `financial_data`
 - `financing_info`
-- `operating_data`
-- `capacity_and_cost`
+- `capacity_data`
+- `cost_structure`
 - `exit_path`
 - `risk_factors`
 - `valuation_readiness`
@@ -133,9 +133,8 @@ app/services/valuation_engine/private_market_extractor.py
 
 来源分为：
 
-- 资料明确披露
+- 文件明确披露
 - 系统推断
-- 用户需要确认
 - 缺失
 
 可信度分为：

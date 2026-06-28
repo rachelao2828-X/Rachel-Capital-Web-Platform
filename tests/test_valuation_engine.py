@@ -205,12 +205,19 @@ def test_extract_private_market_document_recommends_financing_models() -> None:
 
     extraction = extract_private_market_document(parsed)
 
-    assert extraction["project_summary"]["project_name"] == "测试AI公司"
-    assert extraction["project_summary"]["target_type_guess"] == "一级市场融资标的"
+    assert extraction["project_basic_info"]["project_name"] == "测试AI公司"
+    assert extraction["project_basic_info"]["target_type_guess"] == "一级市场融资标的"
     assert "founder_team" in extraction
+    assert "business_model" in extraction
+    assert "technology_route" in extraction
+    assert "products_and_customers" in extraction
+    assert "market_space" in extraction
+    assert "capacity_data" in extraction
+    assert "cost_structure" in extraction
     assert extraction["founder_team"]["founders"]
     assert "可比融资交易法" in extraction["valuation_readiness"]["recommended_models"]
-    assert any(row["来源"] == "资料明确披露" for row in extraction["field_assessments"])
+    assert any(row["来源"] == "文件明确披露" for row in extraction["field_assessments"])
+    assert all("是否需要确认" in row for row in extraction["field_assessments"])
 
 
 def test_write_private_market_document_outputs_public_false(tmp_path) -> None:
@@ -233,7 +240,8 @@ def test_write_private_market_document_outputs_public_false(tmp_path) -> None:
     assert "type: private_market_document_analysis" in analysis_path.read_text(encoding="utf-8")
     assert "public: false" in analysis_path.read_text(encoding="utf-8")
     assert "## 4. 创始团队信息" in analysis_path.read_text(encoding="utf-8")
-    assert "团队风险引用" in framework_path.read_text(encoding="utf-8")
+    assert "## 21. 原始资料关键摘录" in analysis_path.read_text(encoding="utf-8")
+    assert "## 10. 创始团队对估值的影响" in framework_path.read_text(encoding="utf-8")
     assert "public: false" in framework_path.read_text(encoding="utf-8")
 
 

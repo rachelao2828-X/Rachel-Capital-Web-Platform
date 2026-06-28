@@ -25,8 +25,10 @@ from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_l
 from app.services.valuation_engine.memo_writer import (
     write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
+    write_due_diligence_questions,
     write_listed_memo,
     write_multi_model_valuation_report,
+    write_private_market_investment_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
     write_private_market_financial_model_analysis,
@@ -44,6 +46,7 @@ from app.services.valuation_engine.model_registry import (
     PRIVATE_TARGET_TYPES,
 )
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
+from app.services.valuation_engine.investment_memo_builder import build_private_market_investment_memo
 from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_document,
     build_private_market_autofill_from_financial_model,
@@ -226,6 +229,15 @@ def save_multi_model_valuation_result(multi_model_result: dict) -> Path:
     safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
     output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_多模型估值对比.json"
     output_path.write_text(json.dumps(multi_model_result, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
+def save_investment_memo_result(memo_data: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = memo_data.get("target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_投资备忘录整合.json"
+    output_path.write_text(json.dumps(memo_data, ensure_ascii=False, indent=2), encoding="utf-8")
     return output_path
 
 
@@ -519,10 +531,36 @@ def load_basic_valuation_json(path: Path) -> dict | None:
         return None
 
 
+def load_local_json(path: Path, label: str) -> dict | None:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        st.error(f"读取{label} JSON 失败：{exc}")
+        return None
+
+
 def basic_valuation_json_options() -> list[Path]:
     if not PRIVATE_MARKET_CASES_DIR.exists():
         return []
     return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_基础估值计算.json"), reverse=True)
+
+
+def multi_model_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_CASES_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_多模型估值对比.json"), reverse=True)
+
+
+def document_extraction_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_EXTRACTED_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_EXTRACTED_DIR.glob("*.json"), reverse=True)
+
+
+def financial_extraction_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_FINANCIAL_EXTRACTED_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_FINANCIAL_EXTRACTED_DIR.glob("*.json"), reverse=True)
 
 
 def model_results_rows(model_results: list[dict]) -> list[dict[str, str]]:
@@ -618,6 +656,49 @@ def model_interval_rows(rows: list[dict]) -> list[dict]:
 
 def excluded_model_rows(rows: list[dict]) -> list[dict[str, str]]:
     return [{"模型": item.get("model", ""), "原因": item.get("reason", "")} for item in rows]
+
+
+def memo_section_rows(section: dict) -> list[dict[str, str]]:
+    rows = []
+    for key, value in section.items():
+        if isinstance(value, list):
+            display = "、".join(str(item) for item in value) if value else "待补充"
+        elif isinstance(value, dict):
+            display = json.dumps(value, ensure_ascii=False)
+        elif value is None or value == "":
+            display = "待补充"
+        else:
+            display = str(value)
+        rows.append({"字段": str(key), "内容": display})
+    return rows
+
+
+def render_memo_section(title: str, section: dict, expanded: bool = False) -> None:
+    with st.expander(title, expanded=expanded):
+        st.dataframe(memo_section_rows(section), use_container_width=True, hide_index=True)
+
+
+def due_diligence_question_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "分类": row.get("category", ""),
+            "问题": row.get("question", ""),
+            "优先级": row.get("priority", ""),
+        }
+        for row in rows
+    ]
+
+
+def load_selected_json(label: str, options: list[Path], key: str) -> dict | None:
+    if not options:
+        st.caption(f"暂未找到{label} JSON。")
+        return st.session_state.get(key)
+    selected = st.selectbox(f"选择{label} JSON", options, format_func=lambda path: path.name, key=f"{key}_select")
+    if st.button(f"读取{label} JSON", key=f"{key}_button"):
+        loaded = load_local_json(selected, label)
+        if loaded:
+            st.session_state[key] = loaded
+    return st.session_state.get(key)
 
 
 def render_basic_valuation_calculation() -> None:
@@ -857,6 +938,119 @@ def render_multi_model_valuation_comparison() -> None:
         if st.button("生成 Obsidian 多模型估值对比报告"):
             try:
                 output_path = write_multi_model_valuation_report(multi_model_result, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+
+
+def render_investment_memo_builder() -> None:
+    st.subheader("投资备忘录 / 尽调问题 / 研究动作建议")
+    st.warning("本模块生成的是内部投资备忘录草稿与尽调问题清单，仅用于 Rachel Capital OS 内部研究，不构成投资建议、投资邀约、买卖依据、目标价或收益承诺。所有结论均需人工复核。")
+
+    source_mode = st.radio("V0.8 输入来源", ["优先使用当前页面数据", "读取本地 JSON 数据"], horizontal=True)
+    if source_mode == "优先使用当前页面数据":
+        document_extraction = st.session_state.get("private_document_extraction")
+        financial_extraction = st.session_state.get("private_financial_model")
+        assumption_confirmation = st.session_state.get("private_assumption_data")
+        basic_valuation_result = st.session_state.get("private_basic_valuation_result")
+        multi_model_result = st.session_state.get("private_multi_model_valuation_result")
+        st.caption("将优先读取当前页面 session_state 中已经完成的项目资料、财务模型、关键假设、基础估值和多模型估值结果。")
+    else:
+        with st.expander("读取本地 JSON 数据", expanded=True):
+            document_extraction = load_selected_json("项目资料解析", document_extraction_json_options(), "private_loaded_document_extraction_for_memo")
+            financial_extraction = load_selected_json("财务模型解析", financial_extraction_json_options(), "private_loaded_financial_extraction_for_memo")
+            assumption_confirmation = load_selected_json("关键假设确认", assumption_json_options(), "private_loaded_assumption_for_memo")
+            basic_valuation_result = load_selected_json("基础估值计算", basic_valuation_json_options(), "private_loaded_basic_valuation_for_memo")
+            multi_model_result = load_selected_json("多模型估值对比", multi_model_json_options(), "private_loaded_multi_model_for_memo")
+
+    preview_memo = build_private_market_investment_memo(
+        document_extraction,
+        financial_extraction,
+        assumption_confirmation,
+        basic_valuation_result,
+        multi_model_result,
+    )
+
+    st.markdown("### 输入数据读取状态")
+    input_status = preview_memo.get("input_status", {})
+    status_cols = st.columns(4)
+    status_cols[0].metric("Memo 完整度", preview_memo.get("memo_completeness", "不足"))
+    status_cols[1].metric("已读取模块", len(input_status.get("loaded_modules", [])))
+    status_cols[2].metric("缺失模块", len(input_status.get("missing_modules", [])))
+    status_cols[3].metric("数据缺口", len(preview_memo.get("data_gaps", [])))
+    st.write(preview_memo.get("memo_completeness_reason", ""))
+    st.caption(input_status.get("quality_impact", ""))
+
+    status_rows = [
+        {"模块": label, "状态": "已读取" if input_status.get("modules", {}).get(key) else "缺失"}
+        for key, label in {
+            "document_extraction": "项目资料解析",
+            "financial_extraction": "财务模型解析",
+            "assumption_confirmation": "关键假设确认",
+            "basic_valuation_result": "基础估值计算",
+            "multi_model_result": "多模型估值对比",
+        }.items()
+    ]
+    st.dataframe(status_rows, use_container_width=True, hide_index=True)
+
+    if st.button("生成投资备忘录草稿"):
+        st.session_state["private_investment_memo_result"] = preview_memo
+
+    memo_data = st.session_state.get("private_investment_memo_result")
+    if not memo_data:
+        return
+
+    render_memo_section("项目快照", memo_data.get("project_snapshot", {}), expanded=True)
+    render_memo_section("创始团队评估", memo_data.get("founder_team_review", {}))
+    render_memo_section("商业模式评估", memo_data.get("business_model_review", {}))
+    render_memo_section("技术与壁垒评估", memo_data.get("technology_review", {}))
+    render_memo_section("产品与客户评估", memo_data.get("product_customer_review", {}))
+    render_memo_section("市场与竞争评估", memo_data.get("market_competition_review", {}))
+    render_memo_section("财务与经营评估", memo_data.get("financial_review", {}), expanded=True)
+    render_memo_section("融资与估值评估", memo_data.get("financing_valuation_review", {}), expanded=True)
+    render_memo_section("主要风险", memo_data.get("risk_summary", {}), expanded=True)
+
+    with st.expander("尽调问题清单", expanded=True):
+        st.dataframe(due_diligence_question_rows(memo_data.get("due_diligence_questions", [])), use_container_width=True, hide_index=True)
+
+    with st.expander("数据缺口", expanded=True):
+        render_list("缺口清单", memo_data.get("data_gaps", []))
+
+    st.markdown("### 研究动作建议")
+    research_action = memo_data.get("research_action", {})
+    action_cols = st.columns(2)
+    action_cols[0].metric("建议动作", research_action.get("suggested_action", "需要补充数据"))
+    action_cols[1].metric("下次复查", memo_data.get("for_v0_9_project_tracking", {}).get("next_review_date", "待确认"))
+    st.write(research_action.get("reason", ""))
+    render_list("后续研究任务", research_action.get("next_steps", []))
+
+    st.markdown("### 保存与输出")
+    col_save, col_memo, col_questions = st.columns(3)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存 V0.8 投资备忘录整合 JSON"):
+            output_path = save_investment_memo_result(memo_data)
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_memo:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="investment_memo_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "16_投资决策引擎" / "投资备忘录"))
+        if st.button("生成 Obsidian 投资备忘录草稿"):
+            try:
+                output_path = write_private_market_investment_memo(memo_data, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_questions:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="due_diligence_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "16_投资决策引擎" / "尽调问题清单"))
+        if st.button("生成 Obsidian 尽调问题清单"):
+            try:
+                output_path = write_due_diligence_questions(memo_data, vault_path)
             except OSError as exc:
                 st.error(f"生成失败：{exc}")
             else:
@@ -1380,6 +1574,8 @@ with private_tab:
     render_basic_valuation_calculation()
     st.divider()
     render_multi_model_valuation_comparison()
+    st.divider()
+    render_investment_memo_builder()
     st.divider()
     render_private_autofill_message()
     st.subheader("标的基本信息")

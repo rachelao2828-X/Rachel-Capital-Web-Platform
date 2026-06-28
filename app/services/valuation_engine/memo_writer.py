@@ -125,6 +125,34 @@ def write_multi_model_valuation_report(
     return output_path
 
 
+def write_private_market_investment_memo(
+    memo_data: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = memo_data.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "16_投资决策引擎" / "投资备忘录"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_投资备忘录草稿.md"
+    output_path.write_text(private_market_investment_memo_markdown(memo_data, created), encoding="utf-8")
+    return output_path
+
+
+def write_due_diligence_questions(
+    memo_data: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = memo_data.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "16_投资决策引擎" / "尽调问题清单"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_尽调问题清单.md"
+    output_path.write_text(due_diligence_questions_markdown(memo_data, created), encoding="utf-8")
+    return output_path
+
+
 def listed_markdown(profile: ListedCompanyProfile, result: ListedValuationResult, created: date) -> str:
     return f"""---
 type: listed_company_valuation
@@ -910,6 +938,153 @@ tags:
 """
 
 
+def private_market_investment_memo_markdown(memo_data: dict[str, Any], created: date) -> str:
+    project_name = memo_data.get("target_name") or "未命名项目"
+    research_action = memo_data.get("research_action", {})
+    return f"""---
+type: private_market_investment_memo
+title: {project_name}投资备忘录草稿
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+memo_completeness: {memo_data.get("memo_completeness", "不足")}
+research_action: {research_action.get("suggested_action", "需要补充数据")}
+tags:
+  - 一级市场
+  - 投资备忘录
+  - 投资决策引擎
+---
+
+# {project_name}投资备忘录草稿
+
+## 1. 项目快照
+
+{dict_section(memo_data.get("project_snapshot", {}))}
+
+## 2. 创始团队评估
+
+{dict_section(memo_data.get("founder_team_review", {}))}
+
+## 3. 商业模式评估
+
+{dict_section(memo_data.get("business_model_review", {}))}
+
+## 4. 技术与壁垒评估
+
+{dict_section(memo_data.get("technology_review", {}))}
+
+## 5. 产品与客户评估
+
+{dict_section(memo_data.get("product_customer_review", {}))}
+
+## 6. 市场与竞争评估
+
+{dict_section(memo_data.get("market_competition_review", {}))}
+
+## 7. 财务与经营评估
+
+{dict_section(memo_data.get("financial_review", {}))}
+
+## 8. 融资与估值评估
+
+{dict_section(memo_data.get("financing_valuation_review", {}))}
+
+## 9. 主要风险
+
+{dict_section(memo_data.get("risk_summary", {}))}
+
+## 10. 尽调问题清单
+
+{due_diligence_questions_table(memo_data.get("due_diligence_questions", []))}
+
+## 11. 数据缺口
+
+{bullet_list(memo_data.get("data_gaps", [])) if memo_data.get("data_gaps") else "- 暂无"}
+
+## 12. 研究动作建议
+
+- 建议动作：{research_action.get("suggested_action", "需要补充数据")}
+- 原因：{research_action.get("reason", "待补充")}
+
+后续步骤：
+
+{bullet_list(research_action.get("next_steps", [])) if research_action.get("next_steps") else "- 待补充"}
+
+## 13. 后续研究任务
+
+{bullet_list(memo_data.get("for_v0_9_project_tracking", {}).get("follow_up_tasks", [])) if memo_data.get("for_v0_9_project_tracking", {}).get("follow_up_tasks") else "- 待补充"}
+
+## 14. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
+def due_diligence_questions_markdown(memo_data: dict[str, Any], created: date) -> str:
+    project_name = memo_data.get("target_name") or "未命名项目"
+    grouped = group_due_diligence_questions(memo_data.get("due_diligence_questions", []))
+    return f"""---
+type: private_market_due_diligence_questions
+title: {project_name}尽调问题清单
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+tags:
+  - 一级市场
+  - 尽调问题
+  - 投资决策引擎
+---
+
+# {project_name}尽调问题清单
+
+## 1. 团队尽调
+
+{numbered_questions(grouped.get("团队尽调", []))}
+
+## 2. 技术尽调
+
+{numbered_questions(grouped.get("技术尽调", []))}
+
+## 3. 产品与客户尽调
+
+{numbered_questions(grouped.get("产品与客户尽调", []))}
+
+## 4. 市场与竞争尽调
+
+{numbered_questions(grouped.get("市场与竞争尽调", []))}
+
+## 5. 财务尽调
+
+{numbered_questions(grouped.get("财务尽调", []))}
+
+## 6. 融资与股权结构尽调
+
+{numbered_questions(grouped.get("融资与股权结构尽调", []))}
+
+## 7. 法务与合规尽调
+
+{numbered_questions(grouped.get("法务与合规尽调", []))}
+
+## 8. 退出路径尽调
+
+{numbered_questions(grouped.get("退出路径尽调", []))}
+
+## 9. 数据补充清单
+
+{bullet_list(memo_data.get("data_gaps", [])) if memo_data.get("data_gaps") else "- 暂无"}
+
+## 10. 后续跟进任务
+
+{bullet_list(memo_data.get("for_v0_9_project_tracking", {}).get("follow_up_tasks", [])) if memo_data.get("for_v0_9_project_tracking", {}).get("follow_up_tasks") else "- 待补充"}
+
+## 11. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -1107,6 +1282,31 @@ def multi_model_comparison_markdown(rows: list[dict[str, Any]]) -> str:
         for row in rows
     ]
     return markdown_table(display_rows, ["模型", "适用度", "输入完整度", "折扣后估值", "置信度", "主要依据", "主要限制", "是否可纳入"]) if display_rows else "- 暂无"
+
+
+def due_diligence_questions_table(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "分类": row.get("category", ""),
+            "问题": row.get("question", ""),
+            "优先级": row.get("priority", ""),
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["分类", "问题", "优先级"]) if display_rows else "- 暂无"
+
+
+def group_due_diligence_questions(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        grouped.setdefault(row.get("category", "其他"), []).append(row)
+    return grouped
+
+
+def numbered_questions(rows: list[dict[str, Any]]) -> str:
+    if not rows:
+        return "- 暂无"
+    return "\n".join(f"{index}. {row.get('question', '')}（优先级：{row.get('priority', '中')}）" for index, row in enumerate(rows, start=1))
 
 
 def format_report_money(value: Any) -> str:

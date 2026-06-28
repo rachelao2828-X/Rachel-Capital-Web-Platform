@@ -8,8 +8,10 @@ from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_l
 from app.services.valuation_engine.memo_writer import (
     write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
+    write_due_diligence_questions,
     write_listed_memo,
     write_multi_model_valuation_report,
+    write_private_market_investment_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
     write_private_market_financial_model_analysis,
@@ -21,6 +23,7 @@ from app.services.valuation_engine.assumption_manager import (
     finalize_assumption_data,
 )
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
+from app.services.valuation_engine.investment_memo_builder import build_private_market_investment_memo
 from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_document,
     build_private_market_autofill_from_financial_model,
@@ -706,3 +709,171 @@ def test_write_multi_model_valuation_report_public_false(tmp_path) -> None:
     assert "public: false" in content
     assert "## 7. 加权综合估值区间" in content
     assert "本文件仅用于 Rachel Capital OS 内部研究" in content
+
+
+def investment_document_extraction() -> dict:
+    return {
+        "project_basic_info": {
+            "project_name": "测试项目",
+            "company_name": "测试项目公司",
+            "industry": "AI基础设施",
+            "rachel_ecosystem_guess": "AI基础设施生态",
+            "target_type_guess": "一级市场融资标的",
+            "location": "上海",
+            "one_sentence_summary": "面向企业客户的 AI 基础设施平台。",
+        },
+        "founder_team": {
+            "founders": ["张三"],
+            "co_founders": ["李四"],
+            "core_executives": ["王五"],
+            "technical_lead": "李四",
+            "business_lead": "王五",
+            "finance_lead": "赵六",
+            "industry_experience": "具备云计算和企业服务经验",
+            "team_completeness": "较完整",
+            "key_person_dependency": "中",
+            "team_risks": "需核验核心团队稳定性",
+        },
+        "business_model": {
+            "revenue_sources": "订阅费和项目交付",
+            "customer_type": "企业客户",
+            "payment_model": "年度订阅",
+            "is_project_based": "部分项目制",
+            "is_productized": "是",
+            "depends_on_government_or_key_customers": "",
+        },
+        "technology_route": {
+            "core_technology": "推理加速平台",
+            "technical_maturity": "已量产",
+            "patents": "3 项专利",
+            "competitive_advantage": "低延迟和低成本",
+        },
+        "products_and_customers": {
+            "products": "AI 推理平台",
+            "customer_type": "企业客户",
+            "signed_customers": ["客户A"],
+            "orders": "2000万元订单",
+            "contracts": "年度合同",
+        },
+        "market_space": {
+            "market_size": "百亿级",
+            "market_growth": "高增长",
+            "competitors": ["竞品A"],
+        },
+        "financial_data": {
+            "historical_revenue": "1000万元",
+            "forecast_revenue": "3000万元",
+            "gross_margin": "60%",
+            "net_margin": "20%",
+            "ebitda": "700万元",
+            "cash_flow": "400万元",
+            "capex": "1200万元",
+        },
+        "financing_info": {
+            "is_fundraising": "是",
+            "financing_amount": "5000万元",
+            "pre_money_valuation": "5亿元",
+            "post_money_valuation": "5.5亿元",
+            "equity_offered": "9.1%",
+            "use_of_proceeds": "研发和市场拓展",
+        },
+        "exit_path": {"ipo": "IPO", "expected_exit_time": "3-5年"},
+        "risk_factors": {
+            "technology_risk": "需核验性能指标",
+            "market_risk": "竞争加剧",
+            "team_risk": "关键人员稳定性需核验",
+            "data_reliability_risk": "预测数据需审计",
+        },
+        "valuation_readiness": {
+            "missing_data": ["可比融资交易"],
+            "questions_for_company": ["请补充客户合同明细"],
+        },
+    }
+
+
+def investment_financial_extraction() -> dict:
+    return {
+        "file_name": "测试项目财务模型.xlsx",
+        "extraction_quality": "success",
+        "extracted_financial_data": {
+            "fields": {
+                "预测收入": {"extraction_result": "3000万元"},
+                "净利润": {"extraction_result": "500万元"},
+                "项目现金流": {"extraction_result": "400万元"},
+                "项目总投资": {"extraction_result": "1200万元"},
+                "IRR": {"extraction_result": "18%"},
+            },
+            "missing_financial_data": [],
+            "requires_user_confirmation": ["折现率口径"],
+        },
+    }
+
+
+def test_build_private_market_investment_memo_full_inputs() -> None:
+    assumption_data = basic_assumption_data()
+    basic_result = run_basic_private_market_valuation(assumption_data)
+    multi_model_result = run_multi_model_comparison(basic_result)
+
+    memo = build_private_market_investment_memo(
+        investment_document_extraction(),
+        investment_financial_extraction(),
+        assumption_data,
+        basic_result,
+        multi_model_result,
+    )
+
+    assert memo["target_name"] == "测试项目"
+    assert memo["memo_completeness"] == "高"
+    assert memo["project_snapshot"]["项目名称"] == "测试项目"
+    assert memo["founder_team_review"]["创始人 / 联合创始人"]
+    assert memo["financing_valuation_review"]["多模型估值区间"]
+    assert memo["risk_summary"]["技术风险"]
+    assert len(memo["due_diligence_questions"]) >= 24
+    assert memo["research_action"]["suggested_action"] in {
+        "进入观察池",
+        "需要补充数据",
+        "进入深度研究",
+        "暂不进入估值",
+        "等待更多财务或项目数据",
+    }
+    assert "for_v0_9_project_tracking" in memo
+
+
+def test_build_private_market_investment_memo_low_completeness() -> None:
+    memo = build_private_market_investment_memo(None, None, basic_assumption_data(), None, None)
+
+    assert memo["memo_completeness"] == "低"
+    assert "项目资料解析" in memo["input_status"]["missing_modules"]
+    assert memo["research_action"]["suggested_action"] in {
+        "需要补充数据",
+        "暂不进入估值",
+        "等待更多财务或项目数据",
+        "进入观察池",
+    }
+
+
+def test_write_investment_memo_and_due_diligence_public_false(tmp_path) -> None:
+    assumption_data = basic_assumption_data()
+    basic_result = run_basic_private_market_valuation(assumption_data)
+    multi_model_result = run_multi_model_comparison(basic_result)
+    memo = build_private_market_investment_memo(
+        investment_document_extraction(),
+        investment_financial_extraction(),
+        assumption_data,
+        basic_result,
+        multi_model_result,
+    )
+
+    memo_output = write_private_market_investment_memo(memo, tmp_path, created=date(2026, 6, 28))
+    questions_output = write_due_diligence_questions(memo, tmp_path, created=date(2026, 6, 28))
+    memo_content = memo_output.read_text(encoding="utf-8")
+    questions_content = questions_output.read_text(encoding="utf-8")
+
+    assert memo_output == tmp_path / "16_投资决策引擎" / "投资备忘录" / "测试项目_2026-06-28_投资备忘录草稿.md"
+    assert questions_output == tmp_path / "16_投资决策引擎" / "尽调问题清单" / "测试项目_2026-06-28_尽调问题清单.md"
+    assert "type: private_market_investment_memo" in memo_content
+    assert "type: private_market_due_diligence_questions" in questions_content
+    assert "public: false" in memo_content
+    assert "public: false" in questions_content
+    assert "## 12. 研究动作建议" in memo_content
+    assert "## 5. 财务尽调" in questions_content

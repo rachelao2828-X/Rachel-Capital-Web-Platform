@@ -153,6 +153,51 @@ def write_due_diligence_questions(
     return output_path
 
 
+def write_private_market_project_card(
+    tracking_record: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = tracking_record.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}.md"
+    output_path.write_text(private_market_project_card_markdown(tracking_record, created), encoding="utf-8")
+    return output_path
+
+
+def write_project_tracking_tasks(
+    tracking_record: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = tracking_record.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "16_投资决策引擎" / "项目跟踪任务"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_项目跟踪任务.md"
+    output_path.write_text(project_tracking_tasks_markdown(tracking_record, created), encoding="utf-8")
+    return output_path
+
+
+def update_private_market_project_watchlist(
+    tracking_record: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    output_dir = Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / "一级市场项目观察池.md"
+    existing_rows = watchlist_rows_from_markdown(output_path.read_text(encoding="utf-8") if output_path.exists() else "")
+    new_row = watchlist_row_from_tracking(tracking_record)
+    rows = [row for row in existing_rows if row.get("项目") != new_row["项目"]]
+    rows.append(new_row)
+    output_path.write_text(private_market_project_watchlist_markdown(rows, tracking_record, created), encoding="utf-8")
+    return output_path
+
+
 def listed_markdown(profile: ListedCompanyProfile, result: ListedValuationResult, created: date) -> str:
     return f"""---
 type: listed_company_valuation
@@ -1085,6 +1130,235 @@ tags:
 """
 
 
+def private_market_project_card_markdown(tracking_record: dict[str, Any], created: date) -> str:
+    card = tracking_record.get("project_card", {})
+    project_name = tracking_record.get("target_name") or "未命名项目"
+    ecosystem = card.get("rachel_ecosystem") or "待确认"
+    return f"""---
+type: private_market_project
+title: {project_name}
+status: active
+public: false
+created: {created.isoformat()}
+updated: {created.isoformat()}
+target_name: {project_name}
+target_type: {card.get("target_type", "待确认")}
+project_status: {tracking_record.get("project_status", "")}
+watchlist_status: {tracking_record.get("watchlist_status", "")}
+research_action: {tracking_record.get("research_action", "")}
+next_review_date: {tracking_record.get("next_review_date", "")}
+linked_ecosystem:
+  - {ecosystem}
+tags:
+  - 一级市场项目
+  - 估值驾驶舱
+  - 项目观察池
+---
+
+# {project_name}
+
+## 1. 项目快照
+
+{dict_section(card)}
+
+## 2. 一句话摘要
+
+{card.get("one_sentence_summary") or "待补充"}
+
+## 3. 创始团队摘要
+
+{card.get("founder_team_summary") or "待补充"}
+
+## 4. 商业模式摘要
+
+{card.get("business_model_summary") or "待补充"}
+
+## 5. 技术与壁垒摘要
+
+{card.get("technology_summary") or "待补充"}
+
+## 6. 产品与客户摘要
+
+{card.get("product_customer_summary") or "待补充"}
+
+## 7. 市场与竞争摘要
+
+{card.get("market_summary") or "待补充"}
+
+## 8. 财务与融资摘要
+
+- 财务摘要：{card.get("financial_summary") or "待补充"}
+- 融资摘要：{card.get("financing_summary") or "待补充"}
+
+## 9. 估值摘要
+
+{card.get("valuation_summary") or "待补充"}
+
+## 10. 主要风险
+
+{card.get("risk_summary") or "待补充"}
+
+## 11. 当前研究动作
+
+- 项目状态：{tracking_record.get("project_status", "")}
+- 观察池状态：{tracking_record.get("watchlist_status_label", tracking_record.get("watchlist_status", ""))}
+- 研究动作：{tracking_record.get("research_action", "")}
+- 下次复查日期：{tracking_record.get("next_review_date", "") or "暂不设置"}
+
+## 12. 数据缺口
+
+{bullet_list(tracking_record.get("data_gaps", [])) if tracking_record.get("data_gaps") else "- 暂无"}
+
+## 13. 需要向项目方追问的问题
+
+{bullet_list(tracking_record.get("questions_for_company", [])) if tracking_record.get("questions_for_company") else "- 暂无"}
+
+## 14. 后续跟踪任务
+
+{tracking_tasks_markdown(tracking_record.get("tracking_tasks", []))}
+
+## 15. 关联文件
+
+{linked_files_markdown(card)}
+
+## 16. 后续复查记录
+
+- {created.isoformat()}：由 Valuation Cockpit V0.9 自动生成项目卡片。
+
+## 17. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
+def project_tracking_tasks_markdown(tracking_record: dict[str, Any], created: date) -> str:
+    project_name = tracking_record.get("target_name") or "未命名项目"
+    tasks = tracking_record.get("tracking_tasks", [])
+    return f"""---
+type: private_market_project_tracking_tasks
+title: {project_name}项目跟踪任务
+status: active
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+next_review_date: {tracking_record.get("next_review_date", "")}
+tags:
+  - 一级市场
+  - 项目跟踪
+  - 投资决策引擎
+---
+
+# {project_name}项目跟踪任务
+
+## 1. 项目状态
+
+- 项目状态：{tracking_record.get("project_status", "")}
+- 观察池状态：{tracking_record.get("watchlist_status_label", tracking_record.get("watchlist_status", ""))}
+- 研究动作：{tracking_record.get("research_action", "")}
+
+## 2. 下次复查日期
+
+{tracking_record.get("next_review_date", "") or "暂不设置"}
+
+## 3. 高优先级任务
+
+{task_list_by_priority(tasks, "高")}
+
+## 4. 中优先级任务
+
+{task_list_by_priority(tasks, "中")}
+
+## 5. 低优先级任务
+
+{task_list_by_priority(tasks, "低")}
+
+## 6. 数据补充任务
+
+{task_list_by_category(tasks, "资料补充")}
+
+## 7. 尽调任务
+
+{task_list_by_categories(tasks, ["团队尽调", "技术尽调", "客户尽调", "财务尽调", "法务合规"])}
+
+## 8. 估值复核任务
+
+{task_list_by_category(tasks, "估值复核")}
+
+## 9. 后续跟进记录
+
+- {created.isoformat()}：由 Valuation Cockpit V0.9 自动生成项目跟踪任务。
+
+## 10. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
+def private_market_project_watchlist_markdown(rows: list[dict[str, str]], tracking_record: dict[str, Any], created: date) -> str:
+    return f"""---
+type: private_market_project_watchlist
+title: 一级市场项目观察池
+status: active
+public: false
+updated: {created.isoformat()}
+tags:
+  - 一级市场项目
+  - 项目观察池
+  - Rachel Capital OS
+---
+
+# 一级市场项目观察池
+
+## 1. 使用说明
+
+本文件用于汇总 Rachel Capital OS 中由 Valuation Cockpit 生成或维护的一级市场项目观察对象。
+
+所有项目仅作为内部研究观察对象，不构成投资建议。
+
+## 2. 观察池总览
+
+{markdown_table(rows, ["项目", "所属行业", "所属生态", "标的类型", "项目状态", "观察池状态", "研究动作", "估值置信度", "下次复查日期", "项目卡片"])}
+
+## 3. 按状态分组
+
+### 观察中
+
+{watchlist_group(rows, "active")}
+
+### 等待资料
+
+{watchlist_group(rows, "pending_data")}
+
+### 深度研究候选
+
+{watchlist_group(rows, "deep_research_candidate")}
+
+### 暂缓
+
+{watchlist_group(rows, "paused")}
+
+### 已进入投资决策
+
+{watchlist_group(rows, "investment_decision_candidate")}
+
+### 已归档 / 已放弃
+
+{watchlist_groups(rows, ["archived", "rejected"])}
+
+## 4. 本周需要复查项目
+
+{watchlist_due_soon(rows, created)}
+
+## 5. 更新记录
+
+- {created.isoformat()}：由 Valuation Cockpit V0.9 生成或更新，最新项目：{tracking_record.get("target_name", "未命名项目")}。
+
+## 6. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -1307,6 +1581,97 @@ def numbered_questions(rows: list[dict[str, Any]]) -> str:
     if not rows:
         return "- 暂无"
     return "\n".join(f"{index}. {row.get('question', '')}（优先级：{row.get('priority', '中')}）" for index, row in enumerate(rows, start=1))
+
+
+def tracking_tasks_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "任务": row.get("task", ""),
+            "分类": row.get("category", ""),
+            "优先级": row.get("priority", ""),
+            "截止日期": row.get("due_date", ""),
+            "状态": row.get("status", ""),
+            "来源": row.get("source", ""),
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["任务", "分类", "优先级", "截止日期", "状态", "来源"]) if display_rows else "- 暂无"
+
+
+def task_list_by_priority(rows: list[dict[str, Any]], priority: str) -> str:
+    return tracking_tasks_markdown([row for row in rows if row.get("priority") == priority])
+
+
+def task_list_by_category(rows: list[dict[str, Any]], category: str) -> str:
+    return tracking_tasks_markdown([row for row in rows if row.get("category") == category])
+
+
+def task_list_by_categories(rows: list[dict[str, Any]], categories: list[str]) -> str:
+    return tracking_tasks_markdown([row for row in rows if row.get("category") in categories])
+
+
+def linked_files_markdown(card: dict[str, Any]) -> str:
+    rows = []
+    for item in card.get("linked_memos", []):
+        rows.append(f"- {item}")
+    for item in card.get("linked_questions", []):
+        rows.append(f"- {item}")
+    if not rows:
+        return "- 暂无。可后续链接投资备忘录草稿、尽调问题清单、项目资料解析报告、财务模型解析报告、关键假设确认报告、基础估值计算报告、多模型估值对比报告。"
+    return "\n".join(rows)
+
+
+def watchlist_row_from_tracking(tracking_record: dict[str, Any]) -> dict[str, str]:
+    card = tracking_record.get("project_card", {})
+    project = tracking_record.get("target_name", "未命名项目")
+    return {
+        "项目": project,
+        "所属行业": card.get("industry", ""),
+        "所属生态": card.get("rachel_ecosystem", ""),
+        "标的类型": card.get("target_type", ""),
+        "项目状态": tracking_record.get("project_status", ""),
+        "观察池状态": tracking_record.get("watchlist_status", ""),
+        "研究动作": tracking_record.get("research_action", ""),
+        "估值置信度": card.get("valuation_confidence", ""),
+        "下次复查日期": tracking_record.get("next_review_date", ""),
+        "项目卡片": f"[[{project}]]",
+    }
+
+
+def watchlist_rows_from_markdown(content: str) -> list[dict[str, str]]:
+    columns = ["项目", "所属行业", "所属生态", "标的类型", "项目状态", "观察池状态", "研究动作", "估值置信度", "下次复查日期", "项目卡片"]
+    rows = []
+    for line in content.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|") or "---" in stripped or "项目 | 所属行业" in stripped:
+            continue
+        cells = [cell.strip().replace("\\|", "|") for cell in stripped.strip("|").split("|")]
+        if len(cells) == len(columns):
+            rows.append(dict(zip(columns, cells)))
+    return rows
+
+
+def watchlist_group(rows: list[dict[str, str]], status: str) -> str:
+    names = [row.get("项目", "") for row in rows if row.get("观察池状态") == status]
+    return bullet_list([f"[[{name}]]" for name in names]) if names else "- 暂无"
+
+
+def watchlist_groups(rows: list[dict[str, str]], statuses: list[str]) -> str:
+    names = [row.get("项目", "") for row in rows if row.get("观察池状态") in statuses]
+    return bullet_list([f"[[{name}]]" for name in names]) if names else "- 暂无"
+
+
+def watchlist_due_soon(rows: list[dict[str, str]], created: date) -> str:
+    due = []
+    for row in rows:
+        next_date = row.get("下次复查日期", "")
+        try:
+            parsed = date.fromisoformat(next_date)
+        except ValueError:
+            continue
+        if parsed <= created or (parsed - created).days <= 7:
+            due.append(f"{row.get('项目', '')}：{next_date}")
+    return bullet_list(due) if due else "- 暂无"
 
 
 def format_report_money(value: Any) -> str:

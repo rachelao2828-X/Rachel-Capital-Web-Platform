@@ -11,11 +11,14 @@ from app.services.valuation_engine.memo_writer import (
     write_due_diligence_questions,
     write_listed_memo,
     write_multi_model_valuation_report,
+    write_private_market_project_card,
     write_private_market_investment_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
     write_private_market_financial_model_analysis,
     write_private_market_memo,
+    write_project_tracking_tasks,
+    update_private_market_project_watchlist,
 )
 from app.services.valuation_engine.assumption_manager import (
     ASSUMPTION_GROUP_LABELS,
@@ -30,6 +33,7 @@ from app.services.valuation_engine.private_market_autofill import (
 )
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
 from app.services.valuation_engine.multi_model_valuation import run_multi_model_comparison
+from app.services.valuation_engine.project_tracker import build_project_tracking_record, suggest_next_review_date
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
@@ -877,3 +881,81 @@ def test_write_investment_memo_and_due_diligence_public_false(tmp_path) -> None:
     assert "public: false" in questions_content
     assert "## 12. 研究动作建议" in memo_content
     assert "## 5. 财务尽调" in questions_content
+
+
+def full_investment_memo() -> dict:
+    assumption_data = basic_assumption_data()
+    basic_result = run_basic_private_market_valuation(assumption_data)
+    multi_model_result = run_multi_model_comparison(basic_result)
+    return build_private_market_investment_memo(
+        investment_document_extraction(),
+        investment_financial_extraction(),
+        assumption_data,
+        basic_result,
+        multi_model_result,
+    )
+
+
+def test_build_project_tracking_record_from_memo() -> None:
+    memo = full_investment_memo()
+    record = build_project_tracking_record(memo, None)
+
+    assert record["target_name"] == "测试项目"
+    assert record["project_status"] in {"新建观察", "等待资料", "待深度尽调", "暂缓跟踪"}
+    assert record["watchlist_status"] in {"active", "pending_data", "deep_research_candidate", "paused"}
+    assert record["project_card"]["target_name"] == "测试项目"
+    assert record["next_review_date"]
+    assert record["tracking_tasks"]
+    assert "for_v1_0_portfolio_decision" in record
+
+
+def test_project_tracking_manual_override_and_review_dates() -> None:
+    memo = full_investment_memo()
+    record = build_project_tracking_record(
+        memo,
+        {
+            "project_status": "待深度尽调",
+            "watchlist_status": "deep_research_candidate",
+            "next_review_date": "2026-07-05",
+        },
+    )
+
+    assert record["project_status"] == "待深度尽调"
+    assert record["watchlist_status"] == "deep_research_candidate"
+    assert record["next_review_date"] == "2026-07-05"
+    assert suggest_next_review_date("archived", "已归档") == ""
+
+
+def test_write_project_tracking_outputs_public_false(tmp_path) -> None:
+    record = build_project_tracking_record(full_investment_memo(), None)
+
+    card_output = write_private_market_project_card(record, tmp_path, created=date(2026, 6, 28))
+    tasks_output = write_project_tracking_tasks(record, tmp_path, created=date(2026, 6, 28))
+    watchlist_output = update_private_market_project_watchlist(record, tmp_path, created=date(2026, 6, 28))
+    card_content = card_output.read_text(encoding="utf-8")
+    tasks_content = tasks_output.read_text(encoding="utf-8")
+    watchlist_content = watchlist_output.read_text(encoding="utf-8")
+
+    assert card_output == tmp_path / "03_公司数据库" / "一级市场项目" / "测试项目.md"
+    assert tasks_output == tmp_path / "16_投资决策引擎" / "项目跟踪任务" / "测试项目_2026-06-28_项目跟踪任务.md"
+    assert watchlist_output == tmp_path / "03_公司数据库" / "一级市场项目" / "一级市场项目观察池.md"
+    assert "type: private_market_project" in card_content
+    assert "type: private_market_project_tracking_tasks" in tasks_content
+    assert "type: private_market_project_watchlist" in watchlist_content
+    assert "public: false" in card_content
+    assert "public: false" in tasks_content
+    assert "public: false" in watchlist_content
+    assert "[[测试项目]]" in watchlist_content
+
+
+def test_update_project_watchlist_replaces_existing_project_row(tmp_path) -> None:
+    memo = full_investment_memo()
+    record = build_project_tracking_record(memo, None)
+    update_private_market_project_watchlist(record, tmp_path, created=date(2026, 6, 28))
+    updated = build_project_tracking_record(memo, {"project_status": "等待资料", "watchlist_status": "pending_data"})
+
+    watchlist_output = update_private_market_project_watchlist(updated, tmp_path, created=date(2026, 6, 29))
+    content = watchlist_output.read_text(encoding="utf-8")
+
+    assert content.count("| 测试项目 |") == 1
+    assert "pending_data" in content

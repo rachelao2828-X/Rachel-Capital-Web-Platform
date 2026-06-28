@@ -28,11 +28,14 @@ from app.services.valuation_engine.memo_writer import (
     write_due_diligence_questions,
     write_listed_memo,
     write_multi_model_valuation_report,
+    write_private_market_project_card,
     write_private_market_investment_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
     write_private_market_financial_model_analysis,
     write_private_market_memo,
+    write_project_tracking_tasks,
+    update_private_market_project_watchlist,
 )
 from app.services.valuation_engine.model_registry import (
     ASSET_ATTRIBUTES,
@@ -55,6 +58,13 @@ from app.services.valuation_engine.private_market_extractor import extract_priva
 from app.services.valuation_engine.multi_model_valuation import (
     display_money,
     run_multi_model_comparison,
+)
+from app.services.valuation_engine.project_tracker import (
+    PROJECT_STATUS_OPTIONS,
+    WATCHLIST_STATUS_LABELS,
+    WATCHLIST_STATUS_OPTIONS,
+    build_project_tracking_record,
+    suggest_next_review_date,
 )
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
@@ -238,6 +248,15 @@ def save_investment_memo_result(memo_data: dict) -> Path:
     safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
     output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_投资备忘录整合.json"
     output_path.write_text(json.dumps(memo_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
+def save_project_tracking_result(tracking_record: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = tracking_record.get("target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_项目跟踪记录.json"
+    output_path.write_text(json.dumps(tracking_record, ensure_ascii=False, indent=2), encoding="utf-8")
     return output_path
 
 
@@ -551,6 +570,12 @@ def multi_model_json_options() -> list[Path]:
     return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_多模型估值对比.json"), reverse=True)
 
 
+def investment_memo_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_CASES_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_投资备忘录整合.json"), reverse=True)
+
+
 def document_extraction_json_options() -> list[Path]:
     if not PRIVATE_MARKET_EXTRACTED_DIR.exists():
         return []
@@ -686,6 +711,41 @@ def due_diligence_question_rows(rows: list[dict]) -> list[dict[str, str]]:
             "优先级": row.get("priority", ""),
         }
         for row in rows
+    ]
+
+
+def project_card_rows(card: dict) -> list[dict[str, str]]:
+    return memo_section_rows(card)
+
+
+def tracking_task_editor_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "任务": row.get("task", ""),
+            "分类": row.get("category", ""),
+            "优先级": row.get("priority", "中"),
+            "截止日期": row.get("due_date", ""),
+            "状态": row.get("status", "todo"),
+            "来源": row.get("source", ""),
+        }
+        for row in rows
+    ]
+
+
+def tracking_tasks_from_editor(rows) -> list[dict]:
+    if hasattr(rows, "to_dict"):
+        rows = rows.to_dict("records")
+    return [
+        {
+            "task": row.get("任务", ""),
+            "category": row.get("分类", ""),
+            "priority": row.get("优先级", "中"),
+            "due_date": row.get("截止日期", ""),
+            "status": row.get("状态", "todo"),
+            "source": row.get("来源", "用户编辑"),
+        }
+        for row in rows
+        if row.get("任务")
     ]
 
 
@@ -1055,6 +1115,153 @@ def render_investment_memo_builder() -> None:
                 st.error(f"生成失败：{exc}")
             else:
                 st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+
+
+def render_project_tracking_watchlist() -> None:
+    st.subheader("项目观察池 / 跟踪任务 / 项目卡片")
+    st.warning("本模块用于将项目纳入 Rachel Capital OS 内部观察池并生成后续跟踪任务，不构成投资建议、投资邀约、买卖依据、目标价或收益承诺。项目状态和研究动作均需人工复核。")
+
+    source_mode = st.radio("V0.9 输入来源", ["使用当前 V0.8 投资备忘录", "读取本地投资备忘录 JSON", "手动填写观察池信息"], horizontal=True)
+    memo_data = None
+    if source_mode == "使用当前 V0.8 投资备忘录":
+        memo_data = st.session_state.get("private_investment_memo_result")
+        if not memo_data:
+            st.info("当前页面还没有 V0.8 投资备忘录整合结果，可以先生成 Memo，或切换为读取本地 JSON / 手动填写。")
+    elif source_mode == "读取本地投资备忘录 JSON":
+        with st.expander("读取 V0.8 投资备忘录整合 JSON", expanded=True):
+            memo_data = load_selected_json("投资备忘录整合", investment_memo_json_options(), "private_loaded_investment_memo_for_tracking")
+    else:
+        st.info("未读取 V0.8 结果时，可以手动建立观察池记录；系统会将完整度和来源风险标记为较低。")
+
+    preview_record = build_project_tracking_record(memo_data, {})
+    source_status = "已读取 V0.8 Memo" if memo_data else "未读取 V0.8 Memo / 手动模式"
+    st.markdown("### 输入数据读取状态")
+    status_cols = st.columns(4)
+    status_cols[0].metric("输入状态", source_status)
+    status_cols[1].metric("研究动作", preview_record.get("research_action", ""))
+    status_cols[2].metric("系统项目状态", preview_record.get("project_status", ""))
+    status_cols[3].metric("系统观察池状态", preview_record.get("watchlist_status_label", ""))
+
+    if preview_record.get("research_action") == "暂不进入估值":
+        st.warning("V0.8 研究动作建议为“暂不进入估值”，默认不进入活跃观察池；如需纳入，请在下方手动覆盖状态。")
+
+    st.markdown("### 状态与复查日期")
+    manual_cols = st.columns(4)
+    default_target = preview_record.get("target_name", "未命名项目")
+    target_name = manual_cols[0].text_input("项目名称", value=default_target, key="tracking_target_name")
+    project_status = manual_cols[1].selectbox(
+        "项目状态",
+        PROJECT_STATUS_OPTIONS,
+        index=PROJECT_STATUS_OPTIONS.index(preview_record.get("project_status")) if preview_record.get("project_status") in PROJECT_STATUS_OPTIONS else 0,
+        key="tracking_project_status",
+    )
+    watchlist_status = manual_cols[2].selectbox(
+        "观察池状态",
+        WATCHLIST_STATUS_OPTIONS,
+        format_func=lambda value: f"{WATCHLIST_STATUS_LABELS.get(value, value)} ({value})",
+        index=WATCHLIST_STATUS_OPTIONS.index(preview_record.get("watchlist_status")) if preview_record.get("watchlist_status") in WATCHLIST_STATUS_OPTIONS else 0,
+        key="tracking_watchlist_status",
+    )
+    suggested_review = preview_record.get("next_review_date") or suggest_next_review_date(watchlist_status, project_status)
+    next_review_date = manual_cols[3].text_input("下次复查日期", value=suggested_review, key="tracking_next_review_date")
+
+    st.caption(f"系统建议下次复查日期：{suggested_review or '暂不设置'}。用户可以手动修改。")
+
+    preview_manual = {
+        "target_name": target_name,
+        "project_status": project_status,
+        "watchlist_status": watchlist_status,
+        "next_review_date": next_review_date,
+    }
+    preview_record = build_project_tracking_record(memo_data, preview_manual)
+
+    st.markdown("### 项目卡片预览")
+    with st.expander("项目卡片", expanded=True):
+        st.dataframe(project_card_rows(preview_record.get("project_card", {})), use_container_width=True, hide_index=True)
+
+    col_gap, col_question, col_risk = st.columns(3)
+    with col_gap:
+        render_list("数据缺口", preview_record.get("data_gaps", []))
+    with col_question:
+        render_list("需要向项目方追问的问题", preview_record.get("questions_for_company", [])[:12])
+    with col_risk:
+        render_list("风险标记", preview_record.get("risk_flags", []))
+
+    st.markdown("### 跟踪任务列表")
+    edited_tasks = st.data_editor(
+        tracking_task_editor_rows(preview_record.get("tracking_tasks", [])),
+        key="tracking_task_editor",
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "优先级": st.column_config.SelectboxColumn("优先级", options=["高", "中", "低"]),
+            "状态": st.column_config.SelectboxColumn("状态", options=["todo", "doing", "done", "blocked"]),
+        },
+    )
+
+    if st.button("生成 / 刷新项目跟踪记录"):
+        manual_inputs = {
+            **preview_manual,
+            "tracking_tasks": tracking_tasks_from_editor(edited_tasks),
+        }
+        st.session_state["private_project_tracking_record"] = build_project_tracking_record(memo_data, manual_inputs)
+
+    tracking_record = st.session_state.get("private_project_tracking_record")
+    if not tracking_record:
+        return
+
+    st.markdown("### 项目跟踪记录")
+    record_cols = st.columns(5)
+    record_cols[0].metric("项目状态", tracking_record.get("project_status", ""))
+    record_cols[1].metric("观察池状态", tracking_record.get("watchlist_status_label", ""))
+    record_cols[2].metric("研究动作", tracking_record.get("research_action", ""))
+    record_cols[3].metric("下次复查日期", tracking_record.get("next_review_date", "") or "暂不设置")
+    record_cols[4].metric("跟踪任务", len(tracking_record.get("tracking_tasks", [])))
+
+    with st.expander("V1.0 投委会工作流预留接口", expanded=False):
+        st.json(tracking_record.get("for_v1_0_portfolio_decision", {}))
+
+    st.markdown("### 保存与输出")
+    col_save, col_card, col_tasks, col_watchlist = st.columns(4)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存 V0.9 项目跟踪 JSON"):
+            output_path = save_project_tracking_result(tracking_record)
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_card:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="project_card_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目"))
+        if st.button("生成 Obsidian 项目卡片"):
+            try:
+                output_path = write_private_market_project_card(tracking_record, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_tasks:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="tracking_tasks_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "16_投资决策引擎" / "项目跟踪任务"))
+        if st.button("生成 Obsidian 项目跟踪任务"):
+            try:
+                output_path = write_project_tracking_tasks(tracking_record, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_watchlist:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="watchlist_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目" / "一级市场项目观察池.md"))
+        if st.button("生成 / 更新项目观察池总览"):
+            try:
+                output_path = update_private_market_project_watchlist(tracking_record, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成或更新：{output_path}")
                 st.code(str(output_path), language="text")
 
 
@@ -1576,6 +1783,8 @@ with private_tab:
     render_multi_model_valuation_comparison()
     st.divider()
     render_investment_memo_builder()
+    st.divider()
+    render_project_tracking_watchlist()
     st.divider()
     render_private_autofill_message()
     st.subheader("标的基本信息")

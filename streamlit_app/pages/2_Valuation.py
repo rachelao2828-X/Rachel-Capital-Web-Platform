@@ -25,7 +25,9 @@ from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_l
 from app.services.valuation_engine.memo_writer import (
     write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
+    write_decision_log,
     write_due_diligence_questions,
+    write_investment_committee_memo,
     write_listed_memo,
     write_multi_model_valuation_report,
     write_private_market_project_card,
@@ -36,6 +38,7 @@ from app.services.valuation_engine.memo_writer import (
     write_private_market_memo,
     write_project_tracking_tasks,
     write_target_profile_confirmation_report,
+    update_project_card_status,
     update_private_market_project_watchlist,
 )
 from app.services.valuation_engine.model_registry import (
@@ -50,6 +53,11 @@ from app.services.valuation_engine.model_registry import (
     PRIVATE_TARGET_TYPES,
 )
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
+from app.services.valuation_engine.investment_committee import (
+    DECISION_STAGES,
+    PROCESS_ACTIONS,
+    build_investment_committee_package,
+)
 from app.services.valuation_engine.investment_memo_builder import build_private_market_investment_memo
 from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_document,
@@ -259,6 +267,15 @@ def save_project_tracking_result(tracking_record: dict) -> Path:
     safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
     output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_项目跟踪记录.json"
     output_path.write_text(json.dumps(tracking_record, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
+def save_investment_committee_result(decision_package: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = decision_package.get("target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_投委会决策记录.json"
+    output_path.write_text(json.dumps(decision_package, ensure_ascii=False, indent=2), encoding="utf-8")
     return output_path
 
 
@@ -1551,6 +1568,253 @@ def render_project_tracking_watchlist() -> None:
                 st.code(str(output_path), language="text")
 
 
+def decision_gate_rows(gate_checklist: dict) -> list[dict[str, str]]:
+    rows = []
+    for category, items in gate_checklist.items():
+        for item in items:
+            rows.append(
+                {
+                    "分类": category,
+                    "检查项": item.get("item", ""),
+                    "状态": item.get("status", ""),
+                    "证据": item.get("evidence", ""),
+                    "风险等级": item.get("risk_level", ""),
+                    "备注": item.get("notes", ""),
+                }
+            )
+    return rows
+
+
+def red_flag_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "风险": row.get("flag", ""),
+            "风险等级": row.get("risk_level", ""),
+            "证据": row.get("evidence", ""),
+            "流程动作": row.get("suggested_process_action", ""),
+        }
+        for row in rows
+    ]
+
+
+def follow_up_task_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "任务": row.get("task", ""),
+            "分类": row.get("category", ""),
+            "优先级": row.get("priority", ""),
+            "截止日期": row.get("due_date", ""),
+            "状态": row.get("status", ""),
+            "来源": row.get("source", ""),
+        }
+        for row in rows
+    ]
+
+
+def render_committee_memo_preview(memo: dict) -> None:
+    render_memo_section("项目快照", memo.get("project_snapshot", {}), expanded=True)
+    with st.expander("投委会 Memo 草稿", expanded=True):
+        st.markdown("**投资逻辑草案**")
+        st.write(memo.get("investment_thesis", "待补充"))
+        render_list("核心价值驱动因素", memo.get("key_value_drivers", []))
+        render_list("主要风险", memo.get("major_risks", []))
+        render_list("数据缺口", memo.get("data_gaps", []))
+        render_list("投委会需要讨论的问题", memo.get("decision_questions", []))
+        render_list("后续步骤", memo.get("next_steps", []))
+    render_memo_section("估值摘要", memo.get("valuation_summary", {}))
+    render_memo_section("尽调进展", memo.get("due_diligence_status", {}))
+
+
+def investment_committee_manual_inputs(default_package: dict | None = None) -> dict:
+    default_package = default_package or {}
+    manual = default_package.get("manual_review", {})
+    record = default_package.get("decision_record", {})
+    stage = default_package.get("decision_stage", DECISION_STAGES[0])
+    action = record.get("process_action") or default_package.get("committee_memo", {}).get("suggested_process_action") or PROCESS_ACTIONS[0]
+    st.markdown("### 人工复核意见")
+    col_a, col_b, col_c = st.columns(3)
+    reviewer = col_a.text_input("复核人", value=manual.get("reviewer", ""), key="committee_reviewer")
+    review_date = col_b.text_input("复核日期", value=manual.get("review_date", datetime.now().date().isoformat()), key="committee_review_date")
+    decision_stage = col_c.selectbox(
+        "决策阶段",
+        DECISION_STAGES,
+        index=DECISION_STAGES.index(stage) if stage in DECISION_STAGES else 0,
+        key="committee_decision_stage",
+    )
+    core_judgment = st.text_area("核心判断", value=manual.get("core_judgment", ""), key="committee_core_judgment")
+    col_d, col_e = st.columns(2)
+    main_attraction = col_d.text_area("最大吸引力", value=manual.get("main_attraction", ""), key="committee_main_attraction")
+    main_risk = col_e.text_area("最大风险", value=manual.get("main_risk", ""), key="committee_main_risk")
+    required_data = st.text_area(
+        "必须补充的数据",
+        value="\n".join(manual.get("required_data", [])) if isinstance(manual.get("required_data"), list) else str(manual.get("required_data", "")),
+        key="committee_required_data",
+    )
+    col_f, col_g, col_h, col_i = st.columns(4)
+    needs_external_expert = col_f.checkbox("是否需要外部专家", value=bool(manual.get("needs_external_expert", False)), key="committee_needs_external_expert")
+    needs_financial_due_diligence = col_g.checkbox("是否需要财务尽调", value=bool(manual.get("needs_financial_due_diligence", False)), key="committee_needs_financial_dd")
+    needs_legal_due_diligence = col_h.checkbox("是否需要法律尽调", value=bool(manual.get("needs_legal_due_diligence", False)), key="committee_needs_legal_dd")
+    needs_technical_due_diligence = col_i.checkbox("是否需要技术尽调", value=bool(manual.get("needs_technical_due_diligence", False)), key="committee_needs_technical_dd")
+    process_action = st.selectbox(
+        "本次流程动作",
+        PROCESS_ACTIONS,
+        index=PROCESS_ACTIONS.index(action) if action in PROCESS_ACTIONS else 0,
+        key="committee_process_action",
+    )
+    notes = st.text_area("备注", value=manual.get("notes", ""), key="committee_notes")
+    return {
+        "reviewer": reviewer,
+        "review_date": review_date,
+        "decision_stage": decision_stage,
+        "core_judgment": core_judgment,
+        "main_attraction": main_attraction,
+        "main_risk": main_risk,
+        "required_data": required_data,
+        "needs_external_expert": needs_external_expert,
+        "needs_financial_due_diligence": needs_financial_due_diligence,
+        "needs_legal_due_diligence": needs_legal_due_diligence,
+        "needs_technical_due_diligence": needs_technical_due_diligence,
+        "process_action": process_action,
+        "notes": notes,
+    }
+
+
+def render_investment_committee_workflow() -> None:
+    st.subheader("投资委员会工作流 / 决策闸门")
+    st.warning("本模块用于 Rachel Capital OS 内部投委会流程管理和项目状态推进。所有流程动作均需人工复核。")
+
+    source_mode = st.radio("V1.0 输入来源", ["使用当前 V0.9 项目跟踪记录", "读取本地项目跟踪 JSON", "手动填写项目基础信息"], horizontal=True)
+    tracking_record = None
+    if source_mode == "使用当前 V0.9 项目跟踪记录":
+        tracking_record = st.session_state.get("private_project_tracking_record")
+        if not tracking_record:
+            st.info("当前页面还没有 V0.9 项目跟踪记录，可先生成项目跟踪记录，或切换为读取本地 JSON / 手动填写。")
+    elif source_mode == "读取本地项目跟踪 JSON":
+        with st.expander("读取 V0.9 项目跟踪记录 JSON", expanded=True):
+            tracking_record = load_selected_json("项目跟踪记录", project_tracking_json_options(), "private_loaded_tracking_for_committee")
+    else:
+        st.info("手动模式会生成较低准备度的流程包，适合先建立投委会流程占位记录。")
+        col_a, col_b, col_c = st.columns(3)
+        manual_target = col_a.text_input("项目名称", value=st.session_state.get("private_target_name", "未命名项目"), key="committee_manual_target")
+        manual_project_status = col_b.selectbox("当前项目状态", PROJECT_STATUS_OPTIONS, key="committee_manual_project_status")
+        manual_watchlist_status = col_c.selectbox("当前观察池状态", WATCHLIST_STATUS_OPTIONS, key="committee_manual_watchlist_status")
+        tracking_record = {
+            "target_name": manual_target,
+            "project_status": manual_project_status,
+            "watchlist_status": manual_watchlist_status,
+            "project_card": {"target_name": manual_target, "project_status": manual_project_status, "watchlist_status": manual_watchlist_status},
+            "tracking_tasks": [],
+            "data_gaps": ["项目资料、财务模型、估值结果和尽调结论待补充"],
+            "questions_for_company": [],
+            "risk_flags": [],
+            "valuation_summary": {},
+        }
+
+    if not tracking_record:
+        return
+
+    preview_package = build_investment_committee_package(tracking_record, {})
+    st.markdown("### 输入数据读取状态")
+    status_cols = st.columns(5)
+    status_cols[0].metric("项目名称", preview_package.get("target_name", "未命名项目"))
+    status_cols[1].metric("当前项目状态", tracking_record.get("project_status", "待确认"))
+    status_cols[2].metric("当前观察池状态", tracking_record.get("watchlist_status", "待确认"))
+    status_cols[3].metric("系统建议阶段", preview_package.get("decision_stage", "待确认"))
+    status_cols[4].metric("决策准备度", preview_package.get("decision_readiness", "不足"))
+    st.caption(preview_package.get("decision_readiness_reason", ""))
+    if tracking_record.get("project_status") in {"已放弃", "已归档"}:
+        st.warning("当前项目为已放弃或已归档状态，默认不进入活跃流程；如需继续，请在人工复核区手动覆盖流程动作。")
+
+    st.markdown("### 决策闸门检查表")
+    with st.expander("查看 10 类决策闸门", expanded=True):
+        st.dataframe(decision_gate_rows(preview_package.get("gate_checklist", {})), use_container_width=True, hide_index=True)
+
+    red_flags = preview_package.get("red_flags", [])
+    st.markdown("### 一票否决风险提示")
+    if red_flags:
+        st.warning("系统识别到一票否决风险，请人工复核。")
+        st.dataframe(red_flag_rows(red_flags), use_container_width=True, hide_index=True)
+    else:
+        st.info("当前未识别到一票否决风险，仍需人工复核。")
+
+    st.markdown("### 投委会 Memo 草稿预览")
+    render_committee_memo_preview(preview_package.get("committee_memo", {}))
+
+    manual_inputs = investment_committee_manual_inputs(preview_package)
+    final_package = build_investment_committee_package(tracking_record, manual_inputs)
+
+    st.markdown("### 状态推进预览")
+    next_cols = st.columns(4)
+    next_cols[0].metric("流程动作", final_package.get("decision_record", {}).get("process_action", ""))
+    next_cols[1].metric("下一项目状态", final_package.get("next_project_status", ""))
+    next_cols[2].metric("下一观察池状态", final_package.get("next_watchlist_status", ""))
+    next_cols[3].metric("下次复查日期", final_package.get("next_review_date", "") or "暂不设置")
+
+    st.markdown("### 后续跟踪任务")
+    st.dataframe(follow_up_task_rows(final_package.get("follow_up_tasks", [])), use_container_width=True, hide_index=True)
+    for warning in final_package.get("warnings", []):
+        st.warning(warning)
+
+    if st.button("生成 / 刷新 V1.0 决策记录"):
+        st.session_state["private_investment_committee_package"] = final_package
+        st.success("已生成 V1.0 决策记录草稿。")
+
+    decision_package = st.session_state.get("private_investment_committee_package") or final_package
+
+    st.markdown("### 保存与输出")
+    col_save, col_memo, col_log, col_card, col_watchlist = st.columns(5)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存 V1.0 决策记录 JSON"):
+            output_path = save_investment_committee_result(decision_package)
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_memo:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="committee_memo_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "16_投资决策引擎" / "投委会Memo"))
+        if st.button("生成 Obsidian 投委会 Memo"):
+            try:
+                output_path = write_investment_committee_memo(decision_package, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_log:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="decision_log_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "16_投资决策引擎" / "决策日志"))
+        if st.button("生成 Obsidian 决策日志"):
+            try:
+                output_path = write_decision_log(decision_package, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_card:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="committee_card_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目"))
+        if st.button("更新 Obsidian 项目卡片状态"):
+            try:
+                output_path = update_project_card_status(decision_package, vault_path)
+            except OSError as exc:
+                st.error(f"更新失败：{exc}")
+            else:
+                st.success(f"已更新：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_watchlist:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="committee_watchlist_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目" / "一级市场项目观察池.md"))
+        if st.button("更新一级市场项目观察池"):
+            try:
+                output_path = update_private_market_project_watchlist(decision_package, vault_path)
+            except OSError as exc:
+                st.error(f"更新失败：{exc}")
+            else:
+                st.success(f"已更新：{output_path}")
+                st.code(str(output_path), language="text")
+
+
 def render_private_document_upload() -> None:
     st.subheader("项目资料上传与解析")
     st.warning("商业计划书、融资材料和项目资料通常包含敏感信息。当前功能仅建议在本地可信环境使用。上传文件只保存在本地私有目录，不进入 public_site。")
@@ -2058,11 +2322,11 @@ with private_tab:
     ensure_private_form_defaults()
     st.header("未上市 / 一级市场估值")
     st.caption("用于未上市成长公司、融资交易、Pre-IPO、老股转让、项目公司 / SPV、资产型项目。")
-    render_target_profile_confirmation()
-    st.divider()
     render_private_document_upload()
     st.divider()
     render_financial_model_upload()
+    st.divider()
+    render_target_profile_confirmation()
     st.divider()
     render_assumption_confirmation_page()
     st.divider()
@@ -2073,6 +2337,8 @@ with private_tab:
     render_investment_memo_builder()
     st.divider()
     render_project_tracking_watchlist()
+    st.divider()
+    render_investment_committee_workflow()
     st.divider()
     render_private_autofill_message()
     st.subheader("已确认标的基本信息")

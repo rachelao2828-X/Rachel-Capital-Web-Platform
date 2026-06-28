@@ -8,7 +8,9 @@ from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_l
 from app.services.valuation_engine.memo_writer import (
     write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
+    write_decision_log,
     write_due_diligence_questions,
+    write_investment_committee_memo,
     write_listed_memo,
     write_multi_model_valuation_report,
     write_private_market_project_card,
@@ -19,6 +21,7 @@ from app.services.valuation_engine.memo_writer import (
     write_private_market_memo,
     write_project_tracking_tasks,
     write_target_profile_confirmation_report,
+    update_project_card_status,
     update_private_market_project_watchlist,
 )
 from app.services.valuation_engine.assumption_manager import (
@@ -36,6 +39,7 @@ from app.services.valuation_engine.private_market_extractor import extract_priva
 from app.services.valuation_engine.target_profile_detector import build_target_profile
 from app.services.valuation_engine.multi_model_valuation import run_multi_model_comparison
 from app.services.valuation_engine.project_tracker import build_project_tracking_record, suggest_next_review_date
+from app.services.valuation_engine.investment_committee import build_investment_committee_package
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
@@ -1051,3 +1055,78 @@ def test_update_project_watchlist_replaces_existing_project_row(tmp_path) -> Non
 
     assert content.count("| 测试项目 |") == 1
     assert "pending_data" in content
+
+
+def test_build_investment_committee_package_status_and_gate() -> None:
+    tracking_record = build_project_tracking_record(full_investment_memo(), {"project_status": "深度尽调中", "watchlist_status": "deep_research_candidate"})
+    package = build_investment_committee_package(
+        tracking_record,
+        {
+            "reviewer": "Rachel",
+            "decision_stage": "投委会预审",
+            "process_action": "提交投委会预审",
+            "core_judgment": "资料较完整，进入预审流程。",
+            "required_data": "补充客户合同\n补充法务核查",
+            "needs_legal_due_diligence": True,
+        },
+    )
+
+    assert package["target_name"] == "测试项目"
+    assert package["decision_stage"] == "投委会预审"
+    assert package["decision_readiness"] in {"高", "中", "低", "不足"}
+    assert "项目资料完整性" in package["gate_checklist"]
+    assert package["decision_record"]["process_action"] == "提交投委会预审"
+    assert package["next_project_status"] == "深度尽调中"
+    assert package["next_watchlist_status"] == "investment_decision_candidate"
+    assert package["next_review_date"]
+    assert package["committee_memo"]["suggested_process_action"] == "提交投委会预审"
+    assert package["manual_review"]["needs_legal_due_diligence"] is True
+    assert package["follow_up_tasks"]
+    assert "for_v1_1_post_decision_tracking" in package
+
+
+def test_investment_committee_red_flags_trigger_manual_risk_review() -> None:
+    package = build_investment_committee_package(
+        {
+            "target_name": "高风险项目",
+            "project_status": "等待资料",
+            "watchlist_status": "pending_data",
+            "project_card": {"target_name": "高风险项目"},
+            "data_gaps": ["财务数据缺失", "退出路径缺失", "客户合同无法验证"],
+            "risk_flags": ["法律风险重大", "核心技术无法验证"],
+            "tracking_tasks": [],
+        },
+        None,
+    )
+
+    assert package["red_flags"]
+    assert package["committee_memo"]["suggested_process_action"] == "人工风险复核"
+    assert package["next_project_status"] == "待深度尽调"
+
+
+def test_write_investment_committee_outputs_and_updates_public_false(tmp_path) -> None:
+    tracking_record = build_project_tracking_record(full_investment_memo(), {"project_status": "深度尽调中", "watchlist_status": "deep_research_candidate"})
+    package = build_investment_committee_package(tracking_record, {"reviewer": "Rachel", "process_action": "进入投资决策候选"})
+
+    memo_output = write_investment_committee_memo(package, tmp_path, created=date(2026, 6, 28))
+    log_output = write_decision_log(package, tmp_path, created=date(2026, 6, 28))
+    card_output = update_project_card_status(package, tmp_path, created=date(2026, 6, 28))
+    watchlist_output = update_private_market_project_watchlist(package, tmp_path, created=date(2026, 6, 28))
+    memo_content = memo_output.read_text(encoding="utf-8")
+    log_content = log_output.read_text(encoding="utf-8")
+    card_content = card_output.read_text(encoding="utf-8")
+    watchlist_content = watchlist_output.read_text(encoding="utf-8")
+
+    assert memo_output == tmp_path / "16_投资决策引擎" / "投委会Memo" / "测试项目_2026-06-28_投委会Memo.md"
+    assert log_output == tmp_path / "16_投资决策引擎" / "决策日志" / "测试项目_2026-06-28_决策日志.md"
+    assert card_output == tmp_path / "03_公司数据库" / "一级市场项目" / "测试项目.md"
+    assert watchlist_output == tmp_path / "03_公司数据库" / "一级市场项目" / "一级市场项目观察池.md"
+    assert "type: private_market_investment_committee_memo" in memo_content
+    assert "type: private_market_decision_log" in log_content
+    assert "public: false" in memo_content
+    assert "public: false" in log_content
+    assert "project_status: 已进入投资决策" in card_content
+    assert "process_action: 进入投资决策候选" in card_content
+    assert "V1.0 流程动作=进入投资决策候选" in card_content
+    assert "| 测试项目 |" in watchlist_content
+    assert "进入投资决策候选" in watchlist_content

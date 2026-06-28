@@ -191,10 +191,12 @@ def update_private_market_project_watchlist(
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "一级市场项目观察池.md"
     existing_rows = watchlist_rows_from_markdown(output_path.read_text(encoding="utf-8") if output_path.exists() else "")
-    new_row = watchlist_row_from_tracking(tracking_record)
+    new_row = watchlist_row_from_decision(tracking_record) if tracking_record.get("decision_record") else watchlist_row_from_tracking(tracking_record)
     rows = [row for row in existing_rows if row.get("项目") != new_row["项目"]]
     rows.append(new_row)
     output_path.write_text(private_market_project_watchlist_markdown(rows, tracking_record, created), encoding="utf-8")
+    if tracking_record.get("decision_record"):
+        tracking_record.setdefault("for_v1_1_post_decision_tracking", {})["watchlist_path"] = str(output_path)
     return output_path
 
 
@@ -209,6 +211,64 @@ def write_target_profile_confirmation_report(
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_标的基本信息确认.md"
     output_path.write_text(target_profile_confirmation_markdown(target_profile, created), encoding="utf-8")
+    return output_path
+
+
+def write_investment_committee_memo(
+    decision_package: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = decision_package.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "16_投资决策引擎" / "投委会Memo"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_投委会Memo.md"
+    output_path.write_text(investment_committee_memo_markdown(decision_package, created), encoding="utf-8")
+    decision_package.setdefault("for_v1_1_post_decision_tracking", {})["committee_memo_path"] = str(output_path)
+    return output_path
+
+
+def write_decision_log(
+    decision_package: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = decision_package.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "16_投资决策引擎" / "决策日志"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_决策日志.md"
+    output_path.write_text(decision_log_markdown(decision_package, created), encoding="utf-8")
+    decision_package.setdefault("for_v1_1_post_decision_tracking", {})["decision_log_path"] = str(output_path)
+    return output_path
+
+
+def update_project_card_status(
+    decision_package: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = decision_package.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "03_公司数据库" / "一级市场项目"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}.md"
+    if output_path.exists():
+        content = output_path.read_text(encoding="utf-8")
+    else:
+        content = basic_project_card_from_decision(decision_package, created)
+    updates = {
+        "updated": created.isoformat(),
+        "project_status": decision_package.get("next_project_status", ""),
+        "watchlist_status": decision_package.get("next_watchlist_status", ""),
+        "next_review_date": decision_package.get("next_review_date", ""),
+        "process_action": decision_package.get("decision_record", {}).get("process_action", ""),
+    }
+    updated = update_frontmatter(content, updates)
+    updated = append_project_card_review_record(updated, decision_package, created)
+    output_path.write_text(updated, encoding="utf-8")
+    decision_package.setdefault("for_v1_1_post_decision_tracking", {})["project_card_path"] = str(output_path)
     return output_path
 
 
@@ -1426,6 +1486,197 @@ tags:
 """
 
 
+def investment_committee_memo_markdown(decision_package: dict[str, Any], created: date) -> str:
+    project_name = decision_package.get("target_name") or "未命名项目"
+    memo = decision_package.get("committee_memo", {})
+    record = decision_package.get("decision_record", {})
+    return f"""---
+type: private_market_investment_committee_memo
+title: {project_name}投委会Memo
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+decision_stage: {decision_package.get("decision_stage", "")}
+decision_readiness: {decision_package.get("decision_readiness", "")}
+process_action: {record.get("process_action", "")}
+tags:
+  - 一级市场
+  - 投委会Memo
+  - 投资决策引擎
+---
+
+# {project_name}投委会 Memo
+
+## 1. 项目快照
+
+{dict_section(memo.get("project_snapshot", {}))}
+
+## 2. 投资逻辑草案
+
+{memo.get("investment_thesis", "待补充")}
+
+## 3. 核心价值驱动因素
+
+{bullet_list(memo.get("key_value_drivers", [])) if memo.get("key_value_drivers") else "- 待补充"}
+
+## 4. 估值摘要
+
+{dict_section(memo.get("valuation_summary", {}))}
+
+## 5. 决策闸门检查表
+
+{gate_checklist_markdown(decision_package.get("gate_checklist", {}))}
+
+## 6. 一票否决风险
+
+{red_flags_markdown(decision_package.get("red_flags", []))}
+
+## 7. 主要风险
+
+{bullet_list(memo.get("major_risks", [])) if memo.get("major_risks") else "- 暂无"}
+
+## 8. 尽调进展
+
+{dict_section(memo.get("due_diligence_status", {}))}
+
+## 9. 数据缺口
+
+{bullet_list(memo.get("data_gaps", [])) if memo.get("data_gaps") else "- 暂无"}
+
+## 10. 投委会需要讨论的问题
+
+{bullet_list(memo.get("decision_questions", [])) if memo.get("decision_questions") else "- 暂无"}
+
+## 11. 系统建议流程动作
+
+{memo.get("suggested_process_action", "待确认")}
+
+## 12. 人工复核意见
+
+{dict_section(decision_package.get("manual_review", {}))}
+
+## 13. 后续任务
+
+{tracking_tasks_markdown(decision_package.get("follow_up_tasks", []))}
+
+## 14. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究和投委会流程管理，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
+def decision_log_markdown(decision_package: dict[str, Any], created: date) -> str:
+    project_name = decision_package.get("target_name") or "未命名项目"
+    record = decision_package.get("decision_record", {})
+    manual = decision_package.get("manual_review", {})
+    return f"""---
+type: private_market_decision_log
+title: {project_name}决策日志
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+decision_stage: {record.get("decision_stage", "")}
+process_action: {record.get("process_action", "")}
+next_project_status: {record.get("next_project_status", "")}
+next_watchlist_status: {record.get("next_watchlist_status", "")}
+next_review_date: {record.get("next_review_date", "")}
+tags:
+  - 一级市场
+  - 决策日志
+  - 投资决策引擎
+---
+
+# {project_name}决策日志
+
+## 1. 决策日期
+
+{record.get("decision_date", created.isoformat())}
+
+## 2. 决策阶段
+
+{record.get("decision_stage", "")}
+
+## 3. 本次流程动作
+
+{record.get("process_action", "")}
+
+## 4. 决策理由
+
+{record.get("decision_reason", "待补充")}
+
+## 5. 人工复核意见
+
+{dict_section(manual)}
+
+## 6. 一票否决风险
+
+{red_flags_markdown(decision_package.get("red_flags", []))}
+
+## 7. 必须补充的数据
+
+{bullet_list(record.get("required_follow_up", [])) if record.get("required_follow_up") else "- 暂无"}
+
+## 8. 后续跟踪任务
+
+{tracking_tasks_markdown(decision_package.get("follow_up_tasks", []))}
+
+## 9. 下一项目状态
+
+{record.get("next_project_status", "")}
+
+## 10. 下一观察池状态
+
+{record.get("next_watchlist_status", "")}
+
+## 11. 下次复查日期
+
+{record.get("next_review_date", "") or "暂不设置"}
+
+## 12. 关联文件
+
+{dict_section(decision_package.get("for_v1_1_post_decision_tracking", {}))}
+
+## 13. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究和投资决策流程记录，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
+def basic_project_card_from_decision(decision_package: dict[str, Any], created: date) -> str:
+    project_name = decision_package.get("target_name") or "未命名项目"
+    snapshot = decision_package.get("committee_memo", {}).get("project_snapshot", {})
+    return f"""---
+type: private_market_project
+title: {project_name}
+status: active
+public: false
+created: {created.isoformat()}
+updated: {created.isoformat()}
+target_name: {project_name}
+target_type: {snapshot.get("target_type", "待确认")}
+project_status: {decision_package.get("next_project_status", "")}
+watchlist_status: {decision_package.get("next_watchlist_status", "")}
+process_action: {decision_package.get("decision_record", {}).get("process_action", "")}
+next_review_date: {decision_package.get("next_review_date", "")}
+tags:
+  - 一级市场项目
+  - 投资决策引擎
+---
+
+# {project_name}
+
+## 1. 项目快照
+
+{dict_section(snapshot)}
+
+## 16. 后续复查记录
+
+- {created.isoformat()}：由 Valuation Cockpit V1.0 自动创建基础项目卡片。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -1705,6 +1956,24 @@ def watchlist_row_from_tracking(tracking_record: dict[str, Any]) -> dict[str, st
     }
 
 
+def watchlist_row_from_decision(decision_package: dict[str, Any]) -> dict[str, str]:
+    source = decision_package.get("source_tracking_record", {})
+    card = source.get("project_card", {}) or decision_package.get("committee_memo", {}).get("project_snapshot", {})
+    project = decision_package.get("target_name", "未命名项目")
+    return {
+        "项目": project,
+        "所属行业": card.get("industry", ""),
+        "所属生态": card.get("rachel_ecosystem", ""),
+        "标的类型": card.get("target_type", ""),
+        "项目状态": decision_package.get("next_project_status", ""),
+        "观察池状态": decision_package.get("next_watchlist_status", ""),
+        "研究动作": decision_package.get("decision_record", {}).get("process_action", ""),
+        "估值置信度": card.get("valuation_confidence", "") or decision_package.get("decision_readiness", ""),
+        "下次复查日期": decision_package.get("next_review_date", ""),
+        "项目卡片": f"[[{project}]]",
+    }
+
+
 def watchlist_rows_from_markdown(content: str) -> list[dict[str, str]]:
     columns = ["项目", "所属行业", "所属生态", "标的类型", "项目状态", "观察池状态", "研究动作", "估值置信度", "下次复查日期", "项目卡片"]
     rows = []
@@ -1790,6 +2059,77 @@ def target_profile_labels() -> dict[str, str]:
         "cash_flow_stability": "现金流是否稳定",
         "exit_path": "退出路径",
     }
+
+
+def gate_checklist_markdown(gate_checklist: dict[str, list[dict[str, Any]]]) -> str:
+    if not gate_checklist:
+        return "- 暂无"
+    sections = []
+    for category, rows in gate_checklist.items():
+        table_rows = [
+            {
+                "检查项": row.get("item", ""),
+                "状态": row.get("status", ""),
+                "证据": row.get("evidence", ""),
+                "风险等级": row.get("risk_level", ""),
+                "备注": row.get("notes", ""),
+            }
+            for row in rows
+        ]
+        sections.append(f"### {category}\n\n{markdown_table(table_rows, ['检查项', '状态', '证据', '风险等级', '备注'])}")
+    return "\n\n".join(sections)
+
+
+def red_flags_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "风险": row.get("flag", ""),
+            "风险等级": row.get("risk_level", ""),
+            "证据": row.get("evidence", ""),
+            "建议流程动作": row.get("suggested_process_action", ""),
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["风险", "风险等级", "证据", "建议流程动作"]) if display_rows else "- 暂无"
+
+
+def update_frontmatter(content: str, updates: dict[str, Any]) -> str:
+    if not content.startswith("---\n"):
+        lines = ["---", *[f"{key}: {value}" for key, value in updates.items()], "---", "", content]
+        return "\n".join(lines)
+    end = content.find("\n---", 4)
+    if end == -1:
+        lines = ["---", *[f"{key}: {value}" for key, value in updates.items()], "---", "", content]
+        return "\n".join(lines)
+    frontmatter = content[4:end].strip("\n").splitlines()
+    body = content[end + 4 :].lstrip("\n")
+    update_keys = set(updates)
+    updated_lines = []
+    seen = set()
+    for line in frontmatter:
+        key = line.split(":", 1)[0].strip()
+        if key in update_keys:
+            updated_lines.append(f"{key}: {updates[key]}")
+            seen.add(key)
+        else:
+            updated_lines.append(line)
+    for key, value in updates.items():
+        if key not in seen:
+            updated_lines.append(f"{key}: {value}")
+    return "---\n" + "\n".join(updated_lines) + "\n---\n\n" + body
+
+
+def append_project_card_review_record(content: str, decision_package: dict[str, Any], created: date) -> str:
+    record = decision_package.get("decision_record", {})
+    line = (
+        f"- {created.isoformat()}：V1.0 流程动作={record.get('process_action', '')}；"
+        f"项目状态={record.get('next_project_status', '')}；"
+        f"观察池状态={record.get('next_watchlist_status', '')}；"
+        f"下次复查={record.get('next_review_date', '') or '暂不设置'}。"
+    )
+    if "## 16. 后续复查记录" in content:
+        return content.rstrip() + "\n" + line + "\n"
+    return content.rstrip() + "\n\n## 16. 后续复查记录\n\n" + line + "\n"
 
 
 def format_report_money(value: Any) -> str:

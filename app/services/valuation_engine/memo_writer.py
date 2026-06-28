@@ -56,6 +56,7 @@ def write_private_market_document_valuation_framework(
     extraction: dict[str, Any],
     parsed_document: dict[str, Any],
     vault_path: str | Path,
+    financial_model: dict[str, Any] | None = None,
     created: date | None = None,
 ) -> Path:
     created = created or date.today()
@@ -63,7 +64,22 @@ def write_private_market_document_valuation_framework(
     output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "估值历史" / "未上市一级市场"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_未上市一级市场估值框架.md"
-    output_path.write_text(private_document_valuation_markdown(extraction, parsed_document, created), encoding="utf-8")
+    output_path.write_text(private_document_valuation_markdown(extraction, parsed_document, created, financial_model), encoding="utf-8")
+    return output_path
+
+
+def write_private_market_financial_model_analysis(
+    financial_model: dict[str, Any],
+    vault_path: str | Path,
+    project_name: str | None = None,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = project_name or project_name_from_financial_model(financial_model)
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "一级市场财务模型解析"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_财务模型解析.md"
+    output_path.write_text(financial_model_analysis_markdown(financial_model, project_name, created), encoding="utf-8")
     return output_path
 
 
@@ -386,7 +402,12 @@ tags:
 """
 
 
-def private_document_valuation_markdown(extraction: dict[str, Any], parsed_document: dict[str, Any], created: date) -> str:
+def private_document_valuation_markdown(
+    extraction: dict[str, Any],
+    parsed_document: dict[str, Any],
+    created: date,
+    financial_model: dict[str, Any] | None = None,
+) -> str:
     summary = extraction.get("project_basic_info", {})
     readiness = extraction.get("valuation_readiness", {})
     risks = extraction.get("risk_factors", {})
@@ -464,14 +485,113 @@ tags:
 - {risks.get("team_risk") or "待补充"}
 - {risks.get("key_person_risk") or "待补充"}
 
-## 11. 后续研究任务
+## 11. Excel / 财务模型补充信息
+
+{financial_model_supplement_markdown(financial_model)}
+
+## 12. 后续研究任务
 
 - 向项目方追问缺失数据和关键假设。
 - 核验创始团队履历、股权结构、核心人员稳定性和融资经验。
 - 建立可比公司、可比交易和退出路径数据库。
 - 明确折扣、敏感性和估值区间的输入条件。
 
-## 12. 免责声明
+## 13. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
+"""
+
+
+def financial_model_analysis_markdown(financial_model: dict[str, Any], project_name: str, created: date) -> str:
+    extracted = financial_model.get("extracted_financial_data", {})
+    return f"""---
+type: private_market_financial_model_analysis
+title: {project_name}财务模型解析
+status: draft
+public: false
+created: {created.isoformat()}
+source_file: {financial_model.get("file_name", "")}
+target_name: {project_name}
+tags:
+  - 一级市场
+  - 财务模型解析
+  - 估值引擎
+---
+
+# {project_name}财务模型解析
+
+## 1. 文件信息
+
+- 文件名：{financial_model.get("file_name", "")}
+- 本地路径：{financial_model.get("file_path", "")}
+- 文件类型：{financial_model.get("file_type", "")}
+- 解析器：{financial_model.get("parser", "")}
+- 解析质量：{financial_model.get("extraction_quality", "")}
+- 解析提示：{", ".join(financial_model.get("warnings", [])) or "无"}
+
+## 2. Sheet 列表
+
+{sheet_list_markdown(financial_model.get("sheets", []))}
+
+## 3. 自动识别的财务表类型
+
+{detected_sections_markdown(financial_model.get("detected_financial_sections", {}))}
+
+## 4. 收入与增长
+
+{dict_section(extracted.get("revenue_related", {}))}
+
+## 5. 毛利与利润
+
+{dict_section(extracted.get("gross_profit_and_profit", {}))}
+
+## 6. 成本费用结构
+
+{dict_section(extracted.get("costs_and_expenses", {}))}
+
+## 7. 现金流
+
+{dict_section(extracted.get("cash_flow", {}))}
+
+## 8. CAPEX 与产能
+
+{dict_section(extracted.get("investment_and_capacity", {}))}
+
+## 9. 融资与回报
+
+{dict_section(extracted.get("financing_and_returns", {}))}
+
+## 10. 敏感性假设
+
+{dict_section(extracted.get("sensitivity_assumptions", {}))}
+
+## 11. 关键财务数据可信度
+
+{markdown_table(extracted.get("field_assessments", []), ["field", "extraction_result", "source_sheet", "source_position", "confidence", "needs_confirmation"])}
+
+## 12. 缺失财务数据
+
+{bullet_list(extracted.get("missing_financial_data", [])) if extracted.get("missing_financial_data") else "- 暂无"}
+
+## 13. 需要用户确认的数据
+
+{bullet_list(extracted.get("requires_user_confirmation", [])) if extracted.get("requires_user_confirmation") else "- 暂无"}
+
+## 14. 可支持的估值模型
+
+{bullet_list(extracted.get("supported_valuation_models", [])) if extracted.get("supported_valuation_models") else "- 待补充"}
+
+## 15. 风险与异常点
+
+- Excel / CSV 数据来自项目方或用户上传资料，需核验公式、版本、口径和审计来源。
+- 如果文本资料与财务模型数据存在冲突，应优先标记并向项目方追问。
+- 当前解析只提取关键字段和表格结构，不自动给出目标价、推荐或收益承诺。
+
+## 16. 后续研究任务
+
+{bullet_list(extracted.get("recommended_supplemental_materials", [])) if extracted.get("recommended_supplemental_materials") else "- 补齐财务模型关键假设。"}
+
+## 17. 免责声明
 
 本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
 """
@@ -505,6 +625,12 @@ def project_name_from_extraction(extraction: dict[str, Any]) -> str:
     return summary.get("project_name") or summary.get("company_name") or "未命名项目"
 
 
+def project_name_from_financial_model(financial_model: dict[str, Any]) -> str:
+    file_name = Path(str(financial_model.get("file_name") or "未命名项目")).stem
+    cleaned = re.sub(r"[_\-\s]*(财务模型|财务预测|financial.?model|model)$", "", file_name, flags=re.IGNORECASE).strip()
+    return cleaned or "未命名项目"
+
+
 def team_questions(founder_team: dict[str, Any]) -> list[str]:
     questions = []
     if founder_team.get("team_gaps"):
@@ -520,6 +646,8 @@ def dict_section(values: dict[str, Any]) -> str:
     for key, value in values.items():
         if isinstance(value, list):
             display = "、".join(str(item) for item in value) if value else "待补充"
+        elif isinstance(value, dict):
+            display = value.get("extraction_result") or str(value)
         elif value is None or value == "":
             display = "待补充"
         else:
@@ -542,3 +670,39 @@ def model_rows_for_readiness(readiness: dict[str, Any]) -> list[dict[str, str]]:
             }
         )
     return rows
+
+
+def sheet_list_markdown(sheets: list[dict[str, Any]]) -> str:
+    rows = [
+        {"Sheet": item.get("sheet_name", ""), "行数": str(item.get("max_row", "")), "列数": str(item.get("max_column", ""))}
+        for item in sheets
+    ]
+    return markdown_table(rows, ["Sheet", "行数", "列数"]) if rows else "- 未识别到 Sheet。"
+
+
+def detected_sections_markdown(sections: dict[str, Any]) -> str:
+    rows = []
+    for section, matches in sections.items():
+        rows.append(
+            {
+                "财务表类型": section,
+                "匹配 Sheet": "、".join(item.get("sheet_name", "") for item in matches) if matches else "未识别",
+                "关键词": "、".join(item.get("matched_keywords", "") for item in matches) if matches else "",
+            }
+        )
+    return markdown_table(rows, ["财务表类型", "匹配 Sheet", "关键词"]) if rows else "- 未识别到财务表类型。"
+
+
+def financial_model_supplement_markdown(financial_model: dict[str, Any] | None) -> str:
+    if not financial_model:
+        return "- 尚未上传 Excel / 财务模型。"
+    extracted = financial_model.get("extracted_financial_data", {})
+    return f"""- 已上传财务模型文件：{financial_model.get("file_name", "")}
+- 已识别财务表类型：{', '.join(section for section, matches in financial_model.get("detected_financial_sections", {}).items() if matches) or "待确认"}
+- 可用财务数据：{', '.join(extracted.get("usable_financial_data", [])) or "暂无"}
+- 缺失财务数据：{', '.join(extracted.get("missing_financial_data", [])) or "暂无"}
+- 需要用户确认的数据：{', '.join(extracted.get("requires_user_confirmation", [])) or "暂无"}
+- 对估值模型选择的影响：{', '.join(extracted.get("supported_valuation_models", [])) or "待补充财务数据后确认"}
+
+如果项目资料文本与 Excel / 财务模型数据存在冲突，请优先标记为“需要用户确认”，并向项目方追问口径、版本和数据来源。
+"""

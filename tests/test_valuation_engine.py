@@ -3,11 +3,13 @@ from datetime import date
 import pytest
 
 from app.services.valuation_engine.document_parser import parse_uploaded_document
+from app.services.valuation_engine.financial_model_parser import parse_financial_model
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
     write_listed_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
+    write_private_market_financial_model_analysis,
     write_private_market_memo,
 )
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
@@ -306,3 +308,103 @@ def test_parse_pptx_extracts_slides_and_tables(tmp_path) -> None:
     assert "PPTX测试项目" in result["raw_text"]
     assert result["slides"]
     assert result["tables"]
+
+
+def test_parse_xlsx_financial_model_detects_sections_and_fields(tmp_path) -> None:
+    openpyxl = pytest.importorskip("openpyxl")
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "收入预测"
+    sheet.append(["项目", "2024A", "2025E", "2026E"])
+    sheet.append(["营业收入", 1000, 1500, 2200])
+    sheet.append(["毛利率", "45%", "48%", "50%"])
+    sheet.append(["CAPEX", 300, 200, 150])
+    irr = workbook.create_sheet("IRR回收期")
+    irr.append(["IRR", "18%"])
+    irr.append(["回收期", "5年"])
+    path = tmp_path / "financial_model.xlsx"
+    workbook.save(path)
+
+    result = parse_financial_model(path)
+
+    assert result["file_type"] == "xlsx"
+    assert result["sheets"]
+    assert result["raw_preview"]["收入预测"]
+    assert result["detected_financial_sections"]["收入预测表"]
+    assert result["extracted_financial_data"]["fields"]["历史收入"]["extraction_result"] != "缺失"
+    assert "IRR" in result["extracted_financial_data"]["supported_valuation_models"]
+
+
+def test_parse_csv_financial_model(tmp_path) -> None:
+    path = tmp_path / "financial_model.csv"
+    path.write_text("项目,2025E\n预测收入,3000\n自由现金流,500\nIRR,20%\n", encoding="utf-8")
+
+    result = parse_financial_model(path)
+
+    assert result["file_type"] == "csv"
+    assert result["sheets"][0]["sheet_name"] == "CSV"
+    assert result["raw_preview"]["CSV"]
+    assert result["extracted_financial_data"]["fields"]["预测收入"]["extraction_result"] != "缺失"
+    assert "DCF" in result["extracted_financial_data"]["supported_valuation_models"]
+
+
+def test_parse_xls_financial_model_warns_without_crashing(tmp_path) -> None:
+    path = tmp_path / "legacy_model.xls"
+    path.write_bytes(b"legacy xls")
+
+    result = parse_financial_model(path)
+
+    assert result["file_type"] == "xls"
+    assert result["extraction_quality"] == "failed"
+    assert "XLSX" in " ".join(result["warnings"])
+
+
+def test_write_financial_model_analysis_and_framework_supplement(tmp_path) -> None:
+    financial_model = {
+        "file_name": "测试项目财务模型.xlsx",
+        "file_path": "/tmp/测试项目财务模型.xlsx",
+        "file_type": "xlsx",
+        "parser": "openpyxl",
+        "sheets": [{"sheet_name": "收入预测", "max_row": 3, "max_column": 3}],
+        "tables": [],
+        "raw_preview": {"收入预测": [["项目", "2025E"], ["预测收入", 3000]]},
+        "detected_financial_sections": {"收入预测表": [{"sheet_name": "收入预测", "matched_keywords": "收入"}]},
+        "extracted_financial_data": {
+            "field_assessments": [{"field": "预测收入", "extraction_result": "3000", "source_sheet": "收入预测", "source_position": "R2C1", "confidence": "高", "needs_confirmation": "否"}],
+            "revenue_related": {"预测收入": {"extraction_result": "3000"}},
+            "gross_profit_and_profit": {},
+            "costs_and_expenses": {},
+            "cash_flow": {},
+            "investment_and_capacity": {},
+            "financing_and_returns": {},
+            "sensitivity_assumptions": {},
+            "missing_financial_data": ["自由现金流"],
+            "requires_user_confirmation": [],
+            "usable_financial_data": ["预测收入"],
+            "supported_valuation_models": ["收入倍数"],
+            "recommended_supplemental_materials": ["请补充现金流预测表。"],
+        },
+        "warnings": [],
+        "extraction_quality": "medium",
+    }
+    parsed = {
+        "file_name": "测试项目BP.pdf",
+        "file_path": "/tmp/测试项目BP.pdf",
+        "file_type": "pdf",
+        "raw_text": "项目名称：测试项目",
+        "pages": [],
+        "tables": [],
+        "warnings": [],
+    }
+    extraction = extract_private_market_document(parsed)
+
+    report = write_private_market_financial_model_analysis(financial_model, tmp_path, "测试项目", created=date(2026, 6, 28))
+    framework = write_private_market_document_valuation_framework(extraction, parsed, tmp_path, financial_model, created=date(2026, 6, 28))
+
+    report_content = report.read_text(encoding="utf-8")
+    framework_content = framework.read_text(encoding="utf-8")
+    assert report == tmp_path / "15_估值引擎" / "一级市场财务模型解析" / "测试项目_2026-06-28_财务模型解析.md"
+    assert "type: private_market_financial_model_analysis" in report_content
+    assert "public: false" in report_content
+    assert "## 11. Excel / 财务模型补充信息" in framework_content
+    assert "测试项目财务模型.xlsx" in framework_content

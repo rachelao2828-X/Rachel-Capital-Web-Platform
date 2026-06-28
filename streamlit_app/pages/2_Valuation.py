@@ -13,11 +13,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.core.config import settings
 from app.services.valuation_engine.document_parser import parse_uploaded_document
+from app.services.valuation_engine.financial_model_parser import parse_financial_model
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
     write_listed_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
+    write_private_market_financial_model_analysis,
     write_private_market_memo,
 )
 from app.services.valuation_engine.model_registry import (
@@ -37,6 +39,8 @@ from app.services.valuation_engine.private_market_extractor import extract_priva
 
 PRIVATE_MARKET_UPLOAD_DIR = PROJECT_ROOT / "data" / "uploads" / "private_market"
 PRIVATE_MARKET_EXTRACTED_DIR = PROJECT_ROOT / "data" / "extracted" / "private_market"
+PRIVATE_MARKET_FINANCIAL_UPLOAD_DIR = PROJECT_ROOT / "data" / "uploads" / "private_market_financials"
+PRIVATE_MARKET_FINANCIAL_EXTRACTED_DIR = PROJECT_ROOT / "data" / "extracted" / "private_market_financials"
 
 
 def default_vault_path() -> str:
@@ -78,6 +82,22 @@ def save_private_market_extraction(parsed_document: dict, extraction: dict) -> P
     return output_path
 
 
+def save_private_market_financial_upload(uploaded_file) -> Path:
+    PRIVATE_MARKET_FINANCIAL_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = PRIVATE_MARKET_FINANCIAL_UPLOAD_DIR / safe_upload_filename(uploaded_file.name)
+    output_path.write_bytes(uploaded_file.getbuffer())
+    return output_path
+
+
+def save_private_market_financial_extraction(financial_model: dict) -> Path:
+    PRIVATE_MARKET_FINANCIAL_EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
+    source_stem = Path(financial_model.get("file_name", "financial_model")).stem
+    safe_stem = re.sub(r"[\\/:*?\"<>|\s]+", "_", source_stem).strip("_") or "financial_model"
+    output_path = PRIVATE_MARKET_FINANCIAL_EXTRACTED_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{safe_stem}.json"
+    output_path.write_text(json.dumps(financial_model, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
 def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
     rows = []
     for key, label in labels.items():
@@ -95,6 +115,106 @@ def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
 def render_section_expander(title: str, section: dict, labels: dict[str, str], expanded: bool = False) -> None:
     with st.expander(title, expanded=expanded):
         st.dataframe(section_rows(section, labels), use_container_width=True, hide_index=True)
+
+
+def project_name_from_current_analysis() -> str:
+    extraction = st.session_state.get("private_document_extraction") or {}
+    summary = extraction.get("project_basic_info", {})
+    return summary.get("project_name") or summary.get("company_name") or "未命名项目"
+
+
+def render_financial_model_upload() -> None:
+    st.subheader("Excel / 财务模型上传与解析")
+    st.warning("财务模型、预测表和审计资料通常包含敏感信息。当前功能仅建议在本地可信环境使用。上传文件只保存在本地私有目录，不进入 public_site。")
+    uploaded_file = st.file_uploader(
+        "上传 XLSX、CSV 财务模型、预测表或项目测算表",
+        type=["xlsx", "xls", "csv"],
+        accept_multiple_files=False,
+        key="private_market_financial_upload",
+    )
+
+    if uploaded_file and st.button("读取并解析财务模型"):
+        saved_path = save_private_market_financial_upload(uploaded_file)
+        financial_model = parse_financial_model(saved_path)
+        extracted_path = save_private_market_financial_extraction(financial_model)
+        st.session_state["private_financial_saved_path"] = saved_path
+        st.session_state["private_financial_model"] = financial_model
+        st.session_state["private_financial_extracted_path"] = extracted_path
+
+    financial_model = st.session_state.get("private_financial_model")
+    saved_path = st.session_state.get("private_financial_saved_path")
+    extracted_path = st.session_state.get("private_financial_extracted_path")
+    if not financial_model:
+        return
+
+    if financial_model.get("extraction_quality") == "failed":
+        st.error("财务模型读取未能完成，请查看解析警告。")
+    else:
+        st.success("财务模型读取完成。")
+    if saved_path:
+        st.caption(f"上传文件保存路径：{saved_path}")
+    if extracted_path:
+        st.caption(f"解析中间结果保存路径：{extracted_path}")
+
+    status_cols = st.columns(4)
+    status_cols[0].metric("文件类型", financial_model.get("file_type") or "未知")
+    status_cols[1].metric("解析器", financial_model.get("parser") or "未知")
+    status_cols[2].metric("解析质量", financial_model.get("extraction_quality") or "未知")
+    status_cols[3].metric("Sheet 数量", len(financial_model.get("sheets", [])))
+    for warning in financial_model.get("warnings", []):
+        st.warning(warning)
+
+    extracted = financial_model.get("extracted_financial_data", {})
+    sheets = financial_model.get("sheets", [])
+    sections = financial_model.get("detected_financial_sections", {})
+
+    with st.expander("Sheet 列表", expanded=True):
+        st.dataframe(sheets, use_container_width=True, hide_index=True)
+
+    with st.expander("每张 Sheet 前 20 行预览", expanded=False):
+        for sheet_name, rows in financial_model.get("raw_preview", {}).items():
+            st.markdown(f"**{sheet_name}**")
+            st.dataframe(rows, use_container_width=True, hide_index=True)
+
+    with st.expander("自动识别的财务表类型", expanded=True):
+        section_rows_display = [
+            {
+                "财务表类型": section,
+                "匹配 Sheet": "、".join(item.get("sheet_name", "") for item in matches) if matches else "未识别",
+                "关键词": "、".join(item.get("matched_keywords", "") for item in matches) if matches else "",
+            }
+            for section, matches in sections.items()
+        ]
+        st.dataframe(section_rows_display, use_container_width=True, hide_index=True)
+
+    with st.expander("提取出的关键财务字段", expanded=True):
+        st.dataframe(extracted.get("field_assessments", []), use_container_width=True, hide_index=True)
+
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        render_list("缺失财务数据清单", extracted.get("missing_financial_data", []))
+    with col_b:
+        render_list("需要用户确认的数据", extracted.get("requires_user_confirmation", []))
+    with col_c:
+        render_list("可用于估值的字段", extracted.get("usable_financial_data", []))
+        render_list("当前可支持的估值模型", extracted.get("supported_valuation_models", []))
+
+    render_list("建议补充的财务资料", extracted.get("recommended_supplemental_materials", []))
+
+    if st.session_state.get("private_document_extraction"):
+        st.info("财务模型补充结果：Excel / 财务模型用于补充项目资料中缺失的财务、产能、成本、现金流、IRR 和敏感性数据。若文本资料与 Excel 数据冲突，请优先人工核验。")
+
+    st.subheader("生成 Obsidian 财务模型解析报告")
+    vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="private_financial_vault_path")
+    st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "一级市场财务模型解析"))
+    if st.button("生成 Obsidian 财务模型解析报告"):
+        try:
+            output_path = write_private_market_financial_model_analysis(financial_model, vault_path, project_name_from_current_analysis())
+        except OSError as exc:
+            st.error(f"生成失败：{exc}")
+        else:
+            st.success(f"已生成：{output_path}")
+            st.code(str(output_path), language="text")
 
 
 def render_private_document_upload() -> None:
@@ -401,7 +521,12 @@ def render_private_document_upload() -> None:
         st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "估值历史" / "未上市一级市场"))
         if st.button("生成 Obsidian 估值框架草稿"):
             try:
-                output_path = write_private_market_document_valuation_framework(extraction, parsed_document, vault_path)
+                output_path = write_private_market_document_valuation_framework(
+                    extraction,
+                    parsed_document,
+                    vault_path,
+                    st.session_state.get("private_financial_model"),
+                )
             except OSError as exc:
                 st.error(f"生成失败：{exc}")
             else:
@@ -598,6 +723,8 @@ with private_tab:
     st.header("未上市 / 一级市场估值")
     st.caption("用于未上市成长公司、融资交易、Pre-IPO、老股转让、项目公司 / SPV、资产型项目。")
     render_private_document_upload()
+    st.divider()
+    render_financial_model_upload()
     st.divider()
     st.subheader("标的基本信息")
     col_1, col_2, col_3 = st.columns(3)

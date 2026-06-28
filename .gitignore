@@ -13,6 +13,8 @@ data/*.db-*
 data/uploads/
 data/extracted/
 data/private_market_cases/
+data/uploads/private_market_financials/
+data/extracted/private_market_financials/
 .env
 cloudflared
 cloudflared.tgz

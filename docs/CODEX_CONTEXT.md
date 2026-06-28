@@ -199,3 +199,13 @@ docs/CODEX_CONTEXT.md
 然后再执行用户当前指令。
 
 不要依赖聊天历史记忆。
+
+## Rachel Valuation Agent 未来方向
+
+- 当前 Valuation Cockpit 是 Rachel Capital OS 的内部估值工具，覆盖一级市场和二级市场研究场景。
+- 未来未上市 / 一级市场部分可升级为 Rachel Valuation Agent。
+- Rachel Valuation Agent 的市场化定位是 AI 估值与尽调助理 / AI Valuation & Due Diligence Copilot。
+- 不定位为 AI 投资顾问、AI 荐股工具、自动买卖决策工具、收益预测工具或自动交易工具。
+- 第一款市场化 MVP 是一级市场 BP 解析 + 尽调初筛 + 估值框架生成器。
+- 所有关键输出必须保留 human review gate，由用户确认后才能进入下一步。
+- 不输出买入、卖出、推荐、收益承诺或自动交易指令。

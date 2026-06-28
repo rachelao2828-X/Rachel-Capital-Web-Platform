@@ -6,6 +6,7 @@ from app.services.valuation_engine.document_parser import parse_uploaded_documen
 from app.services.valuation_engine.financial_model_parser import parse_financial_model
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
+    write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
     write_listed_memo,
     write_private_market_document_analysis,
@@ -24,6 +25,7 @@ from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_financial_model,
 )
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
+from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
 def listed_profile(**overrides) -> ListedCompanyProfile:
@@ -568,3 +570,84 @@ def test_write_assumption_confirmation_report_public_false(tmp_path) -> None:
     assert "public: false" in content
     assert "valuation_readiness: 中" in content
     assert "## 13. 进入 V0.6 自动估值计算前必须补充的数据" in content
+
+
+def basic_assumption_data() -> dict:
+    return {
+        "target_name": "测试项目",
+        "source_files": [{"file_name": "测试项目BP.pdf", "source_type": "项目资料"}],
+        "readiness_summary": {
+            "valuation_readiness_level": "高",
+            "reason": "关键假设较完整。",
+            "ready_for_v0_6_calculation": True,
+            "missing_before_calculation": [],
+        },
+        "ready_for_valuation_calculation": True,
+        "valuation_inputs": {
+            "revenue": {
+                "预测收入": {"confirmed_value": "3000万元", "confidence": "高", "source": "Excel明确披露"},
+                "订单金额": {"confirmed_value": "2000万元", "confidence": "中", "source": "文件明确披露"},
+            },
+            "cost_profit": {
+                "净利润": {"confirmed_value": "500万元", "confidence": "高", "source": "Excel明确披露"},
+                "EBITDA": {"confirmed_value": "700万元", "confidence": "高", "source": "Excel明确披露"},
+            },
+            "cash_flow": {
+                "自由现金流": {"confirmed_value": "400万元", "confidence": "高", "source": "Excel明确披露"},
+            },
+            "capex_capacity": {
+                "项目总投资": {"confirmed_value": "1200万元", "confidence": "高", "source": "Excel明确披露"},
+                "重置成本": {"confirmed_value": "1500万元", "confidence": "中", "source": "文件明确披露"},
+            },
+            "return_valuation": {
+                "收入倍数": {"confirmed_value": "5", "confidence": "中", "source": "用户手动输入"},
+                "利润倍数": {"confirmed_value": "12", "confidence": "中", "source": "用户手动输入"},
+                "EBITDA 倍数": {"confirmed_value": "8", "confidence": "中", "source": "用户手动输入"},
+                "订单倍数": {"confirmed_value": "2", "confidence": "中", "source": "用户手动输入"},
+                "折现率": {"confirmed_value": "10%", "confidence": "中", "source": "用户手动输入"},
+                "流动性折扣": {"confirmed_value": "10%", "confidence": "中", "source": "用户手动输入"},
+            },
+            "scenario_sensitivity": {},
+        },
+        "warnings": [],
+    }
+
+
+def test_run_basic_private_market_valuation_models_and_range() -> None:
+    result = run_basic_private_market_valuation(basic_assumption_data())
+
+    assert result["target_name"] == "测试项目"
+    assert "收入倍数法" in result["available_models"]
+    assert "利润倍数法" in result["available_models"]
+    assert "EBITDA 倍数法" in result["available_models"]
+    assert "订单倍数法" in result["available_models"]
+    assert "DCF 简化法" in result["available_models"]
+    assert result["valuation_range"]["method"] == "weighted_range"
+    assert result["valuation_range"]["low"] is not None
+    assert result["risk_adjustments"][0]["折扣项"] == "流动性折扣"
+    assert "for_v0_7_multi_model_comparison" in result
+    assert result["confidence_level"] in {"高", "中"}
+
+
+def test_run_basic_private_market_valuation_uses_only_confirmed_inputs() -> None:
+    data = basic_assumption_data()
+    data["valuation_inputs"]["revenue"]["预测收入"]["confirmed_value"] = ""
+
+    result = run_basic_private_market_valuation(data)
+
+    revenue_model = next(item for item in result["model_results"] if item["model"] == "收入倍数法")
+    assert revenue_model["status"] == "不可计算"
+    assert "预测收入或历史收入" in revenue_model["missing_fields"]
+
+
+def test_write_basic_valuation_calculation_report_public_false(tmp_path) -> None:
+    result = run_basic_private_market_valuation(basic_assumption_data())
+
+    output = write_basic_valuation_calculation_report(result, tmp_path, created=date(2026, 6, 28))
+    content = output.read_text(encoding="utf-8")
+
+    assert output == tmp_path / "15_估值引擎" / "基础估值计算" / "测试项目_2026-06-28_基础估值计算.md"
+    assert "type: private_market_basic_valuation_calculation" in content
+    assert "public: false" in content
+    assert "## 8. 初步估值区间" in content
+    assert "本文件仅用于 Rachel Capital OS 内部研究" in content

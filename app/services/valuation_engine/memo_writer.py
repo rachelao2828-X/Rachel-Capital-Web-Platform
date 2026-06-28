@@ -97,6 +97,20 @@ def write_assumption_confirmation_report(
     return output_path
 
 
+def write_basic_valuation_calculation_report(
+    valuation_result: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = valuation_result.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "基础估值计算"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_基础估值计算.md"
+    output_path.write_text(basic_valuation_calculation_markdown(valuation_result, created), encoding="utf-8")
+    return output_path
+
+
 def listed_markdown(profile: ListedCompanyProfile, result: ListedValuationResult, created: date) -> str:
     return f"""---
 type: listed_company_valuation
@@ -702,6 +716,86 @@ tags:
 """
 
 
+def basic_valuation_calculation_markdown(valuation_result: dict[str, Any], created: date) -> str:
+    project_name = valuation_result.get("target_name") or "未命名项目"
+    valuation_range = valuation_result.get("valuation_range", {})
+    return f"""---
+type: private_market_basic_valuation_calculation
+title: {project_name}基础估值计算
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+valuation_confidence: {valuation_result.get("confidence_level", "仅供框架参考")}
+tags:
+  - 一级市场
+  - 基础估值计算
+  - 估值引擎
+---
+
+# {project_name}基础估值计算
+
+## 1. 输入来源
+
+本报告基于 V0.5 已确认关键假设生成，只读取 confirmed_value、use_in_valuation = true 且 confidence 不为“缺失”的输入。
+
+## 2. 关键假设摘要
+
+{dict_section(valuation_result.get("input_summary", {}))}
+
+## 3. 估值准备度
+
+- 综合估值置信度：{valuation_result.get("confidence_level", "仅供框架参考")}
+- 置信度说明：{valuation_result.get("confidence_reason", "待确认")}
+
+## 4. 可计算模型
+
+{bullet_list(valuation_result.get("available_models", [])) if valuation_result.get("available_models") else "- 暂无"}
+
+## 5. 不可计算模型与缺失字段
+
+{unavailable_models_markdown(valuation_result.get("unavailable_models", []))}
+
+## 6. 模型结果表
+
+{model_results_markdown(valuation_result.get("model_results", []))}
+
+## 7. 折扣与风险调整
+
+{markdown_table(valuation_result.get("risk_adjustments", []), ["折扣项", "折扣率", "原因", "是否应用"])}
+
+## 8. 初步估值区间
+
+- 初步估值区间：{valuation_range.get("display", "可计算模型不足，暂不生成综合区间。")}
+- 货币单位：{valuation_range.get("currency", "万元 RMB")}
+- 生成方法：{valuation_range.get("method", "")}
+- 使用方式：研究参考，需人工确认。
+
+## 9. 敏感性提示
+
+{bullet_list(valuation_result.get("sensitivity_notes", [])) if valuation_result.get("sensitivity_notes") else "- 暂无"}
+
+## 10. 主要限制
+
+{bullet_list(valuation_result.get("warnings", [])) if valuation_result.get("warnings") else "- 本阶段仅生成基础估值计算结果，不构成最终投资结论。"}
+
+## 11. 后续需要补充的数据
+
+{bullet_list(valuation_result.get("missing_data", [])) if valuation_result.get("missing_data") else "- 暂无"}
+
+## 12. 后续研究任务
+
+- 核验所有估值输入的来源、口径、期间和可比样本。
+- 补充收入倍数、利润倍数、折现率、现金流、CAPEX 和退出路径假设。
+- 在 V0.7 中进行多模型对比、权重调整和综合估值区间校验。
+- 保留 human review gate，不输出买入、卖出、推荐、目标价或收益承诺。
+
+## 13. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -819,6 +913,35 @@ def assumption_group_markdown(items: list[dict[str, Any]]) -> str:
         for item in items
     ]
     return markdown_table(rows, ["字段", "系统提取值", "用户确认值", "单位", "期间/情景", "来源", "可信度", "用于估值", "备注"]) if rows else "- 暂无"
+
+
+def model_results_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "模型": row.get("model", ""),
+            "适用度": row.get("status", ""),
+            "输入完整度": row.get("input_completeness", ""),
+            "原始估值": row.get("raw_valuation", ""),
+            "折扣后估值": row.get("discounted_valuation", ""),
+            "置信度": row.get("confidence", ""),
+            "主要依据": row.get("主要依据", ""),
+            "主要限制": row.get("main_limitations", ""),
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["模型", "适用度", "输入完整度", "原始估值", "折扣后估值", "置信度", "主要依据", "主要限制"]) if display_rows else "- 暂无"
+
+
+def unavailable_models_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "模型": row.get("model", ""),
+            "缺失字段": "、".join(row.get("missing_fields", [])),
+            "主要限制": row.get("主要限制", ""),
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["模型", "缺失字段", "主要限制"]) if display_rows else "- 暂无"
 
 
 def financial_model_supplement_markdown(financial_model: dict[str, Any] | None) -> str:

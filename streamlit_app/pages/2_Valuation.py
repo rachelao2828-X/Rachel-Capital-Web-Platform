@@ -23,6 +23,7 @@ from app.services.valuation_engine.document_parser import parse_uploaded_documen
 from app.services.valuation_engine.financial_model_parser import parse_financial_model
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
+    write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
     write_listed_memo,
     write_private_market_document_analysis,
@@ -47,6 +48,7 @@ from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_financial_model,
 )
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
+from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
 PRIVATE_MARKET_UPLOAD_DIR = PROJECT_ROOT / "data" / "uploads" / "private_market"
@@ -201,6 +203,15 @@ def save_assumption_confirmation(assumption_data: dict) -> Path:
     safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
     output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_关键假设确认.json"
     output_path.write_text(json.dumps(assumption_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
+def save_basic_valuation_result(valuation_result: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = valuation_result.get("target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_基础估值计算.json"
+    output_path.write_text(json.dumps(valuation_result, ensure_ascii=False, indent=2), encoding="utf-8")
     return output_path
 
 
@@ -465,6 +476,139 @@ def render_assumption_confirmation_page() -> None:
         if st.button("生成 Obsidian 关键假设确认报告"):
             try:
                 output_path = write_assumption_confirmation_report(assumption_data, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+
+
+def load_assumption_json(path: Path) -> dict | None:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        st.error(f"读取关键假设 JSON 失败：{exc}")
+        return None
+
+
+def assumption_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_CASES_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_关键假设确认.json"), reverse=True)
+
+
+def model_results_rows(model_results: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "模型": item.get("model", ""),
+            "适用度": item.get("status", ""),
+            "输入完整度": item.get("input_completeness", ""),
+            "原始估值": item.get("raw_valuation", ""),
+            "折扣后估值": item.get("discounted_valuation", ""),
+            "置信度": item.get("confidence", ""),
+            "主要依据": item.get("主要依据", ""),
+            "主要限制": item.get("main_limitations", ""),
+        }
+        for item in model_results
+    ]
+
+
+def render_basic_valuation_calculation() -> None:
+    st.subheader("基础估值自动计算")
+    st.warning("本模块基于用户已确认的关键假设进行基础估值计算。计算结果仅为内部研究参考，不构成投资建议、投资邀约、买卖依据或收益承诺。一级市场估值高度依赖假设质量，请谨慎使用。")
+
+    source_mode = st.radio("关键假设来源", ["使用当前页面已确认假设", "读取已保存关键假设 JSON"], horizontal=True)
+    assumption_data = None
+    if source_mode == "使用当前页面已确认假设":
+        assumption_data = st.session_state.get("private_assumption_data")
+        if not assumption_data:
+            st.info("当前页面还没有关键假设确认结果，请先在 V0.5 模块生成关键假设表。")
+    else:
+        options = assumption_json_options()
+        if not options:
+            st.info(f"暂未找到已保存关键假设 JSON：{PRIVATE_MARKET_CASES_DIR}")
+        else:
+            selected = st.selectbox("选择关键假设 JSON", options, format_func=lambda path: path.name)
+            if st.button("读取关键假设 JSON"):
+                assumption_data = load_assumption_json(selected)
+                if assumption_data:
+                    st.session_state["private_loaded_assumption_data"] = assumption_data
+            assumption_data = st.session_state.get("private_loaded_assumption_data")
+
+    if not assumption_data:
+        return
+
+    readiness = assumption_data.get("readiness_summary", {})
+    st.markdown("### 估值准备度")
+    readiness_cols = st.columns(3)
+    readiness_cols[0].metric("准备度等级", readiness.get("valuation_readiness_level", "不足"))
+    readiness_cols[1].metric("V0.6 可计算", "是" if assumption_data.get("ready_for_valuation_calculation") else "试算")
+    readiness_cols[2].metric("待补充项", len(readiness.get("missing_before_calculation", [])))
+    st.write(readiness.get("reason", "待确认"))
+    if readiness.get("valuation_readiness_level") == "中":
+        st.info("部分关键数据仍需确认，结果仅作为初步研究参考。")
+    elif readiness.get("valuation_readiness_level") == "低":
+        st.warning("低置信度，仅用于理解估值敏感性。")
+    elif readiness.get("valuation_readiness_level") == "不足":
+        st.error("当前数据不足，不建议进入估值计算。用户仍可手动选择试算。")
+        force = st.checkbox("强制试算，并将结果标记为低置信度")
+        if not force:
+            return
+
+    if st.button("运行基础估值计算"):
+        st.session_state["private_basic_valuation_result"] = run_basic_private_market_valuation(assumption_data)
+
+    valuation_result = st.session_state.get("private_basic_valuation_result")
+    if not valuation_result:
+        return
+
+    st.markdown("### 可计算模型")
+    render_list("模型", valuation_result.get("available_models", []))
+
+    st.markdown("### 不可计算模型及缺失字段")
+    unavailable_rows = [
+        {"模型": item.get("model", ""), "缺失字段": "、".join(item.get("missing_fields", [])), "主要限制": item.get("主要限制", "")}
+        for item in valuation_result.get("unavailable_models", [])
+    ]
+    st.dataframe(unavailable_rows, use_container_width=True, hide_index=True)
+
+    st.markdown("### 模型结果表")
+    st.dataframe(model_results_rows(valuation_result.get("model_results", [])), use_container_width=True, hide_index=True)
+
+    st.markdown("### 折扣与风险调整")
+    st.dataframe(valuation_result.get("risk_adjustments", []), use_container_width=True, hide_index=True)
+
+    valuation_range = valuation_result.get("valuation_range", {})
+    st.markdown("### 初步估值区间")
+    range_cols = st.columns(4)
+    range_cols[0].metric("保守区间", valuation_range.get("display", "").split(" / ")[0] if valuation_range.get("display") else "不足")
+    range_cols[1].metric("中性区间", valuation_range.get("display", "不足"))
+    range_cols[2].metric("综合置信度", valuation_result.get("confidence_level", "仅供框架参考"))
+    range_cols[3].metric("方法", valuation_range.get("method", ""))
+    st.write(valuation_result.get("confidence_reason", ""))
+
+    st.markdown("### 敏感性提示")
+    for note in valuation_result.get("sensitivity_notes", []):
+        st.write(f"- {note}")
+
+    st.markdown("### 缺失数据提示")
+    for item in valuation_result.get("missing_data", []):
+        st.write(f"- {item}")
+
+    st.markdown("### 保存与输出")
+    col_save, col_obsidian = st.columns(2)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存基础估值计算 JSON"):
+            output_path = save_basic_valuation_result(valuation_result)
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_obsidian:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="basic_valuation_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "基础估值计算"))
+        if st.button("生成 Obsidian 基础估值计算报告"):
+            try:
+                output_path = write_basic_valuation_calculation_report(valuation_result, vault_path)
             except OSError as exc:
                 st.error(f"生成失败：{exc}")
             else:
@@ -984,6 +1128,8 @@ with private_tab:
     render_financial_model_upload()
     st.divider()
     render_assumption_confirmation_page()
+    st.divider()
+    render_basic_valuation_calculation()
     st.divider()
     render_private_autofill_message()
     st.subheader("标的基本信息")

@@ -33,6 +33,21 @@ Streamlit / localhost
 GitHub Pages，但当前阶段不要发布新功能。
 ```
 
+## GitHub Pages 发布状态说明
+
+- AI基础设施生态已经存在 GitHub Pages 公开版本，线上版本不是名称占位，已经包含公开摘要和详情内容。
+- 半导体生态已经存在 GitHub Pages 公开版本，线上版本不是名称占位，已经包含公开摘要和详情内容，后续仍可能继续增强。
+- 当前线上 GitHub Pages 与本地 `develop` 分支可能存在版本差异。
+- 当前状态定义：
+  - 线上 Pages：已发布旧版本 / 轻量公开版本。
+  - 本地 `develop`：增强版本 / 待统一审查后再发布。
+- 例如：AI基础设施生态在本地 `develop` 的 `public_site/data/ecosystems.json` 中 `company_count` 为 26，线上 Pages 当前展示为 12。
+- 当前战略生态建设原则：先在 Obsidian + localhost + `develop` 中本地完善，后续统一进行公开版发布审查。
+- 后续建设华为生态、机器人生态、高端材料生态、船舶与国防生态、医疗科技生态时，默认只建设 Obsidian + localhost + `develop`。
+- `public_site` 不自动同步内部研究内容。
+- GitHub Pages 发布需要用户单独明确指令。
+- 等七大战略生态完成后，再统一进行公开版发布审查。
+
 ## 当前重要边界
 
 - 不要合并 main

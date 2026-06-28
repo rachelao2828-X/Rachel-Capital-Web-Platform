@@ -12,10 +12,18 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.core.config import settings
+from app.services.valuation_engine.assumption_manager import (
+    ASSUMPTION_GROUP_LABELS,
+    assumption_counts,
+    build_assumption_table,
+    finalize_assumption_data,
+    update_group_from_rows,
+)
 from app.services.valuation_engine.document_parser import parse_uploaded_document
 from app.services.valuation_engine.financial_model_parser import parse_financial_model
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
+    write_assumption_confirmation_report,
     write_listed_memo,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
@@ -34,6 +42,10 @@ from app.services.valuation_engine.model_registry import (
     PRIVATE_TARGET_TYPES,
 )
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
+from app.services.valuation_engine.private_market_autofill import (
+    build_private_market_autofill_from_document,
+    build_private_market_autofill_from_financial_model,
+)
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
 
 
@@ -41,6 +53,91 @@ PRIVATE_MARKET_UPLOAD_DIR = PROJECT_ROOT / "data" / "uploads" / "private_market"
 PRIVATE_MARKET_EXTRACTED_DIR = PROJECT_ROOT / "data" / "extracted" / "private_market"
 PRIVATE_MARKET_FINANCIAL_UPLOAD_DIR = PROJECT_ROOT / "data" / "uploads" / "private_market_financials"
 PRIVATE_MARKET_FINANCIAL_EXTRACTED_DIR = PROJECT_ROOT / "data" / "extracted" / "private_market_financials"
+PRIVATE_MARKET_CASES_DIR = PROJECT_ROOT / "data" / "private_market_cases"
+
+PRIVATE_AUTOFILL_WIDGET_KEYS = {
+    "target_name": "private_target_name",
+    "initial_type": "private_initial_type",
+    "industry": "private_industry",
+    "ecosystem": "private_ecosystem",
+    "is_financing_or_transfer": "private_is_financing_or_transfer",
+    "is_complete_company": "private_is_complete_company",
+    "is_single_project_spv": "private_is_single_project_spv",
+    "is_asset_or_contract_based": "private_is_asset_or_contract_based",
+    "has_revenue": "private_has_revenue",
+    "is_profitable": "private_is_profitable",
+    "revenue_growth_status": "private_revenue_growth",
+    "cash_flow_stable": "private_cash_flow_stable",
+    "exit_path": "private_exit_path",
+    "financing_round": "private_financing_round",
+    "pre_money_valuation": "private_pre_money",
+    "post_money_valuation": "private_post_money",
+    "financing_amount": "private_financing_amount",
+    "equity_sold": "private_equity_sold",
+    "previous_round_valuation": "private_previous_round_valuation",
+    "previous_round_date": "private_previous_round_date",
+    "project_total_investment": "private_project_total_investment",
+    "construction_period": "private_construction_period",
+    "expected_revenue": "private_expected_revenue",
+    "expected_gross_margin": "private_expected_gross_margin",
+    "expected_net_margin": "private_expected_net_margin",
+    "annual_cash_flow": "private_annual_cash_flow",
+    "payback_period": "private_payback_period",
+    "government_subsidy": "private_government_subsidy",
+    "key_contract_signed": "private_key_contract_signed",
+    "utilization_rate": "private_utilization_rate",
+    "asset_type": "private_asset_type",
+    "book_value": "private_book_value",
+    "replacement_cost": "private_replacement_cost",
+    "comparable_transaction_price": "private_comparable_transaction_price",
+    "asset_generates_cash_flow": "private_asset_generates_cash_flow",
+    "asset_is_scarce": "private_asset_is_scarce",
+    "asset_is_tradeable": "private_asset_is_tradeable",
+    "asset_has_long_contract": "private_asset_has_long_contract",
+    "asset_has_policy_restriction": "private_asset_has_policy_restriction",
+}
+
+PRIVATE_AUTOFILL_LABELS = {
+    "target_name": "标的名称",
+    "initial_type": "标的类型初选",
+    "industry": "所属行业",
+    "ecosystem": "所属 Rachel 战略生态",
+    "is_financing_or_transfer": "是否正在融资或老股转让",
+    "is_complete_company": "是否为完整公司主体",
+    "is_single_project_spv": "是否为单一项目 / SPV",
+    "is_asset_or_contract_based": "是否主要依赖资产、资源、牌照或合同",
+    "has_revenue": "是否已有收入",
+    "is_profitable": "是否盈利",
+    "revenue_growth_status": "收入增长状态",
+    "cash_flow_stable": "现金流是否稳定",
+    "exit_path": "退出路径",
+    "financing_round": "本轮融资类型",
+    "pre_money_valuation": "投前估值",
+    "post_money_valuation": "投后估值",
+    "financing_amount": "本轮融资金额",
+    "equity_sold": "出让股权比例",
+    "previous_round_valuation": "上一轮估值",
+    "previous_round_date": "上一轮融资时间",
+    "project_total_investment": "项目总投资",
+    "construction_period": "建设周期",
+    "expected_revenue": "预计收入",
+    "expected_gross_margin": "预计毛利率",
+    "expected_net_margin": "预计净利率",
+    "annual_cash_flow": "年现金流",
+    "payback_period": "回收期",
+    "government_subsidy": "政府补贴",
+    "key_contract_signed": "关键合同是否已签署",
+    "utilization_rate": "产能利用率 / 上架率 / 负荷率",
+    "asset_type": "资产类型",
+    "book_value": "资产账面价值",
+    "replacement_cost": "重置成本",
+    "comparable_transaction_price": "可比交易价格",
+    "asset_generates_cash_flow": "是否产生现金流",
+    "asset_is_scarce": "是否具备稀缺性",
+    "asset_is_tradeable": "是否可交易",
+    "asset_has_long_contract": "是否有长期合同",
+    "asset_has_policy_restriction": "是否有政策限制",
+}
 
 
 def default_vault_path() -> str:
@@ -98,6 +195,15 @@ def save_private_market_financial_extraction(financial_model: dict) -> Path:
     return output_path
 
 
+def save_assumption_confirmation(assumption_data: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = assumption_data.get("target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_关键假设确认.json"
+    output_path.write_text(json.dumps(assumption_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
 def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
     rows = []
     for key, label in labels.items():
@@ -123,6 +229,50 @@ def project_name_from_current_analysis() -> str:
     return summary.get("project_name") or summary.get("company_name") or "未命名项目"
 
 
+def apply_private_market_autofill(values: dict, source: str) -> None:
+    applied_labels = []
+    for field, value in values.items():
+        widget_key = PRIVATE_AUTOFILL_WIDGET_KEYS.get(field)
+        if not widget_key:
+            continue
+        st.session_state[widget_key] = value
+        applied_labels.append(PRIVATE_AUTOFILL_LABELS.get(field, field))
+    if applied_labels:
+        st.session_state["private_autofill_message"] = f"{source}已自动回填：" + "、".join(applied_labels)
+
+
+def render_private_autofill_message() -> None:
+    message = st.session_state.get("private_autofill_message")
+    if message:
+        st.success(message)
+        st.caption("自动回填结果来自上传资料解析，建议人工复核后再生成估值框架。")
+
+
+def ensure_private_form_defaults() -> None:
+    defaults = {
+        "private_initial_type": PRIVATE_TARGET_TYPES[0],
+        "private_ecosystem": ECOSYSTEM_OPTIONS[0],
+        "private_is_financing_or_transfer": False,
+        "private_is_complete_company": True,
+        "private_is_single_project_spv": False,
+        "private_is_asset_or_contract_based": False,
+        "private_has_revenue": True,
+        "private_is_profitable": False,
+        "private_revenue_growth": PRIVATE_REVENUE_GROWTH[0],
+        "private_cash_flow_stable": False,
+        "private_exit_path": EXIT_PATHS[0],
+        "private_financing_round": FINANCING_ROUNDS[0],
+        "private_key_contract_signed": False,
+        "private_asset_generates_cash_flow": False,
+        "private_asset_is_scarce": False,
+        "private_asset_is_tradeable": False,
+        "private_asset_has_long_contract": False,
+        "private_asset_has_policy_restriction": False,
+    }
+    for key, value in defaults.items():
+        st.session_state.setdefault(key, value)
+
+
 def render_financial_model_upload() -> None:
     st.subheader("Excel / 财务模型上传与解析")
     st.warning("财务模型、预测表和审计资料通常包含敏感信息。当前功能仅建议在本地可信环境使用。上传文件只保存在本地私有目录，不进入 public_site。")
@@ -140,6 +290,7 @@ def render_financial_model_upload() -> None:
         st.session_state["private_financial_saved_path"] = saved_path
         st.session_state["private_financial_model"] = financial_model
         st.session_state["private_financial_extracted_path"] = extracted_path
+        apply_private_market_autofill(build_private_market_autofill_from_financial_model(financial_model), "财务模型")
 
     financial_model = st.session_state.get("private_financial_model")
     saved_path = st.session_state.get("private_financial_saved_path")
@@ -217,6 +368,110 @@ def render_financial_model_upload() -> None:
             st.code(str(output_path), language="text")
 
 
+def current_assumption_sources() -> tuple[dict | None, dict | None]:
+    document_extraction = st.session_state.get("private_document_extraction")
+    parsed_document = st.session_state.get("private_document_parsed")
+    if document_extraction and parsed_document:
+        document_extraction = {**document_extraction, "_source_file": parsed_document.get("file_name", "")}
+    return document_extraction, st.session_state.get("private_financial_model")
+
+
+def render_assumption_confirmation_page() -> None:
+    st.subheader("关键假设确认页")
+    st.warning("BP、财务模型和项目资料中的数据通常来自项目方预测，可能存在乐观假设。请在进入自动估值计算前确认关键收入、成本、现金流、CAPEX、估值、团队和退出路径假设。")
+    document_extraction, financial_model = current_assumption_sources()
+    if not document_extraction and not financial_model:
+        st.info("上传并解析项目资料或 Excel / 财务模型后，这里会生成关键假设确认表。")
+        return
+
+    if st.button("生成 / 刷新关键假设表"):
+        st.session_state["private_assumption_data"] = build_assumption_table(document_extraction, financial_model)
+
+    if "private_assumption_data" not in st.session_state:
+        st.session_state["private_assumption_data"] = build_assumption_table(document_extraction, financial_model)
+
+    assumption_data = st.session_state["private_assumption_data"]
+    counts = assumption_counts(assumption_data)
+    readiness = assumption_data.get("readiness_summary", {})
+
+    st.markdown("### 汇总信息")
+    summary_cols = st.columns(4)
+    summary_cols[0].metric("标的名称", assumption_data.get("target_name") or "未命名项目")
+    summary_cols[1].metric("来源文件数量", len(assumption_data.get("source_files", [])))
+    summary_cols[2].metric("关键假设总数", counts["total"])
+    summary_cols[3].metric("可用于估值计算", counts["usable"])
+    confidence_cols = st.columns(5)
+    confidence_cols[0].metric("高可信度", counts["high"])
+    confidence_cols[1].metric("中可信度", counts["medium"])
+    confidence_cols[2].metric("低可信度", counts["low"])
+    confidence_cols[3].metric("缺失", counts["missing"])
+    confidence_cols[4].metric("需要确认", counts["needs_confirmation"])
+
+    st.markdown("### 估值准备度")
+    readiness_cols = st.columns(3)
+    readiness_cols[0].metric("准备度等级", readiness.get("valuation_readiness_level", "不足"))
+    readiness_cols[1].metric("可进入 V0.6", "是" if readiness.get("ready_for_v0_6_calculation") else "否")
+    readiness_cols[2].metric("待补充项", len(readiness.get("missing_before_calculation", [])))
+    st.write(readiness.get("reason", "待确认"))
+
+    missing_items = readiness.get("missing_before_calculation", [])
+    if missing_items:
+        st.markdown("### 缺失关键数据")
+        for item in missing_items:
+            st.write(f"- {item}缺失")
+
+    st.markdown("### 分组确认")
+    for group_key, group_label in ASSUMPTION_GROUP_LABELS.items():
+        with st.expander(group_label, expanded=group_key in {"project_basic", "financing_valuation", "revenue"}):
+            rows = assumption_data.get("assumption_groups", {}).get(group_key, [])
+            edited_rows = st.data_editor(
+                rows,
+                key=f"assumption_editor_{group_key}",
+                use_container_width=True,
+                hide_index=True,
+                disabled=["field", "extracted_value", "source", "source_file", "source_location", "confidence"],
+                column_order=[
+                    "field",
+                    "extracted_value",
+                    "confirmed_value",
+                    "unit",
+                    "period",
+                    "source",
+                    "confidence",
+                    "needs_confirmation",
+                    "use_in_valuation",
+                    "notes",
+                ],
+            )
+            if hasattr(edited_rows, "to_dict"):
+                edited_rows = edited_rows.to_dict("records")
+            assumption_data["assumption_groups"][group_key] = update_group_from_rows(rows, list(edited_rows))
+
+    assumption_data = finalize_assumption_data(assumption_data)
+    st.session_state["private_assumption_data"] = assumption_data
+
+    st.markdown("### 保存与输出")
+    col_save, col_obsidian = st.columns(2)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存关键假设确认结果"):
+            output_path = save_assumption_confirmation(assumption_data)
+            st.session_state["private_assumption_saved_path"] = output_path
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_obsidian:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="assumption_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "关键假设确认"))
+        if st.button("生成 Obsidian 关键假设确认报告"):
+            try:
+                output_path = write_assumption_confirmation_report(assumption_data, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+
+
 def render_private_document_upload() -> None:
     st.subheader("项目资料上传与解析")
     st.warning("商业计划书、融资材料和项目资料通常包含敏感信息。当前功能仅建议在本地可信环境使用。上传文件只保存在本地私有目录，不进入 public_site。")
@@ -236,6 +491,7 @@ def render_private_document_upload() -> None:
         st.session_state["private_document_parsed"] = parsed_document
         st.session_state["private_document_extraction"] = extraction
         st.session_state["private_document_extracted_path"] = extracted_path
+        apply_private_market_autofill(build_private_market_autofill_from_document(extraction), "项目资料")
 
     parsed_document = st.session_state.get("private_document_parsed")
     extraction = st.session_state.get("private_document_extraction")
@@ -720,79 +976,83 @@ with listed_tab:
     render_listed_result()
 
 with private_tab:
+    ensure_private_form_defaults()
     st.header("未上市 / 一级市场估值")
     st.caption("用于未上市成长公司、融资交易、Pre-IPO、老股转让、项目公司 / SPV、资产型项目。")
     render_private_document_upload()
     st.divider()
     render_financial_model_upload()
     st.divider()
+    render_assumption_confirmation_page()
+    st.divider()
+    render_private_autofill_message()
     st.subheader("标的基本信息")
     col_1, col_2, col_3 = st.columns(3)
-    target_name = col_1.text_input("标的名称", placeholder="例如：OpenAI 老股交易 / 信宜绿色算力中心")
-    initial_type = col_2.selectbox("标的类型初选", PRIVATE_TARGET_TYPES)
-    private_industry = col_3.text_input("所属行业", placeholder="例如：AI应用 / 绿色算力 / 资源回收")
+    target_name = col_1.text_input("标的名称", placeholder="例如：OpenAI 老股交易 / 信宜绿色算力中心", key="private_target_name")
+    initial_type = col_2.selectbox("标的类型初选", PRIVATE_TARGET_TYPES, key="private_initial_type")
+    private_industry = col_3.text_input("所属行业", placeholder="例如：AI应用 / 绿色算力 / 资源回收", key="private_industry")
     private_ecosystem = st.selectbox("所属 Rachel 战略生态", ECOSYSTEM_OPTIONS, key="private_ecosystem")
 
     st.subheader("交易 / 项目特征")
     col_a, col_b, col_c, col_d = st.columns(4)
-    is_financing_or_transfer = col_a.checkbox("是否正在融资或老股转让")
-    is_complete_company = col_b.checkbox("是否为完整公司主体", value=True)
-    is_single_project_spv = col_c.checkbox("是否为单一项目 / SPV")
-    is_asset_or_contract_based = col_d.checkbox("是否主要依赖资产、资源、牌照或合同")
+    is_financing_or_transfer = col_a.checkbox("是否正在融资或老股转让", key="private_is_financing_or_transfer")
+    is_complete_company = col_b.checkbox("是否为完整公司主体", key="private_is_complete_company")
+    is_single_project_spv = col_c.checkbox("是否为单一项目 / SPV", key="private_is_single_project_spv")
+    is_asset_or_contract_based = col_d.checkbox("是否主要依赖资产、资源、牌照或合同", key="private_is_asset_or_contract_based")
 
     col_e, col_f, col_g, col_h = st.columns(4)
-    has_revenue = col_e.checkbox("是否已有收入", value=True)
-    is_private_profitable = col_f.checkbox("是否盈利")
-    private_revenue_growth = col_g.selectbox("收入增长状态", PRIVATE_REVENUE_GROWTH)
-    private_cash_flow_stable = col_h.checkbox("现金流是否稳定")
-    exit_path = st.selectbox("退出路径", EXIT_PATHS)
+    has_revenue = col_e.checkbox("是否已有收入", key="private_has_revenue")
+    is_private_profitable = col_f.checkbox("是否盈利", key="private_is_profitable")
+    private_revenue_growth = col_g.selectbox("收入增长状态", PRIVATE_REVENUE_GROWTH, key="private_revenue_growth")
+    private_cash_flow_stable = col_h.checkbox("现金流是否稳定", key="private_cash_flow_stable")
+    exit_path = st.selectbox("退出路径", EXIT_PATHS, key="private_exit_path")
 
     financing_round = pre_money = post_money = financing_amount = equity_sold = previous_round_valuation = previous_round_date = None
     if initial_type == "一级市场融资标的" or is_financing_or_transfer:
         st.subheader("一级市场专用字段")
         col_i, col_j, col_k, col_l = st.columns(4)
-        financing_round = col_i.selectbox("本轮融资类型", FINANCING_ROUNDS)
-        pre_money = col_j.text_input("投前估值")
-        post_money = col_k.text_input("投后估值")
-        financing_amount = col_l.text_input("本轮融资金额")
+        financing_round = col_i.selectbox("本轮融资类型", FINANCING_ROUNDS, key="private_financing_round")
+        pre_money = col_j.text_input("投前估值", key="private_pre_money")
+        post_money = col_k.text_input("投后估值", key="private_post_money")
+        financing_amount = col_l.text_input("本轮融资金额", key="private_financing_amount")
         col_m, col_n, col_o = st.columns(3)
-        equity_sold = col_m.text_input("出让股权比例")
-        previous_round_valuation = col_n.text_input("上一轮估值")
-        previous_round_date = col_o.text_input("上一轮融资时间")
+        equity_sold = col_m.text_input("出让股权比例", key="private_equity_sold")
+        previous_round_valuation = col_n.text_input("上一轮估值", key="private_previous_round_valuation")
+        previous_round_date = col_o.text_input("上一轮融资时间", key="private_previous_round_date")
 
     project_total_investment = construction_period = expected_revenue = expected_gross_margin = expected_net_margin = annual_cash_flow = payback_period = government_subsidy = utilization_rate = None
     key_contract_signed = None
     if initial_type == "项目公司 / SPV" or is_single_project_spv:
         st.subheader("项目公司 / SPV 专用字段")
         col_p, col_q, col_r, col_s = st.columns(4)
-        project_total_investment = col_p.text_input("项目总投资")
-        construction_period = col_q.text_input("建设周期")
-        expected_revenue = col_r.text_input("预计收入")
-        expected_gross_margin = col_s.text_input("预计毛利率")
+        project_total_investment = col_p.text_input("项目总投资", key="private_project_total_investment")
+        construction_period = col_q.text_input("建设周期", key="private_construction_period")
+        expected_revenue = col_r.text_input("预计收入", key="private_expected_revenue")
+        expected_gross_margin = col_s.text_input("预计毛利率", key="private_expected_gross_margin")
         col_t, col_u, col_v, col_w = st.columns(4)
-        expected_net_margin = col_t.text_input("预计净利率")
-        annual_cash_flow = col_u.text_input("年现金流")
-        payback_period = col_v.text_input("回收期")
-        government_subsidy = col_w.text_input("政府补贴")
+        expected_net_margin = col_t.text_input("预计净利率", key="private_expected_net_margin")
+        annual_cash_flow = col_u.text_input("年现金流", key="private_annual_cash_flow")
+        payback_period = col_v.text_input("回收期", key="private_payback_period")
+        government_subsidy = col_w.text_input("政府补贴", key="private_government_subsidy")
         col_x, col_y = st.columns(2)
-        key_contract_signed = col_x.checkbox("关键合同是否已签署")
-        utilization_rate = col_y.text_input("产能利用率 / 上架率 / 负荷率")
+        key_contract_signed = col_x.checkbox("关键合同是否已签署", key="private_key_contract_signed")
+        utilization_rate = col_y.text_input("产能利用率 / 上架率 / 负荷率", key="private_utilization_rate")
 
     asset_type = book_value = replacement_cost = comparable_transaction_price = None
     asset_generates_cash_flow = asset_is_scarce = asset_is_tradeable = asset_has_long_contract = asset_has_policy_restriction = None
     if initial_type == "资产型项目" or is_asset_or_contract_based:
         st.subheader("资产型项目专用字段")
         col_z, col_aa, col_ab, col_ac = st.columns(4)
-        asset_type = col_z.text_input("资产类型")
-        book_value = col_aa.text_input("资产账面价值")
-        replacement_cost = col_ab.text_input("重置成本")
-        comparable_transaction_price = col_ac.text_input("可比交易价格")
+        asset_type = col_z.text_input("资产类型", key="private_asset_type")
+        book_value = col_aa.text_input("资产账面价值", key="private_book_value")
+        replacement_cost = col_ab.text_input("重置成本", key="private_replacement_cost")
+        comparable_transaction_price = col_ac.text_input("可比交易价格", key="private_comparable_transaction_price")
         col_ad, col_ae, col_af, col_ag, col_ah = st.columns(5)
-        asset_generates_cash_flow = col_ad.checkbox("是否产生现金流")
-        asset_is_scarce = col_ae.checkbox("是否具备稀缺性")
-        asset_is_tradeable = col_af.checkbox("是否可交易")
-        asset_has_long_contract = col_ag.checkbox("是否有长期合同")
-        asset_has_policy_restriction = col_ah.checkbox("是否有政策限制")
+        asset_generates_cash_flow = col_ad.checkbox("是否产生现金流", key="private_asset_generates_cash_flow")
+        asset_is_scarce = col_ae.checkbox("是否具备稀缺性", key="private_asset_is_scarce")
+        asset_is_tradeable = col_af.checkbox("是否可交易", key="private_asset_is_tradeable")
+        asset_has_long_contract = col_ag.checkbox("是否有长期合同", key="private_asset_has_long_contract")
+        asset_has_policy_restriction = col_ah.checkbox("是否有政策限制", key="private_asset_has_policy_restriction")
 
     private_submit = st.button("生成未上市 / 一级市场估值框架")
 

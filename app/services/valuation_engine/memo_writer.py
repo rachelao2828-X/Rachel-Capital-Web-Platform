@@ -83,6 +83,20 @@ def write_private_market_financial_model_analysis(
     return output_path
 
 
+def write_assumption_confirmation_report(
+    assumption_data: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = assumption_data.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "关键假设确认"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_关键假设确认.md"
+    output_path.write_text(assumption_confirmation_markdown(assumption_data, created), encoding="utf-8")
+    return output_path
+
+
 def listed_markdown(profile: ListedCompanyProfile, result: ListedValuationResult, created: date) -> str:
     return f"""---
 type: listed_company_valuation
@@ -597,6 +611,97 @@ tags:
 """
 
 
+def assumption_confirmation_markdown(assumption_data: dict[str, Any], created: date) -> str:
+    project_name = assumption_data.get("target_name") or "未命名项目"
+    readiness = assumption_data.get("readiness_summary", {})
+    groups = assumption_data.get("assumption_groups", {})
+    return f"""---
+type: private_market_assumption_confirmation
+title: {project_name}关键假设确认
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+valuation_readiness: {readiness.get("valuation_readiness_level", "不足")}
+tags:
+  - 一级市场
+  - 关键假设确认
+  - 估值引擎
+---
+
+# {project_name}关键假设确认
+
+## 1. 来源文件
+
+{source_files_markdown(assumption_data.get("source_files", []))}
+
+## 2. 估值准备度
+
+- 准备度等级：{readiness.get("valuation_readiness_level", "不足")}
+- 判断理由：{readiness.get("reason", "待确认")}
+- 是否可以进入 V0.6 自动估值计算：{"是" if readiness.get("ready_for_v0_6_calculation") else "否"}
+
+进入计算前必须补充的数据：
+
+{bullet_list(readiness.get("missing_before_calculation", [])) if readiness.get("missing_before_calculation") else "- 暂无"}
+
+## 3. 项目基本假设
+
+{assumption_group_markdown(groups.get("project_basic", []))}
+
+## 4. 融资与估值假设
+
+{assumption_group_markdown(groups.get("financing_valuation", []))}
+
+## 5. 收入假设
+
+{assumption_group_markdown(groups.get("revenue", []))}
+
+## 6. 成本与利润假设
+
+{assumption_group_markdown(groups.get("cost_profit", []))}
+
+## 7. 现金流假设
+
+{assumption_group_markdown(groups.get("cash_flow", []))}
+
+## 8. CAPEX 与产能假设
+
+{assumption_group_markdown(groups.get("capex_capacity", []))}
+
+## 9. 回报与估值计算假设
+
+{assumption_group_markdown(groups.get("return_valuation", []))}
+
+## 10. 情景与敏感性假设
+
+{assumption_group_markdown(groups.get("scenario_sensitivity", []))}
+
+## 11. 创始团队假设
+
+{assumption_group_markdown(groups.get("founder_team", []))}
+
+## 12. 风险与缺失数据假设
+
+{assumption_group_markdown(groups.get("risk_missing_data", []))}
+
+## 13. 进入 V0.6 自动估值计算前必须补充的数据
+
+{bullet_list(readiness.get("missing_before_calculation", [])) if readiness.get("missing_before_calculation") else "- 暂无"}
+
+## 14. 后续研究任务
+
+- 逐项核验所有需要确认的关键假设。
+- 对项目方预测口径、合同、订单、成本、现金流和退出路径进行交叉验证。
+- 将确认后的 JSON 作为 V0.6 自动估值计算的输入，不读取未确认或缺失字段。
+- 保留 human review gate，不输出买入、卖出、推荐、目标价或收益承诺。
+
+## 15. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -691,6 +796,29 @@ def detected_sections_markdown(sections: dict[str, Any]) -> str:
             }
         )
     return markdown_table(rows, ["财务表类型", "匹配 Sheet", "关键词"]) if rows else "- 未识别到财务表类型。"
+
+
+def source_files_markdown(source_files: list[dict[str, str]]) -> str:
+    rows = [{"文件名": item.get("file_name", ""), "类型": item.get("source_type", "")} for item in source_files]
+    return markdown_table(rows, ["文件名", "类型"]) if rows else "- 暂无来源文件。"
+
+
+def assumption_group_markdown(items: list[dict[str, Any]]) -> str:
+    rows = [
+        {
+            "字段": item.get("field", ""),
+            "系统提取值": item.get("extracted_value", ""),
+            "用户确认值": item.get("confirmed_value", ""),
+            "单位": item.get("unit", ""),
+            "期间/情景": item.get("period", ""),
+            "来源": item.get("source", ""),
+            "可信度": item.get("confidence", ""),
+            "用于估值": "是" if item.get("use_in_valuation") else "否",
+            "备注": item.get("notes", ""),
+        }
+        for item in items
+    ]
+    return markdown_table(rows, ["字段", "系统提取值", "用户确认值", "单位", "期间/情景", "来源", "可信度", "用于估值", "备注"]) if rows else "- 暂无"
 
 
 def financial_model_supplement_markdown(financial_model: dict[str, Any] | None) -> str:

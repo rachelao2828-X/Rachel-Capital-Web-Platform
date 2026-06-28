@@ -50,9 +50,11 @@ DEFAULT_WEIGHT_RULES = {
 def run_multi_model_comparison(
     valuation_result: dict[str, Any],
     user_weighting: list[dict[str, Any]] | None = None,
+    target_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    target_name = valuation_result.get("target_name") or "未命名项目"
-    target_type = infer_target_type(valuation_result)
+    target_profile = target_profile or valuation_result.get("target_profile") or {}
+    target_name = target_profile_value(target_profile, "target_name") or valuation_result.get("target_name") or "未命名项目"
+    target_type = target_profile_value(target_profile, "target_type") or infer_target_type(valuation_result)
     model_results = valuation_result.get("model_results", [])
     comparable_models = build_model_comparison(model_results)
     default_table = build_default_weighting_table(comparable_models, target_type)
@@ -79,6 +81,7 @@ def run_multi_model_comparison(
         "target_name": target_name,
         "valuation_date": date.today().isoformat(),
         "input_source": valuation_result.get("input_source", "V0.6 基础估值计算结果"),
+        "target_profile": target_profile,
         "target_type": target_type,
         "model_comparison": comparable_models,
         "weighting_table": weighting_table,
@@ -119,6 +122,13 @@ def infer_target_type(valuation_result: dict[str, Any]) -> str:
         if "成长" in text:
             return "未上市成长公司"
     return "未上市成长公司"
+
+
+def target_profile_value(target_profile: dict[str, Any], key: str) -> str:
+    payload = target_profile.get(key, {})
+    if isinstance(payload, dict) and payload.get("confirmed_value") not in {None, ""}:
+        return str(payload.get("confirmed_value"))
+    return ""
 
 
 def build_model_comparison(model_results: list[dict[str, Any]]) -> list[dict[str, Any]]:

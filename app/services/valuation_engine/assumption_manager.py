@@ -31,21 +31,25 @@ VALUATION_INPUT_GROUPS = {
 def build_assumption_table(
     document_extraction: dict[str, Any] | None,
     financial_extraction: dict[str, Any] | None,
+    target_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     document_extraction = document_extraction or {}
     financial_extraction = financial_extraction or {}
+    target_profile = target_profile or {}
     groups = {key: [] for key in ASSUMPTION_GROUP_LABELS}
     warnings: list[str] = []
 
     add_document_assumptions(groups, document_extraction)
     add_financial_assumptions(groups, financial_extraction)
+    add_target_profile_assumptions(groups, target_profile)
     add_required_missing_assumptions(groups)
 
-    target_name = target_name_from_sources(document_extraction, financial_extraction)
-    source_files = source_files_from_sources(document_extraction, financial_extraction)
+    target_name = target_profile_value(target_profile, "target_name") or target_name_from_sources(document_extraction, financial_extraction)
+    source_files = source_files_from_sources(document_extraction, financial_extraction, target_profile)
     readiness = score_valuation_readiness(groups)
     return {
         "target_name": target_name,
+        "target_profile": target_profile,
         "source_files": source_files,
         "assumption_groups": groups,
         "warnings": warnings,
@@ -217,6 +221,37 @@ def add_financial_assumptions(groups: dict[str, list[dict[str, Any]]], financial
             )
 
 
+def add_target_profile_assumptions(groups: dict[str, list[dict[str, Any]]], target_profile: dict[str, Any]) -> None:
+    if not target_profile:
+        return
+    source_file = "标的基本信息确认"
+    mappings = [
+        ("project_basic", "项目名称", "target_name"),
+        ("project_basic", "标的类型", "target_type"),
+        ("project_basic", "所属行业", "industry"),
+        ("project_basic", "所属 Rachel 战略生态", "rachel_ecosystem"),
+        ("financing_valuation", "退出路径", "exit_path"),
+        ("revenue", "收入增长状态", "revenue_growth_status"),
+        ("cash_flow", "现金流是否稳定", "cash_flow_stability"),
+    ]
+    for group_key, field_name, profile_key in mappings:
+        payload = target_profile.get(profile_key, {})
+        value = payload.get("confirmed_value") if isinstance(payload, dict) else ""
+        if not has_value(value):
+            continue
+        groups[group_key].append(
+            assumption_item(
+                field=field_name,
+                value=value,
+                source="用户确认",
+                source_file=source_file,
+                source_location=payload.get("source_location", "") if isinstance(payload, dict) else "",
+                confidence="高",
+                needs_confirmation=False,
+            )
+        )
+
+
 def add_required_missing_assumptions(groups: dict[str, list[dict[str, Any]]]) -> None:
     required = {
         "financing_valuation": ["退出路径"],
@@ -383,13 +418,22 @@ def target_name_from_sources(document_extraction: dict[str, Any], financial_mode
     return re.sub(r"[_\-\s]*(财务模型|财务预测|financial.?model|model)$", "", file_name.rsplit(".", 1)[0], flags=re.IGNORECASE) or "未命名项目"
 
 
-def source_files_from_sources(document_extraction: dict[str, Any], financial_model: dict[str, Any]) -> list[dict[str, str]]:
+def source_files_from_sources(document_extraction: dict[str, Any], financial_model: dict[str, Any], target_profile: dict[str, Any] | None = None) -> list[dict[str, str]]:
     files = []
     if document_extraction.get("_source_file"):
         files.append({"file_name": str(document_extraction.get("_source_file")), "source_type": "项目资料"})
     if financial_model.get("file_name"):
         files.append({"file_name": str(financial_model.get("file_name")), "source_type": "财务模型"})
+    if target_profile:
+        files.append({"file_name": "标的基本信息确认", "source_type": "用户确认"})
     return files
+
+
+def target_profile_value(target_profile: dict[str, Any], key: str) -> str:
+    payload = target_profile.get(key, {})
+    if isinstance(payload, dict) and has_value(payload.get("confirmed_value")):
+        return str(payload.get("confirmed_value"))
+    return ""
 
 
 def has_confirmed(groups: dict[str, list[dict[str, Any]]], group_key: str, fields: list[str]) -> bool:

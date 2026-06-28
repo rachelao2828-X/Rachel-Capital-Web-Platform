@@ -27,7 +27,8 @@ DISCOUNT_FIELDS = {
 
 
 def run_basic_private_market_valuation(assumption_data: dict[str, Any]) -> dict[str, Any]:
-    target_name = assumption_data.get("target_name") or "未命名项目"
+    target_profile = assumption_data.get("target_profile") or {}
+    target_name = target_profile_value(target_profile, "target_name") or assumption_data.get("target_name") or "未命名项目"
     target_type = target_type_from_assumption(assumption_data)
     readiness = assumption_data.get("readiness_summary", {})
     inputs = assumption_data.get("valuation_inputs") or build_inputs_from_groups(assumption_data.get("assumption_groups", {}))
@@ -68,6 +69,7 @@ def run_basic_private_market_valuation(assumption_data: dict[str, Any]) -> dict[
     ] or [{"折扣项": "未设置风险折扣", "折扣率": "", "原因": "当前未设置风险折扣，因此结果为未折扣估值。", "是否应用": "否"}]
     return {
         "target_name": target_name,
+        "target_profile": target_profile,
         "target_type": target_type,
         "valuation_date": date.today().isoformat(),
         "input_summary": input_summary,
@@ -397,6 +399,9 @@ def summarize_inputs(inputs: dict[str, dict[str, Any]], readiness: dict[str, Any
 
 
 def target_type_from_assumption(assumption_data: dict[str, Any]) -> str:
+    target_profile_type = target_profile_value(assumption_data.get("target_profile") or {}, "target_type")
+    if target_profile_type:
+        return target_profile_type
     for item in assumption_data.get("assumption_groups", {}).get("project_basic", []):
         if item.get("field") == "标的类型" and item.get("confirmed_value"):
             return str(item.get("confirmed_value"))
@@ -405,6 +410,13 @@ def target_type_from_assumption(assumption_data: dict[str, Any]) -> str:
     if payload and payload.get("confirmed_value"):
         return str(payload.get("confirmed_value"))
     return str(assumption_data.get("target_type") or "未确认")
+
+
+def target_profile_value(target_profile: dict[str, Any], key: str) -> str:
+    payload = target_profile.get(key, {})
+    if isinstance(payload, dict) and payload.get("confirmed_value") not in {None, ""}:
+        return str(payload.get("confirmed_value"))
+    return ""
 
 
 def collect_missing_data(model_results: list[dict[str, Any]], readiness: dict[str, Any]) -> list[str]:

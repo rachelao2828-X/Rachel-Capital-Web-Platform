@@ -18,6 +18,7 @@ from app.services.valuation_engine.memo_writer import (
     write_private_market_financial_model_analysis,
     write_private_market_memo,
     write_project_tracking_tasks,
+    write_target_profile_confirmation_report,
     update_private_market_project_watchlist,
 )
 from app.services.valuation_engine.assumption_manager import (
@@ -32,6 +33,7 @@ from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_financial_model,
 )
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
+from app.services.valuation_engine.target_profile_detector import build_target_profile
 from app.services.valuation_engine.multi_model_valuation import run_multi_model_comparison
 from app.services.valuation_engine.project_tracker import build_project_tracking_record, suggest_next_review_date
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
@@ -75,6 +77,28 @@ def private_profile(**overrides) -> PrivateMarketProfile:
     }
     base.update(overrides)
     return PrivateMarketProfile(**base)
+
+
+def confirmed_target_profile(**overrides) -> dict:
+    profile = {
+        "target_name": {"detected_value": "测试项目", "confirmed_value": "确认项目", "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "target_type": {"detected_value": "一级市场融资标的", "confirmed_value": "项目公司 / SPV", "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "industry": {"detected_value": "AI基础设施 / 算力 / 数据中心", "confirmed_value": "绿色算力 / IDC", "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "rachel_ecosystem": {"detected_value": "AI基础设施生态", "confirmed_value": "AI基础设施生态", "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "is_financing_or_secondary_transfer": {"detected_value": True, "confirmed_value": True, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "is_complete_company": {"detected_value": False, "confirmed_value": False, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "is_single_project_spv": {"detected_value": True, "confirmed_value": True, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "is_asset_based": {"detected_value": True, "confirmed_value": True, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "has_revenue": {"detected_value": True, "confirmed_value": True, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "is_profitable": {"detected_value": True, "confirmed_value": True, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "revenue_growth_status": {"detected_value": "高增长", "confirmed_value": "稳定增长", "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "cash_flow_stability": {"detected_value": True, "confirmed_value": True, "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "exit_path": {"detected_value": "IPO", "confirmed_value": "并购", "source": "用户确认", "source_location": "", "confidence": "高", "needs_confirmation": False, "notes": ""},
+        "classification_reason": "测试判断理由",
+        "warnings": [],
+    }
+    profile.update(overrides)
+    return profile
 
 
 def models(result) -> set[str]:
@@ -536,6 +560,74 @@ def test_build_assumption_table_groups_and_v0_6_inputs() -> None:
     assert finalized["valuation_inputs"]["revenue"]["预测收入"]["confirmed_value"] == "3000万元"
     assert finalized["valuation_inputs"]["cash_flow"]["自由现金流"]["confirmed_value"] == "500万元"
     assert finalized["ready_for_valuation_calculation"] is True
+
+
+def test_build_target_profile_detects_basic_fields_from_sources() -> None:
+    document_extraction = {
+        "_source_file": "白海数智商业计划书.pdf",
+        "project_basic_info": {
+            "project_name": "白海数智",
+            "industry": "AI基础设施 / 算力 / 数据中心",
+        },
+        "financing_info": {
+            "financing_amount": "3000万元",
+            "pre_money_valuation": "1亿元",
+        },
+        "financial_data": {
+            "historical_revenue": "1200万元",
+            "net_margin": "12%",
+            "cash_flow": "300万元",
+        },
+        "exit_path": {"ipo": "计划 IPO"},
+    }
+    financial_extraction = {
+        "file_name": "白海数智财务模型.xlsx",
+        "extracted_financial_data": {
+            "fields": {
+                "收入增长率": {"extraction_result": "35%"},
+                "净利润": {"extraction_result": "200万元"},
+            }
+        },
+    }
+
+    profile = build_target_profile(document_extraction, financial_extraction)
+
+    assert profile["target_name"]["confirmed_value"] == "白海数智"
+    assert profile["target_type"]["confirmed_value"] == "一级市场融资标的"
+    assert profile["industry"]["confirmed_value"] == "AI基础设施 / 算力 / 数据中心"
+    assert profile["rachel_ecosystem"]["confirmed_value"] == "AI基础设施生态"
+    assert profile["is_financing_or_secondary_transfer"]["confirmed_value"] is True
+    assert profile["has_revenue"]["confirmed_value"] is True
+    assert profile["is_profitable"]["confirmed_value"] is True
+    assert profile["revenue_growth_status"]["confirmed_value"] == "高增长"
+    assert profile["exit_path"]["confirmed_value"] == "IPO"
+
+
+def test_target_profile_confirmed_values_flow_to_v0_5_v0_9(tmp_path) -> None:
+    profile = confirmed_target_profile()
+    assumption_data = build_assumption_table({}, {}, profile)
+
+    assert assumption_data["target_name"] == "确认项目"
+    assert assumption_data["target_profile"] == profile
+    assert any(item["field"] == "标的类型" and item["confirmed_value"] == "项目公司 / SPV" for item in assumption_data["assumption_groups"]["project_basic"])
+
+    basic_result = run_basic_private_market_valuation(assumption_data)
+    multi_model_result = run_multi_model_comparison(basic_result, target_profile=profile)
+    memo = build_private_market_investment_memo(None, None, assumption_data, basic_result, multi_model_result, target_profile=profile)
+    tracking = build_project_tracking_record(memo, {"target_profile": profile})
+
+    assert basic_result["target_name"] == "确认项目"
+    assert basic_result["target_type"] == "项目公司 / SPV"
+    assert multi_model_result["target_type"] == "项目公司 / SPV"
+    assert memo["project_snapshot"]["所属行业"] == "绿色算力 / IDC"
+    assert tracking["project_card"]["target_type"] == "项目公司 / SPV"
+
+    output = write_target_profile_confirmation_report(profile, tmp_path, created=date(2026, 6, 28))
+    content = output.read_text(encoding="utf-8")
+    assert output == tmp_path / "15_估值引擎" / "标的基本信息确认" / "确认项目_2026-06-28_标的基本信息确认.md"
+    assert "type: private_market_target_profile_confirmation" in content
+    assert "public: false" in content
+    assert "## 4. 标的类型判断理由" in content
 
 
 def test_write_assumption_confirmation_report_public_false(tmp_path) -> None:

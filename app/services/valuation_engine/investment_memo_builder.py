@@ -13,6 +13,7 @@ ALLOWED_RESEARCH_ACTIONS = {
 }
 
 MODULE_LABELS = {
+    "target_profile": "标的基本信息确认",
     "document_extraction": "项目资料解析",
     "financial_extraction": "财务模型解析",
     "assumption_confirmation": "关键假设确认",
@@ -27,12 +28,14 @@ def build_private_market_investment_memo(
     assumption_confirmation: dict[str, Any] | None,
     basic_valuation_result: dict[str, Any] | None,
     multi_model_result: dict[str, Any] | None,
+    target_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     document_extraction = normalize_document_extraction(document_extraction)
     financial_extraction = normalize_financial_extraction(financial_extraction)
-    input_status = build_input_status(document_extraction, financial_extraction, assumption_confirmation, basic_valuation_result, multi_model_result)
-    target_name = infer_target_name(document_extraction, financial_extraction, assumption_confirmation, basic_valuation_result, multi_model_result)
-    project_snapshot = build_project_snapshot(document_extraction, assumption_confirmation, multi_model_result)
+    target_profile = target_profile or (assumption_confirmation or {}).get("target_profile") or (basic_valuation_result or {}).get("target_profile") or (multi_model_result or {}).get("target_profile") or {}
+    input_status = build_input_status(document_extraction, financial_extraction, assumption_confirmation, basic_valuation_result, multi_model_result, target_profile)
+    target_name = target_profile_value(target_profile, "target_name") or infer_target_name(document_extraction, financial_extraction, assumption_confirmation, basic_valuation_result, multi_model_result)
+    project_snapshot = build_project_snapshot(document_extraction, assumption_confirmation, multi_model_result, target_profile)
     founder_team_review = build_founder_team_review(document_extraction)
     business_model_review = build_business_model_review(document_extraction)
     technology_review = build_technology_review(document_extraction)
@@ -53,6 +56,7 @@ def build_private_market_investment_memo(
 
     return {
         "target_name": target_name,
+        "target_profile": target_profile,
         "memo_date": date.today().isoformat(),
         "input_status": input_status,
         "memo_completeness": memo_completeness,
@@ -97,14 +101,23 @@ def normalize_financial_extraction(payload: dict[str, Any] | None) -> dict[str, 
     return payload
 
 
+def target_profile_value(target_profile: dict[str, Any] | None, key: str) -> str:
+    payload = (target_profile or {}).get(key, {})
+    if isinstance(payload, dict) and has_value(payload.get("confirmed_value")):
+        return str(payload.get("confirmed_value"))
+    return ""
+
+
 def build_input_status(
     document_extraction: dict[str, Any],
     financial_extraction: dict[str, Any],
     assumption_confirmation: dict[str, Any] | None,
     basic_valuation_result: dict[str, Any] | None,
     multi_model_result: dict[str, Any] | None,
+    target_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     modules = {
+        "target_profile": bool(target_profile),
         "document_extraction": bool(document_extraction),
         "financial_extraction": bool(financial_extraction),
         "assumption_confirmation": bool(assumption_confirmation),
@@ -128,7 +141,8 @@ def memo_completeness_from_inputs(
     financing_valuation_review: dict[str, Any],
 ) -> tuple[str, str]:
     modules = input_status["modules"]
-    if all(modules.values()):
+    core_modules = {key: value for key, value in modules.items() if key != "target_profile"}
+    if all(core_modules.values()):
         return "高", "项目资料、财务模型、关键假设、基础估值和多模型估值均已读取。"
     if modules["document_extraction"] and modules["assumption_confirmation"] and (modules["basic_valuation_result"] or modules["multi_model_result"]):
         return "中", "已具备项目资料、关键假设和至少一种估值结果，但仍缺少部分输入。"
@@ -146,15 +160,16 @@ def build_project_snapshot(
     document_extraction: dict[str, Any],
     assumption_confirmation: dict[str, Any] | None,
     multi_model_result: dict[str, Any] | None,
+    target_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     basic = document_extraction.get("project_basic_info", {})
     financing = document_extraction.get("financing_info", {})
     return {
-        "项目名称": first_value(basic.get("project_name"), assumption_confirmation.get("target_name") if assumption_confirmation else None, multi_model_result.get("target_name") if multi_model_result else None),
+        "项目名称": first_value(target_profile_value(target_profile, "target_name"), basic.get("project_name"), assumption_confirmation.get("target_name") if assumption_confirmation else None, multi_model_result.get("target_name") if multi_model_result else None),
         "公司名称": basic.get("company_name"),
-        "所属行业": basic.get("industry") or assumption_value(assumption_confirmation, "project_basic", "所属行业"),
-        "所属 Rachel 战略生态": basic.get("rachel_ecosystem_guess") or assumption_value(assumption_confirmation, "project_basic", "所属 Rachel 战略生态"),
-        "标的类型": basic.get("target_type_guess") or assumption_value(assumption_confirmation, "project_basic", "标的类型") or (multi_model_result or {}).get("target_type"),
+        "所属行业": target_profile_value(target_profile, "industry") or basic.get("industry") or assumption_value(assumption_confirmation, "project_basic", "所属行业"),
+        "所属 Rachel 战略生态": target_profile_value(target_profile, "rachel_ecosystem") or basic.get("rachel_ecosystem_guess") or assumption_value(assumption_confirmation, "project_basic", "所属 Rachel 战略生态"),
+        "标的类型": target_profile_value(target_profile, "target_type") or basic.get("target_type_guess") or assumption_value(assumption_confirmation, "project_basic", "标的类型") or (multi_model_result or {}).get("target_type"),
         "项目阶段": basic.get("document_date") or assumption_value(assumption_confirmation, "project_basic", "项目阶段"),
         "地区": basic.get("location") or assumption_value(assumption_confirmation, "project_basic", "地区"),
         "一句话摘要": basic.get("one_sentence_summary"),

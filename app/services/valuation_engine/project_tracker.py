@@ -52,14 +52,15 @@ def build_project_tracking_record(
 ) -> dict[str, Any]:
     memo_data = memo_data or {}
     manual_inputs = manual_inputs or {}
-    target_name = first_value(manual_inputs.get("target_name"), memo_data.get("target_name"), "未命名项目")
+    target_profile = manual_inputs.get("target_profile") or memo_data.get("target_profile") or {}
+    target_name = first_value(manual_inputs.get("target_name"), target_profile_value(target_profile, "target_name"), memo_data.get("target_name"), "未命名项目")
     memo_tracking = memo_data.get("for_v0_9_project_tracking", {})
     research_action = safe_research_action(first_value(manual_inputs.get("research_action"), memo_tracking.get("research_action"), memo_data.get("research_action", {}).get("suggested_action"), "需要补充数据"))
     default_project_status, default_watchlist_status = status_from_research_action(research_action)
     project_status = safe_project_status(first_value(manual_inputs.get("project_status"), default_project_status))
     watchlist_status = safe_watchlist_status(first_value(manual_inputs.get("watchlist_status"), memo_tracking.get("watchlist_status"), default_watchlist_status))
     next_review_date = first_value(manual_inputs.get("next_review_date"), memo_tracking.get("next_review_date"), suggest_next_review_date(watchlist_status, project_status))
-    project_card = build_project_card(memo_data, manual_inputs, target_name, project_status, watchlist_status, research_action, next_review_date)
+    project_card = build_project_card(memo_data, manual_inputs, target_name, project_status, watchlist_status, research_action, next_review_date, target_profile)
     data_gaps = dedupe(listify(manual_inputs.get("data_gaps")) + listify(memo_tracking.get("data_gaps")) + listify(memo_data.get("data_gaps")))
     questions_for_company = dedupe(listify(manual_inputs.get("questions_for_company")) + listify(memo_tracking.get("questions_for_company")) + [item.get("question", "") for item in memo_data.get("due_diligence_questions", [])[:20]])
     risk_flags = risk_flags_from_memo(memo_data)
@@ -74,6 +75,7 @@ def build_project_tracking_record(
 
     return {
         "target_name": target_name,
+        "target_profile": target_profile,
         "tracking_date": date.today().isoformat(),
         "project_status": project_status,
         "watchlist_status": watchlist_status,
@@ -134,6 +136,7 @@ def build_project_card(
     watchlist_status: str,
     research_action: str,
     next_review_date: str,
+    target_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     snapshot = memo_data.get("project_snapshot", {})
     founder = memo_data.get("founder_team_review", {})
@@ -149,9 +152,9 @@ def build_project_card(
         "target_name": target_name,
         "company_name": first_value(manual_inputs.get("company_name"), snapshot.get("公司名称")),
         "project_name": first_value(manual_inputs.get("project_name"), snapshot.get("项目名称"), target_name),
-        "industry": first_value(manual_inputs.get("industry"), snapshot.get("所属行业")),
-        "rachel_ecosystem": first_value(manual_inputs.get("rachel_ecosystem"), snapshot.get("所属 Rachel 战略生态")),
-        "target_type": first_value(manual_inputs.get("target_type"), snapshot.get("标的类型")),
+        "industry": first_value(manual_inputs.get("industry"), target_profile_value(target_profile, "industry"), snapshot.get("所属行业")),
+        "rachel_ecosystem": first_value(manual_inputs.get("rachel_ecosystem"), target_profile_value(target_profile, "rachel_ecosystem"), snapshot.get("所属 Rachel 战略生态")),
+        "target_type": first_value(manual_inputs.get("target_type"), target_profile_value(target_profile, "target_type"), snapshot.get("标的类型")),
         "project_stage": first_value(manual_inputs.get("project_stage"), snapshot.get("项目阶段")),
         "location": first_value(manual_inputs.get("location"), snapshot.get("地区")),
         "one_sentence_summary": first_value(manual_inputs.get("one_sentence_summary"), snapshot.get("一句话摘要")),
@@ -354,6 +357,13 @@ def first_value(*values: Any) -> str:
     for value in values:
         if has_value(value):
             return str(value)
+    return ""
+
+
+def target_profile_value(target_profile: dict[str, Any] | None, key: str) -> str:
+    payload = (target_profile or {}).get(key, {})
+    if isinstance(payload, dict) and has_value(payload.get("confirmed_value")):
+        return str(payload.get("confirmed_value"))
     return ""
 
 

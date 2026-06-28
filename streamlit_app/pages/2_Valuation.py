@@ -35,6 +35,7 @@ from app.services.valuation_engine.memo_writer import (
     write_private_market_financial_model_analysis,
     write_private_market_memo,
     write_project_tracking_tasks,
+    write_target_profile_confirmation_report,
     update_private_market_project_watchlist,
 )
 from app.services.valuation_engine.model_registry import (
@@ -66,6 +67,7 @@ from app.services.valuation_engine.project_tracker import (
     build_project_tracking_record,
     suggest_next_review_date,
 )
+from app.services.valuation_engine.target_profile_detector import build_target_profile
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
@@ -260,6 +262,15 @@ def save_project_tracking_result(tracking_record: dict) -> Path:
     return output_path
 
 
+def save_target_profile_confirmation(target_profile: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = target_profile_confirmed_value(target_profile, "target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_标的基本信息确认.json"
+    output_path.write_text(json.dumps(target_profile, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
 def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
     rows = []
     for key, label in labels.items():
@@ -302,6 +313,273 @@ def render_private_autofill_message() -> None:
     if message:
         st.success(message)
         st.caption("自动回填结果来自上传资料解析，建议人工复核后再生成估值框架。")
+
+
+TARGET_PROFILE_LABELS = {
+    "target_name": "标的名称",
+    "target_type": "标的类型",
+    "industry": "所属行业",
+    "rachel_ecosystem": "所属 Rachel 战略生态",
+    "is_financing_or_secondary_transfer": "是否正在融资或老股转让",
+    "is_complete_company": "是否为完整公司主体",
+    "is_single_project_spv": "是否为单一项目 / SPV",
+    "is_asset_based": "是否主要依赖资产、资源、牌照或合同",
+    "has_revenue": "是否已有收入",
+    "is_profitable": "是否盈利",
+    "revenue_growth_status": "收入增长状态",
+    "cash_flow_stability": "现金流是否稳定",
+    "exit_path": "退出路径",
+}
+
+
+def target_profile_confirmed_value(target_profile: dict | None, key: str, default: str = ""):
+    payload = (target_profile or {}).get(key, {})
+    if isinstance(payload, dict):
+        value = payload.get("confirmed_value")
+        return default if value in {None, ""} else value
+    return default
+
+
+def target_profile_source_rows(target_profile: dict) -> list[dict[str, str]]:
+    rows = []
+    for key, label in TARGET_PROFILE_LABELS.items():
+        payload = target_profile.get(key, {})
+        rows.append(
+            {
+                "字段": label,
+                "系统识别结果": str(payload.get("detected_value", "")),
+                "用户确认值": str(payload.get("confirmed_value", "")),
+                "来源": payload.get("source", ""),
+                "来源位置": payload.get("source_location", ""),
+                "可信度": payload.get("confidence", ""),
+                "需要确认": "是" if payload.get("needs_confirmation") else "否",
+                "备注": payload.get("notes", ""),
+            }
+        )
+    return rows
+
+
+def current_target_profile_sources() -> dict[str, dict | None]:
+    return {
+        "document_extraction": st.session_state.get("private_document_extraction"),
+        "financial_extraction": st.session_state.get("private_financial_model"),
+        "assumption_confirmation": st.session_state.get("private_assumption_data"),
+        "memo_data": st.session_state.get("private_investment_memo_result"),
+        "tracking_record": st.session_state.get("private_project_tracking_record"),
+    }
+
+
+def project_tracking_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_CASES_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_项目跟踪记录.json"), reverse=True)
+
+
+def target_profile_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_CASES_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_标的基本信息确认.json"), reverse=True)
+
+
+def target_profile_sources_from_local_json() -> dict[str, dict | None]:
+    with st.expander("读取本地历史 JSON", expanded=True):
+        document_extraction = load_selected_json("项目资料解析", document_extraction_json_options(), "private_loaded_document_for_target_profile")
+        financial_extraction = load_selected_json("财务模型解析", financial_extraction_json_options(), "private_loaded_financial_for_target_profile")
+        assumption_confirmation = load_selected_json("关键假设确认", assumption_json_options(), "private_loaded_assumption_for_target_profile")
+        memo_data = load_selected_json("投资备忘录整合", investment_memo_json_options(), "private_loaded_memo_for_target_profile")
+        tracking_record = load_selected_json("项目跟踪记录", project_tracking_json_options(), "private_loaded_tracking_for_target_profile")
+    return {
+        "document_extraction": document_extraction,
+        "financial_extraction": financial_extraction,
+        "assumption_confirmation": assumption_confirmation,
+        "memo_data": memo_data,
+        "tracking_record": tracking_record,
+    }
+
+
+def target_profile_manual_inputs_from_widgets() -> dict:
+    return {
+        "target_name": st.session_state.get("target_profile_confirm_target_name", ""),
+        "target_type": st.session_state.get("target_profile_confirm_target_type", PRIVATE_TARGET_TYPES[0]),
+        "industry": st.session_state.get("target_profile_confirm_industry", ""),
+        "rachel_ecosystem": st.session_state.get("target_profile_confirm_ecosystem", ECOSYSTEM_OPTIONS[0]),
+        "is_financing_or_secondary_transfer": st.session_state.get("target_profile_confirm_financing", False),
+        "is_complete_company": st.session_state.get("target_profile_confirm_complete_company", True),
+        "is_single_project_spv": st.session_state.get("target_profile_confirm_spv", False),
+        "is_asset_based": st.session_state.get("target_profile_confirm_asset_based", False),
+        "has_revenue": st.session_state.get("target_profile_confirm_has_revenue", True),
+        "is_profitable": st.session_state.get("target_profile_confirm_profitable", False),
+        "revenue_growth_status": st.session_state.get("target_profile_confirm_revenue_growth", PRIVATE_REVENUE_GROWTH[0]),
+        "cash_flow_stability": st.session_state.get("target_profile_confirm_cashflow_stable", False),
+        "exit_path": st.session_state.get("target_profile_confirm_exit_path", EXIT_PATHS[0]),
+    }
+
+
+def apply_target_profile_to_private_widgets(target_profile: dict) -> None:
+    values = {
+        "private_target_name": target_profile_confirmed_value(target_profile, "target_name", ""),
+        "private_initial_type": target_profile_confirmed_value(target_profile, "target_type", PRIVATE_TARGET_TYPES[0]),
+        "private_industry": target_profile_confirmed_value(target_profile, "industry", ""),
+        "private_ecosystem": target_profile_confirmed_value(target_profile, "rachel_ecosystem", ECOSYSTEM_OPTIONS[0]),
+        "private_is_financing_or_transfer": bool(target_profile_confirmed_value(target_profile, "is_financing_or_secondary_transfer", False)),
+        "private_is_complete_company": bool(target_profile_confirmed_value(target_profile, "is_complete_company", True)),
+        "private_is_single_project_spv": bool(target_profile_confirmed_value(target_profile, "is_single_project_spv", False)),
+        "private_is_asset_or_contract_based": bool(target_profile_confirmed_value(target_profile, "is_asset_based", False)),
+        "private_has_revenue": bool(target_profile_confirmed_value(target_profile, "has_revenue", True)),
+        "private_is_profitable": bool(target_profile_confirmed_value(target_profile, "is_profitable", False)),
+        "private_revenue_growth": target_profile_confirmed_value(target_profile, "revenue_growth_status", PRIVATE_REVENUE_GROWTH[0]),
+        "private_cash_flow_stable": bool(target_profile_confirmed_value(target_profile, "cash_flow_stability", False)),
+        "private_exit_path": target_profile_confirmed_value(target_profile, "exit_path", EXIT_PATHS[0]),
+    }
+    for key, value in values.items():
+        st.session_state[key] = value
+
+
+def target_profile_input_status(sources: dict[str, dict | None]) -> list[dict[str, str]]:
+    labels = {
+        "document_extraction": "项目资料解析",
+        "financial_extraction": "财务模型解析",
+        "assumption_confirmation": "关键假设确认",
+        "memo_data": "投资备忘录",
+        "tracking_record": "项目跟踪记录",
+    }
+    return [{"模块": label, "状态": "已读取" if sources.get(key) else "缺失"} for key, label in labels.items()]
+
+
+def tracking_manual_from_target_profile(target_profile: dict | None) -> dict:
+    if not target_profile:
+        return {}
+    return {
+        "target_profile": target_profile,
+        "target_name": target_profile_confirmed_value(target_profile, "target_name", ""),
+        "target_type": target_profile_confirmed_value(target_profile, "target_type", ""),
+        "industry": target_profile_confirmed_value(target_profile, "industry", ""),
+        "rachel_ecosystem": target_profile_confirmed_value(target_profile, "rachel_ecosystem", ""),
+    }
+
+
+def render_target_profile_confirmation() -> None:
+    st.subheader("标的基本信息识别与确认")
+    st.warning("本区基于本地资料解析、财务模型、关键假设、Memo 和项目跟踪记录自动预填，所有字段仍需人工确认。数据仅保存在本地私有目录，不进入 public_site。")
+
+    source_mode = st.radio("识别来源", ["优先使用当前页面数据", "读取本地历史 JSON"], horizontal=True, key="target_profile_source_mode")
+    if source_mode == "优先使用当前页面数据":
+        sources = current_target_profile_sources()
+    else:
+        sources = target_profile_sources_from_local_json()
+
+    st.dataframe(target_profile_input_status(sources), use_container_width=True, hide_index=True)
+
+    profile_options = target_profile_json_options()
+    if profile_options:
+        with st.expander("读取已保存的标的基本信息确认 JSON", expanded=False):
+            loaded = load_selected_json("标的基本信息确认", profile_options, "private_loaded_target_profile_confirmation")
+            if loaded and st.button("应用已保存的标的基本信息确认", key="apply_loaded_target_profile"):
+                st.session_state["target_profile"] = loaded
+                st.session_state["target_profile_draft"] = loaded
+                apply_target_profile_to_private_widgets(loaded)
+                st.success("已应用已保存的标的基本信息确认。")
+
+    if st.button("自动识别标的基本信息", key="auto_detect_target_profile"):
+        st.session_state["target_profile_sources"] = sources
+        st.session_state["target_profile_draft"] = build_target_profile(**sources)
+
+    target_profile = st.session_state.get("target_profile_draft") or st.session_state.get("target_profile")
+    if not target_profile:
+        st.info("点击“自动识别标的基本信息”后，系统会预填标的名称、类型、行业、Rachel 生态和交易 / 项目特征。")
+        return
+
+    st.markdown("### 系统识别结果与来源")
+    st.dataframe(target_profile_source_rows(target_profile), use_container_width=True, hide_index=True)
+    if target_profile.get("classification_reason"):
+        st.caption(f"标的类型判断理由：{target_profile.get('classification_reason')}")
+    for warning in target_profile.get("warnings", [])[:8]:
+        st.warning(warning)
+
+    st.markdown("### 用户确认 / 修正")
+    col_1, col_2, col_3 = st.columns(3)
+    col_1.text_input(
+        "标的名称",
+        value=str(target_profile_confirmed_value(target_profile, "target_name", "")),
+        key="target_profile_confirm_target_name",
+    )
+    target_type_value = target_profile_confirmed_value(target_profile, "target_type", PRIVATE_TARGET_TYPES[0])
+    col_2.selectbox(
+        "标的类型",
+        PRIVATE_TARGET_TYPES,
+        index=PRIVATE_TARGET_TYPES.index(target_type_value) if target_type_value in PRIVATE_TARGET_TYPES else 0,
+        key="target_profile_confirm_target_type",
+    )
+    col_3.text_input(
+        "所属行业",
+        value=str(target_profile_confirmed_value(target_profile, "industry", "")),
+        key="target_profile_confirm_industry",
+    )
+    ecosystem_value = target_profile_confirmed_value(target_profile, "rachel_ecosystem", ECOSYSTEM_OPTIONS[0])
+    st.selectbox(
+        "所属 Rachel 战略生态",
+        ECOSYSTEM_OPTIONS,
+        index=ECOSYSTEM_OPTIONS.index(ecosystem_value) if ecosystem_value in ECOSYSTEM_OPTIONS else 0,
+        key="target_profile_confirm_ecosystem",
+    )
+
+    st.markdown("### 交易 / 项目特征确认")
+    col_a, col_b, col_c, col_d = st.columns(4)
+    col_a.checkbox("是否正在融资或老股转让", value=bool(target_profile_confirmed_value(target_profile, "is_financing_or_secondary_transfer", False)), key="target_profile_confirm_financing")
+    col_b.checkbox("是否为完整公司主体", value=bool(target_profile_confirmed_value(target_profile, "is_complete_company", True)), key="target_profile_confirm_complete_company")
+    col_c.checkbox("是否为单一项目 / SPV", value=bool(target_profile_confirmed_value(target_profile, "is_single_project_spv", False)), key="target_profile_confirm_spv")
+    col_d.checkbox("是否主要依赖资产、资源、牌照或合同", value=bool(target_profile_confirmed_value(target_profile, "is_asset_based", False)), key="target_profile_confirm_asset_based")
+
+    col_e, col_f, col_g, col_h = st.columns(4)
+    col_e.checkbox("是否已有收入", value=bool(target_profile_confirmed_value(target_profile, "has_revenue", True)), key="target_profile_confirm_has_revenue")
+    col_f.checkbox("是否盈利", value=bool(target_profile_confirmed_value(target_profile, "is_profitable", False)), key="target_profile_confirm_profitable")
+    revenue_growth = target_profile_confirmed_value(target_profile, "revenue_growth_status", PRIVATE_REVENUE_GROWTH[0])
+    col_g.selectbox(
+        "收入增长状态",
+        PRIVATE_REVENUE_GROWTH,
+        index=PRIVATE_REVENUE_GROWTH.index(revenue_growth) if revenue_growth in PRIVATE_REVENUE_GROWTH else 0,
+        key="target_profile_confirm_revenue_growth",
+    )
+    col_h.checkbox("现金流是否稳定", value=bool(target_profile_confirmed_value(target_profile, "cash_flow_stability", False)), key="target_profile_confirm_cashflow_stable")
+    exit_value = target_profile_confirmed_value(target_profile, "exit_path", EXIT_PATHS[0])
+    st.selectbox(
+        "退出路径",
+        EXIT_PATHS,
+        index=EXIT_PATHS.index(exit_value) if exit_value in EXIT_PATHS else 0,
+        key="target_profile_confirm_exit_path",
+    )
+
+    if st.button("确认并应用到后续估值流程", key="confirm_target_profile"):
+        source_payload = st.session_state.get("target_profile_sources") or sources
+        confirmed_profile = build_target_profile(**source_payload, manual_inputs=target_profile_manual_inputs_from_widgets())
+        st.session_state["target_profile"] = confirmed_profile
+        st.session_state["target_profile_draft"] = confirmed_profile
+        apply_target_profile_to_private_widgets(confirmed_profile)
+        st.success("已确认标的基本信息，并同步到后续估值流程。")
+
+    confirmed_profile = st.session_state.get("target_profile")
+    if not confirmed_profile:
+        return
+
+    st.markdown("### 保存与输出")
+    col_save, col_obsidian = st.columns(2)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存标的基本信息确认 JSON", key="save_target_profile_json"):
+            output_path = save_target_profile_confirmation(confirmed_profile)
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_obsidian:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="target_profile_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "标的基本信息确认"))
+        if st.button("生成 Obsidian 标的基本信息确认报告", key="write_target_profile_obsidian"):
+            try:
+                output_path = write_target_profile_confirmation_report(confirmed_profile, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
 
 
 def ensure_private_form_defaults() -> None:
@@ -424,27 +702,27 @@ def render_financial_model_upload() -> None:
             st.code(str(output_path), language="text")
 
 
-def current_assumption_sources() -> tuple[dict | None, dict | None]:
+def current_assumption_sources() -> tuple[dict | None, dict | None, dict | None]:
     document_extraction = st.session_state.get("private_document_extraction")
     parsed_document = st.session_state.get("private_document_parsed")
     if document_extraction and parsed_document:
         document_extraction = {**document_extraction, "_source_file": parsed_document.get("file_name", "")}
-    return document_extraction, st.session_state.get("private_financial_model")
+    return document_extraction, st.session_state.get("private_financial_model"), st.session_state.get("target_profile")
 
 
 def render_assumption_confirmation_page() -> None:
     st.subheader("关键假设确认页")
     st.warning("BP、财务模型和项目资料中的数据通常来自项目方预测，可能存在乐观假设。请在进入自动估值计算前确认关键收入、成本、现金流、CAPEX、估值、团队和退出路径假设。")
-    document_extraction, financial_model = current_assumption_sources()
-    if not document_extraction and not financial_model:
+    document_extraction, financial_model, target_profile = current_assumption_sources()
+    if not document_extraction and not financial_model and not target_profile:
         st.info("上传并解析项目资料或 Excel / 财务模型后，这里会生成关键假设确认表。")
         return
 
     if st.button("生成 / 刷新关键假设表"):
-        st.session_state["private_assumption_data"] = build_assumption_table(document_extraction, financial_model)
+        st.session_state["private_assumption_data"] = build_assumption_table(document_extraction, financial_model, target_profile)
 
     if "private_assumption_data" not in st.session_state:
-        st.session_state["private_assumption_data"] = build_assumption_table(document_extraction, financial_model)
+        st.session_state["private_assumption_data"] = build_assumption_table(document_extraction, financial_model, target_profile)
 
     assumption_data = st.session_state["private_assumption_data"]
     counts = assumption_counts(assumption_data)
@@ -763,7 +1041,7 @@ def load_selected_json(label: str, options: list[Path], key: str) -> dict | None
 
 def render_basic_valuation_calculation() -> None:
     st.subheader("基础估值自动计算")
-    st.warning("本模块基于用户已确认的关键假设进行基础估值计算。计算结果仅为内部研究参考，不构成投资建议、投资邀约、买卖依据或收益承诺。一级市场估值高度依赖假设质量，请谨慎使用。")
+    st.warning("本模块基于用户已确认的关键假设进行基础估值计算。结果仅用于内部研究框架，所有结论均需人工复核。一级市场估值高度依赖假设质量，请谨慎使用。")
 
     source_mode = st.radio("关键假设来源", ["使用当前页面已确认假设", "读取已保存关键假设 JSON"], horizontal=True)
     assumption_data = None
@@ -866,7 +1144,7 @@ def render_basic_valuation_calculation() -> None:
 
 def render_multi_model_valuation_comparison() -> None:
     st.subheader("多模型估值对比与综合区间")
-    st.warning("本模块基于多个估值模型生成综合估值区间。结果仅为内部研究参考，不构成投资建议、投资邀约、买卖依据、目标价或收益承诺。模型结果高度依赖已确认关键假设和数据质量。")
+    st.warning("本模块基于多个估值模型生成综合估值区间。结果仅用于内部研究框架，所有结论均需人工复核。模型结果高度依赖已确认关键假设和数据质量。")
 
     source_mode = st.radio("V0.6 估值结果来源", ["使用当前页面基础估值计算结果", "读取已保存基础估值计算 JSON"], horizontal=True)
     valuation_result = None
@@ -889,7 +1167,7 @@ def render_multi_model_valuation_comparison() -> None:
     if not valuation_result:
         return
 
-    preview_result = run_multi_model_comparison(valuation_result)
+    preview_result = run_multi_model_comparison(valuation_result, target_profile=st.session_state.get("target_profile"))
     weighted_range = preview_result.get("weighted_valuation_range", {})
     readiness = valuation_result.get("input_summary", {})
 
@@ -925,7 +1203,11 @@ def render_multi_model_valuation_comparison() -> None:
 
     if st.button("生成多模型综合区间"):
         user_weighting = user_weighting_from_rows(edited_rows)
-        st.session_state["private_multi_model_valuation_result"] = run_multi_model_comparison(valuation_result, user_weighting)
+        st.session_state["private_multi_model_valuation_result"] = run_multi_model_comparison(
+            valuation_result,
+            user_weighting,
+            target_profile=st.session_state.get("target_profile"),
+        )
 
     multi_model_result = st.session_state.get("private_multi_model_valuation_result")
     if not multi_model_result:
@@ -1007,7 +1289,7 @@ def render_multi_model_valuation_comparison() -> None:
 
 def render_investment_memo_builder() -> None:
     st.subheader("投资备忘录 / 尽调问题 / 研究动作建议")
-    st.warning("本模块生成的是内部投资备忘录草稿与尽调问题清单，仅用于 Rachel Capital OS 内部研究，不构成投资建议、投资邀约、买卖依据、目标价或收益承诺。所有结论均需人工复核。")
+    st.warning("本模块生成的是内部投资备忘录草稿与尽调问题清单，仅用于 Rachel Capital OS 内部研究流程。所有结论均需人工复核。")
 
     source_mode = st.radio("V0.8 输入来源", ["优先使用当前页面数据", "读取本地 JSON 数据"], horizontal=True)
     if source_mode == "优先使用当前页面数据":
@@ -1031,6 +1313,7 @@ def render_investment_memo_builder() -> None:
         assumption_confirmation,
         basic_valuation_result,
         multi_model_result,
+        target_profile=st.session_state.get("target_profile"),
     )
 
     st.markdown("### 输入数据读取状态")
@@ -1051,6 +1334,7 @@ def render_investment_memo_builder() -> None:
             "assumption_confirmation": "关键假设确认",
             "basic_valuation_result": "基础估值计算",
             "multi_model_result": "多模型估值对比",
+            "target_profile": "标的基本信息确认",
         }.items()
     ]
     st.dataframe(status_rows, use_container_width=True, hide_index=True)
@@ -1120,7 +1404,7 @@ def render_investment_memo_builder() -> None:
 
 def render_project_tracking_watchlist() -> None:
     st.subheader("项目观察池 / 跟踪任务 / 项目卡片")
-    st.warning("本模块用于将项目纳入 Rachel Capital OS 内部观察池并生成后续跟踪任务，不构成投资建议、投资邀约、买卖依据、目标价或收益承诺。项目状态和研究动作均需人工复核。")
+    st.warning("本模块用于将项目纳入 Rachel Capital OS 内部观察池并生成后续跟踪任务。项目状态和研究动作均需人工复核。")
 
     source_mode = st.radio("V0.9 输入来源", ["使用当前 V0.8 投资备忘录", "读取本地投资备忘录 JSON", "手动填写观察池信息"], horizontal=True)
     memo_data = None
@@ -1134,7 +1418,8 @@ def render_project_tracking_watchlist() -> None:
     else:
         st.info("未读取 V0.8 结果时，可以手动建立观察池记录；系统会将完整度和来源风险标记为较低。")
 
-    preview_record = build_project_tracking_record(memo_data, {})
+    target_profile_manual = tracking_manual_from_target_profile(st.session_state.get("target_profile"))
+    preview_record = build_project_tracking_record(memo_data, target_profile_manual)
     source_status = "已读取 V0.8 Memo" if memo_data else "未读取 V0.8 Memo / 手动模式"
     st.markdown("### 输入数据读取状态")
     status_cols = st.columns(4)
@@ -1169,6 +1454,7 @@ def render_project_tracking_watchlist() -> None:
     st.caption(f"系统建议下次复查日期：{suggested_review or '暂不设置'}。用户可以手动修改。")
 
     preview_manual = {
+        **target_profile_manual,
         "target_name": target_name,
         "project_status": project_status,
         "watchlist_status": watchlist_status,
@@ -1528,7 +1814,7 @@ def render_private_document_upload() -> None:
         "估值可用性",
         readiness,
         {
-            "recommended_models": "推荐估值模型",
+            "recommended_models": "建议估值模型",
             "usable_data": "当前可用数据",
             "missing_data": "缺失数据清单",
             "questions_for_company": "建议向项目方追问的问题",
@@ -1545,7 +1831,7 @@ def render_private_document_upload() -> None:
 
     col_models, col_missing, col_questions = st.columns(3)
     with col_models:
-        render_list("推荐估值模型", readiness.get("recommended_models", []))
+        render_list("建议估值模型", readiness.get("recommended_models", []))
         render_list("暂不可用模型", readiness.get("unavailable_models", []))
     with col_missing:
         render_list("当前可用数据", readiness.get("usable_data", []))
@@ -1597,7 +1883,7 @@ def render_listed_result() -> None:
     cols[2].metric("研究动作建议", result.research_action)
     render_list("公司画像识别", result.portrait)
 
-    st.subheader("系统推荐估值模型")
+    st.subheader("系统建议估值模型")
     col_a, col_b, col_c, col_d = st.columns(4)
     with col_a:
         render_list("主模型", result.primary_models)
@@ -1655,7 +1941,7 @@ def render_private_result() -> None:
     st.subheader("判断理由")
     render_list("理由", result.classification.reasons)
 
-    st.subheader("推荐估值模型")
+    st.subheader("建议估值模型")
     col_a, col_b, col_c, col_d = st.columns(4)
     with col_a:
         render_list("主模型", result.primary_models)
@@ -1772,6 +2058,8 @@ with private_tab:
     ensure_private_form_defaults()
     st.header("未上市 / 一级市场估值")
     st.caption("用于未上市成长公司、融资交易、Pre-IPO、老股转让、项目公司 / SPV、资产型项目。")
+    render_target_profile_confirmation()
+    st.divider()
     render_private_document_upload()
     st.divider()
     render_financial_model_upload()
@@ -1787,26 +2075,37 @@ with private_tab:
     render_project_tracking_watchlist()
     st.divider()
     render_private_autofill_message()
-    st.subheader("标的基本信息")
-    col_1, col_2, col_3 = st.columns(3)
-    target_name = col_1.text_input("标的名称", placeholder="例如：OpenAI 老股交易 / 信宜绿色算力中心", key="private_target_name")
-    initial_type = col_2.selectbox("标的类型初选", PRIVATE_TARGET_TYPES, key="private_initial_type")
-    private_industry = col_3.text_input("所属行业", placeholder="例如：AI应用 / 绿色算力 / 资源回收", key="private_industry")
-    private_ecosystem = st.selectbox("所属 Rachel 战略生态", ECOSYSTEM_OPTIONS, key="private_ecosystem")
-
-    st.subheader("交易 / 项目特征")
-    col_a, col_b, col_c, col_d = st.columns(4)
-    is_financing_or_transfer = col_a.checkbox("是否正在融资或老股转让", key="private_is_financing_or_transfer")
-    is_complete_company = col_b.checkbox("是否为完整公司主体", key="private_is_complete_company")
-    is_single_project_spv = col_c.checkbox("是否为单一项目 / SPV", key="private_is_single_project_spv")
-    is_asset_or_contract_based = col_d.checkbox("是否主要依赖资产、资源、牌照或合同", key="private_is_asset_or_contract_based")
-
-    col_e, col_f, col_g, col_h = st.columns(4)
-    has_revenue = col_e.checkbox("是否已有收入", key="private_has_revenue")
-    is_private_profitable = col_f.checkbox("是否盈利", key="private_is_profitable")
-    private_revenue_growth = col_g.selectbox("收入增长状态", PRIVATE_REVENUE_GROWTH, key="private_revenue_growth")
-    private_cash_flow_stable = col_h.checkbox("现金流是否稳定", key="private_cash_flow_stable")
-    exit_path = st.selectbox("退出路径", EXIT_PATHS, key="private_exit_path")
+    st.subheader("已确认标的基本信息")
+    target_name = st.session_state.get("private_target_name", "")
+    initial_type = st.session_state.get("private_initial_type", PRIVATE_TARGET_TYPES[0])
+    private_industry = st.session_state.get("private_industry", "")
+    private_ecosystem = st.session_state.get("private_ecosystem", ECOSYSTEM_OPTIONS[0])
+    is_financing_or_transfer = st.session_state.get("private_is_financing_or_transfer", False)
+    is_complete_company = st.session_state.get("private_is_complete_company", True)
+    is_single_project_spv = st.session_state.get("private_is_single_project_spv", False)
+    is_asset_or_contract_based = st.session_state.get("private_is_asset_or_contract_based", False)
+    has_revenue = st.session_state.get("private_has_revenue", True)
+    is_private_profitable = st.session_state.get("private_is_profitable", False)
+    private_revenue_growth = st.session_state.get("private_revenue_growth", PRIVATE_REVENUE_GROWTH[0])
+    private_cash_flow_stable = st.session_state.get("private_cash_flow_stable", False)
+    exit_path = st.session_state.get("private_exit_path", EXIT_PATHS[0])
+    confirmed_rows = [
+        {"字段": "标的名称", "确认值": target_name or "待确认"},
+        {"字段": "标的类型", "确认值": initial_type},
+        {"字段": "所属行业", "确认值": private_industry or "待确认"},
+        {"字段": "Rachel 战略生态", "确认值": private_ecosystem},
+        {"字段": "融资或老股转让", "确认值": "是" if is_financing_or_transfer else "否"},
+        {"字段": "完整公司主体", "确认值": "是" if is_complete_company else "否"},
+        {"字段": "单一项目 / SPV", "确认值": "是" if is_single_project_spv else "否"},
+        {"字段": "资产型项目", "确认值": "是" if is_asset_or_contract_based else "否"},
+        {"字段": "已有收入", "确认值": "是" if has_revenue else "否"},
+        {"字段": "盈利", "确认值": "是" if is_private_profitable else "否"},
+        {"字段": "收入增长状态", "确认值": private_revenue_growth},
+        {"字段": "现金流稳定", "确认值": "是" if private_cash_flow_stable else "否"},
+        {"字段": "退出路径", "确认值": exit_path},
+    ]
+    st.dataframe(confirmed_rows, use_container_width=True, hide_index=True)
+    st.caption("如需修改，请回到页面顶部“标的基本信息识别与确认”区域，调整后点击确认并应用。")
 
     financing_round = pre_money = post_money = financing_amount = equity_sold = previous_round_valuation = previous_round_date = None
     if initial_type == "一级市场融资标的" or is_financing_or_transfer:

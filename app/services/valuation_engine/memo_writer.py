@@ -198,6 +198,20 @@ def update_private_market_project_watchlist(
     return output_path
 
 
+def write_target_profile_confirmation_report(
+    target_profile: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = target_profile_field(target_profile, "target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "标的基本信息确认"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_标的基本信息确认.md"
+    output_path.write_text(target_profile_confirmation_markdown(target_profile, created), encoding="utf-8")
+    return output_path
+
+
 def listed_markdown(profile: ListedCompanyProfile, result: ListedValuationResult, created: date) -> str:
     return f"""---
 type: listed_company_valuation
@@ -1359,6 +1373,59 @@ tags:
 """
 
 
+def target_profile_confirmation_markdown(target_profile: dict[str, Any], created: date) -> str:
+    project_name = target_profile_field(target_profile, "target_name") or "未命名项目"
+    target_type = target_profile_field(target_profile, "target_type") or "待确认"
+    return f"""---
+type: private_market_target_profile_confirmation
+title: {project_name}标的基本信息确认
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+target_type: {target_type}
+tags:
+  - 一级市场
+  - 标的基本信息
+  - 估值引擎
+---
+
+# {project_name}标的基本信息确认
+
+## 1. 系统识别摘要
+
+{target_profile_detected_summary(target_profile)}
+
+## 2. 用户确认结果
+
+{target_profile_confirmed_summary(target_profile)}
+
+## 3. 字段来源与可信度
+
+{target_profile_fields_markdown(target_profile)}
+
+## 4. 标的类型判断理由
+
+{target_profile.get("classification_reason") or "待确认"}
+
+## 5. 对估值模型选择的影响
+
+- 标的类型：{target_type}
+- 估值模型选择应优先读取本确认结果中的 confirmed_value。
+- 若标的类型为项目公司 / SPV，应优先关注 DCF、IRR、项目现金流和投资回收期。
+- 若标的类型为资产型项目，应优先关注资产重估、重置成本、合同现金流和可交易性。
+- 若标的类型为一级市场融资标的或未上市成长公司，应优先关注收入倍数、利润倍数、EBITDA 倍数和可比交易。
+
+## 6. 需要继续确认的信息
+
+{bullet_list(target_profile.get("warnings", [])) if target_profile.get("warnings") else "- 暂无"}
+
+## 7. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -1672,6 +1739,57 @@ def watchlist_due_soon(rows: list[dict[str, str]], created: date) -> str:
         if parsed <= created or (parsed - created).days <= 7:
             due.append(f"{row.get('项目', '')}：{next_date}")
     return bullet_list(due) if due else "- 暂无"
+
+
+def target_profile_fields_markdown(target_profile: dict[str, Any]) -> str:
+    rows = []
+    for key, label in target_profile_labels().items():
+        payload = target_profile.get(key, {})
+        rows.append(
+            {
+                "字段": label,
+                "系统识别值": payload.get("detected_value", ""),
+                "用户确认值": payload.get("confirmed_value", ""),
+                "来源": payload.get("source", ""),
+                "可信度": payload.get("confidence", ""),
+                "是否需要确认": "是" if payload.get("needs_confirmation") else "否",
+                "备注": payload.get("notes", ""),
+            }
+        )
+    return markdown_table(rows, ["字段", "系统识别值", "用户确认值", "来源", "可信度", "是否需要确认", "备注"])
+
+
+def target_profile_detected_summary(target_profile: dict[str, Any]) -> str:
+    rows = [{"字段": label, "系统识别值": target_profile.get(key, {}).get("detected_value", "")} for key, label in target_profile_labels().items()]
+    return markdown_table(rows, ["字段", "系统识别值"])
+
+
+def target_profile_confirmed_summary(target_profile: dict[str, Any]) -> str:
+    rows = [{"字段": label, "用户确认值": target_profile.get(key, {}).get("confirmed_value", "")} for key, label in target_profile_labels().items()]
+    return markdown_table(rows, ["字段", "用户确认值"])
+
+
+def target_profile_field(target_profile: dict[str, Any], key: str) -> str:
+    payload = target_profile.get(key, {})
+    return str(payload.get("confirmed_value") or payload.get("detected_value") or "")
+
+
+def target_profile_labels() -> dict[str, str]:
+    return {
+        "target_name": "标的名称",
+        "target_type": "标的类型",
+        "industry": "所属行业",
+        "rachel_ecosystem": "所属 Rachel 战略生态",
+        "is_financing_or_secondary_transfer": "是否正在融资或老股转让",
+        "is_complete_company": "是否为完整公司主体",
+        "is_single_project_spv": "是否为单一项目 / SPV",
+        "is_asset_based": "是否主要依赖资产、资源、牌照或合同",
+        "has_revenue": "是否已有收入",
+        "is_profitable": "是否盈利",
+        "revenue_growth_status": "收入增长状态",
+        "cash_flow_stability": "现金流是否稳定",
+        "exit_path": "退出路径",
+    }
 
 
 def format_report_money(value: Any) -> str:

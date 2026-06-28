@@ -242,10 +242,12 @@ tags:
 def private_document_analysis_markdown(extraction: dict[str, Any], parsed_document: dict[str, Any], created: date) -> str:
     summary = extraction.get("project_summary", {})
     financing = extraction.get("financing_info", {})
-    founder_team = extraction.get("founder_team_info", {})
+    founder_team = extraction.get("founder_team", {})
+    commercial_model = extraction.get("commercial_model", {})
+    product_and_customers = extraction.get("product_and_customers", {})
     operating = extraction.get("operating_data", {})
     financial = extraction.get("financial_data", {})
-    cost_structure = extraction.get("cost_structure", {})
+    capacity_and_cost = extraction.get("capacity_and_cost", {})
     technology = extraction.get("technology_and_barriers", {})
     market = extraction.get("market_and_competition", {})
     risks = extraction.get("risk_factors", {})
@@ -274,7 +276,12 @@ tags:
 
 - 文件名：{parsed_document.get("file_name", "")}
 - 本地路径：{parsed_document.get("file_path", "")}
+- 文件类型：{parsed_document.get("file_type", "")}
+- 解析器：{parsed_document.get("parser", "")}
+- 解析质量：{parsed_document.get("extraction_quality", "")}
 - 页数：{len(parsed_document.get("pages", []))}
+- 幻灯片数量：{len(parsed_document.get("slides", []))}
+- 段落数量：{len(parsed_document.get("paragraphs", []))}
 - 表格数量：{len(parsed_document.get("tables", []))}
 - 解析提示：{", ".join(parsed_document.get("warnings", [])) or "无"}
 
@@ -289,43 +296,59 @@ tags:
 - 所属行业：{summary.get("industry") or "待确认"}
 - 所在地：{summary.get("location") or "待确认"}
 
-## 4. 商业模式
-
-{summary.get("business_model") or "待补充"}
-
-## 4.1 创始团队信息
+## 4. 创始团队信息
 
 {dict_section(founder_team)}
 
-## 5. 核心技术与壁垒
+需要进一步核验的问题：
+
+{bullet_list(team_questions(founder_team)) if team_questions(founder_team) else "- 暂无"}
+
+## 5. 商业模式
+
+{dict_section(commercial_model)}
+
+## 6. 核心技术与壁垒
 
 {dict_section(technology)}
 
-## 6. 市场与竞争
+## 7. 产品与客户
+
+{dict_section(product_and_customers)}
+
+## 8. 市场与竞争
 
 {dict_section(market)}
 
-## 7. 融资信息
+## 9. 融资信息
 
 {dict_section(financing)}
 
-## 8. 经营数据
+## 10. 经营与产能数据
 
 {dict_section(operating)}
 
-## 9. 财务数据
+## 11. 财务数据
 
 {dict_section(financial)}
 
-## 9.1 成本结构
+## 12. 成本结构
 
-{dict_section(cost_structure)}
+{dict_section(capacity_and_cost)}
 
-## 10. 推荐估值模型
+## 13. 退出路径
+
+{dict_section(exit_path)}
+
+## 14. 推荐估值模型
 
 {bullet_list(readiness.get("recommended_models", [])) if readiness.get("recommended_models") else "- 待补充"}
 
-## 11. 数据可信度与缺失项
+暂不可用模型：
+
+{bullet_list(readiness.get("unavailable_models", [])) if readiness.get("unavailable_models") else "- 暂无"}
+
+## 15. 数据可信度与缺失项
 
 {markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要用户确认"])}
 
@@ -333,30 +356,27 @@ tags:
 
 {bullet_list(readiness.get("missing_data", [])) if readiness.get("missing_data") else "- 暂无"}
 
-## 12. 需要向项目方追问的问题
+## 16. 需要向项目方追问的问题
 
 {bullet_list(readiness.get("questions_for_company", [])) if readiness.get("questions_for_company") else "- 暂无"}
 
-## 13. 初步风险提示
+## 17. 初步风险提示
 
 {dict_section(risks)}
 
-退出路径线索：
+## 18. 后续研究任务
 
-{dict_section(exit_path)}
-
-## 14. 后续研究任务
-
+- 核验创始团队履历、股权结构、核心人员稳定性和关键人依赖。
 - 核验项目主体、股权结构、融资条款和历史经营数据。
 - 补齐可比融资交易、可比上市公司和退出路径假设。
 - 对关键数据进行来源标注，区分披露、推断、待确认和缺失。
 - 建立乐观、中性、保守三种情景，不输出最终投资结论。
 
-## 15. 免责声明
+## 19. 免责声明
 
 本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
 
-## 16. 原始资料摘录
+## 20. 原始资料摘录
 
 {extraction.get("raw_excerpt") or "未能提取有效文本。"}
 """
@@ -366,6 +386,7 @@ def private_document_valuation_markdown(extraction: dict[str, Any], parsed_docum
     summary = extraction.get("project_summary", {})
     readiness = extraction.get("valuation_readiness", {})
     risks = extraction.get("risk_factors", {})
+    founder_team = extraction.get("founder_team", {})
     project_name = project_name_from_extraction(extraction)
     target_type = summary.get("target_type_guess") or "未确认"
     return f"""---
@@ -398,40 +419,55 @@ tags:
 - 标的类型初判：{target_type}
 - 分类说明：基于上传资料关键词和已披露信息自动初判，需人工复核。
 
-## 3. 推荐估值模型
+## 3. 创始团队与团队风险
+
+{dict_section(founder_team)}
+
+团队风险引用：
+
+- {risks.get("team_risk") or "待补充"}
+- {risks.get("key_person_risk") or "待补充"}
+
+## 4. 推荐估值模型
 
 {bullet_list(readiness.get("recommended_models", [])) if readiness.get("recommended_models") else "- 待补充"}
 
-## 4. 可用数据
+暂不可用模型：
+
+{bullet_list(readiness.get("unavailable_models", [])) if readiness.get("unavailable_models") else "- 暂无"}
+
+## 5. 可用数据
 
 {bullet_list(readiness.get("usable_data", [])) if readiness.get("usable_data") else "- 暂无"}
 
-## 5. 缺失数据
+## 6. 缺失数据
 
 {bullet_list(readiness.get("missing_data", [])) if readiness.get("missing_data") else "- 暂无"}
 
-## 6. 追问清单
+## 7. 追问清单
 
 {bullet_list(readiness.get("questions_for_company", [])) if readiness.get("questions_for_company") else "- 暂无"}
 
-## 7. 风险提示
+## 8. 风险提示
 
 {dict_section(risks)}
 
-## 8. 初步估值工作流
+## 9. 初步估值工作流
 
 - 先核验资料中明确披露的数据，剔除无法确认的宣传性表述。
 - 按主分类选择估值模型，并为每个模型列出所需输入数据。
 - 建立可比交易、可比上市公司和退出路径假设。
 - 输出情景框架和数据缺口，不输出买入、卖出或推荐结论。
 
-## 9. 数据可信度
+## 10. 数据可信度
 
-当前估值可用性：{readiness.get("confidence_level") or "待确认"}
+- 数据可信度：{readiness.get("data_confidence_level") or "待确认"}
+- 估值置信度：{readiness.get("valuation_confidence_level") or "待确认"}
+- 是否适合进入初步估值：{"是" if readiness.get("ready_for_preliminary_valuation") else "否"}
 
 {markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要用户确认"])}
 
-## 10. 免责声明
+## 11. 免责声明
 
 本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
 """
@@ -463,6 +499,16 @@ def safe_filename(name: str) -> str:
 def project_name_from_extraction(extraction: dict[str, Any]) -> str:
     summary = extraction.get("project_summary", {})
     return summary.get("project_name") or summary.get("company_name") or "未命名项目"
+
+
+def team_questions(founder_team: dict[str, Any]) -> list[str]:
+    questions = []
+    if founder_team.get("team_gaps"):
+        questions.extend(f"请补充：{item}。" for item in founder_team.get("team_gaps", []))
+    if not founder_team.get("founders"):
+        questions.append("请确认创始人、联合创始人、核心高管姓名和职责分工。")
+    questions.append("请核验创始团队过往履历、产业资源、融资经验和核心人员稳定性。")
+    return questions
 
 
 def dict_section(values: dict[str, Any]) -> str:

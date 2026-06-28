@@ -12,7 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.core.config import settings
-from app.services.valuation_engine.document_parser import parse_project_document
+from app.services.valuation_engine.document_parser import parse_uploaded_document
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
     write_listed_memo,
@@ -94,17 +94,17 @@ def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
 
 def render_private_document_upload() -> None:
     st.subheader("上传项目资料 / 商业计划书")
-    st.warning("商业计划书通常包含敏感信息，请仅在本地可信环境使用；当前功能不会自动调用外部 API 上传资料。")
+    st.warning("商业计划书、融资材料和项目资料通常包含敏感信息。当前功能仅建议在本地可信环境使用；不会自动调用外部 API 上传文件内容。")
     uploaded_file = st.file_uploader(
-        "上传 PDF 项目资料、商业计划书或可研报告",
-        type=["pdf", "pptx", "docx", "xlsx"],
+        "上传 PDF、PPTX、DOCX 项目资料、商业计划书或可研报告",
+        type=["pdf", "ppt", "pptx", "doc", "docx"],
         accept_multiple_files=False,
         key="private_market_document_upload",
     )
 
     if uploaded_file and st.button("读取并解析上传资料"):
         saved_path = save_private_market_upload(uploaded_file)
-        parsed_document = parse_project_document(saved_path)
+        parsed_document = parse_uploaded_document(saved_path)
         extraction = extract_private_market_document(parsed_document)
         extracted_path = save_private_market_extraction(parsed_document, extraction)
         st.session_state["private_document_saved_path"] = saved_path
@@ -119,11 +119,19 @@ def render_private_document_upload() -> None:
     if not parsed_document or not extraction:
         return
 
-    st.success("文件读取完成。")
+    if parsed_document.get("extraction_quality") == "failed":
+        st.error("文件读取未能完成，请查看解析警告。")
+    else:
+        st.success("文件读取完成。")
     if saved_path:
         st.caption(f"上传文件保存路径：{saved_path}")
     if extracted_path:
         st.caption(f"解析中间结果保存路径：{extracted_path}")
+    status_cols = st.columns(4)
+    status_cols[0].metric("文件类型", parsed_document.get("file_type") or "未知")
+    status_cols[1].metric("解析器", parsed_document.get("parser") or "未知")
+    status_cols[2].metric("解析质量", parsed_document.get("extraction_quality") or "未知")
+    status_cols[3].metric("表格数量", len(parsed_document.get("tables", [])))
     for warning in parsed_document.get("warnings", []):
         st.warning(warning)
 
@@ -132,16 +140,21 @@ def render_private_document_upload() -> None:
     financing = extraction.get("financing_info", {})
     operating = extraction.get("operating_data", {})
     financial = extraction.get("financial_data", {})
-    founder_team = extraction.get("founder_team_info", {})
-    cost_structure = extraction.get("cost_structure", {})
+    founder_team = extraction.get("founder_team", {})
+    commercial_model = extraction.get("commercial_model", {})
+    technology = extraction.get("technology_and_barriers", {})
+    product_and_customers = extraction.get("product_and_customers", {})
+    market = extraction.get("market_and_competition", {})
+    capacity_and_cost = extraction.get("capacity_and_cost", {})
     exit_path = extraction.get("exit_path", {})
+    risks = extraction.get("risk_factors", {})
 
     st.subheader("项目摘要与初判")
     cols = st.columns(4)
     cols[0].metric("项目名称", summary.get("project_name") or "待确认")
     cols[1].metric("标的类型初判", summary.get("target_type_guess") or "待确认")
     cols[2].metric("Rachel 战略生态", summary.get("rachel_ecosystem_guess") or "待确认")
-    cols[3].metric("估值可用性", readiness.get("confidence_level") or "待确认")
+    cols[3].metric("估值置信度", readiness.get("valuation_confidence_level") or "待确认")
     st.write(summary.get("one_sentence_summary") or "未提取到一句话摘要。")
 
     st.subheader("创始团队信息")
@@ -150,9 +163,43 @@ def render_private_document_upload() -> None:
             founder_team,
             {
                 "founders": "创始人",
-                "management_team": "管理团队",
-                "team_background": "团队背景",
-                "key_person_risk": "关键人风险",
+                "co_founders": "联合创始人",
+                "core_executives": "核心高管",
+                "technical_lead": "技术负责人",
+                "business_lead": "商业负责人",
+                "finance_lead": "财务负责人",
+                "advisors_or_board": "董事会 / 顾问",
+                "education_background": "高校 / 教育背景",
+                "industry_experience": "产业经验",
+                "entrepreneurial_experience": "创业经历",
+                "research_background": "科研 / 论文 / 专利背景",
+                "big_company_background": "大厂背景",
+                "industrial_resource_background": "产业资源背景",
+                "fundraising_experience": "融资经验",
+                "team_completeness": "团队完整度",
+                "team_gaps": "团队短板",
+                "key_person_dependency": "关键人依赖",
+                "team_risks": "团队风险",
+            },
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.subheader("商业模式")
+    st.dataframe(
+        section_rows(
+            commercial_model,
+            {
+                "revenue_sources": "收入来源",
+                "customer_type": "客户类型",
+                "payment_model": "付费模式",
+                "delivery_model": "交付方式",
+                "is_project_based": "是否项目制",
+                "is_productized": "是否产品化",
+                "is_platform_based": "是否平台型",
+                "is_asset_or_resource_driven": "是否资源 / 资产驱动",
+                "depends_on_government_or_key_customers": "是否依赖政府订单或大客户",
             },
         ),
         use_container_width=True,
@@ -162,20 +209,57 @@ def render_private_document_upload() -> None:
     st.subheader("核心数据提取表")
     st.dataframe(
         section_rows(
-            operating,
+            product_and_customers,
             {
-                "products": "产品与服务",
-                "customers": "客户",
-                "orders_or_contracts": "订单 / 合同",
-                "capacity": "产能",
-                "capacity_utilization": "产能利用率",
-                "construction_period": "建设周期",
-                "revenue_model": "收入模式",
+                "products": "主要产品",
+                "product_form": "产品形态",
+                "customer_type": "客户类型",
+                "signed_customers": "已签客户",
+                "intended_customers": "意向客户",
+                "orders": "订单情况",
+                "contracts": "合同情况",
+                "customer_concentration": "客户集中度",
+                "repurchase": "复购情况",
+                "channels": "渠道情况",
             },
         ),
         use_container_width=True,
         hide_index=True,
     )
+
+    col_tech, col_market = st.columns(2)
+    with col_tech:
+        st.subheader("技术路线与壁垒")
+        st.dataframe(
+            section_rows(
+                technology,
+                {
+                    "core_technology": "核心技术",
+                    "patents": "专利",
+                    "technical_maturity": "技术成熟度",
+                    "competitive_advantage": "技术壁垒 / 竞争优势",
+                    "key_dependencies": "关键技术依赖",
+                },
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+    with col_market:
+        st.subheader("市场与竞争信息")
+        st.dataframe(
+            section_rows(
+                market,
+                {
+                    "market_size": "市场空间",
+                    "market_growth": "市场增速 / 景气度",
+                    "competitors": "竞争格局",
+                    "comparable_listed_companies": "可比上市公司",
+                    "comparable_private_companies": "可比未上市公司",
+                },
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
 
     col_financing, col_financial = st.columns(2)
     with col_financing:
@@ -206,10 +290,12 @@ def render_private_document_upload() -> None:
                     "forecast_revenue": "预测收入",
                     "gross_margin": "毛利率",
                     "net_margin": "净利率",
+                    "ebitda": "EBITDA",
                     "capex": "资本开支",
                     "opex": "运营成本",
                     "cash_flow": "现金流",
                     "payback_period": "回收期",
+                    "break_even_time": "盈亏平衡时间",
                 },
             ),
             use_container_width=True,
@@ -218,16 +304,23 @@ def render_private_document_upload() -> None:
 
     col_cost, col_exit = st.columns(2)
     with col_cost:
-        st.subheader("成本结构提取表")
+        st.subheader("产能与成本信息")
         st.dataframe(
             section_rows(
-                cost_structure,
+                capacity_and_cost,
                 {
+                    "designed_capacity": "设计产能",
+                    "current_capacity": "当前产能",
+                    "capacity_expansion_plan": "产能爬坡 / 扩产计划",
+                    "unit_price": "单位售价",
+                    "unit_cost": "单位成本",
                     "raw_material_cost": "原材料成本",
+                    "energy_cost": "能耗成本",
                     "labor_cost": "人工成本",
-                    "manufacturing_cost": "制造成本",
-                    "sales_and_marketing_cost": "销售 / 获客成本",
-                    "rd_cost": "研发费用",
+                    "depreciation": "设备折旧",
+                    "maintenance_cost": "运维成本",
+                    "environmental_cost": "环保成本",
+                    "compliance_cost": "合规成本",
                 },
             ),
             use_container_width=True,
@@ -239,15 +332,40 @@ def render_private_document_upload() -> None:
             section_rows(
                 exit_path,
                 {
-                    "ipo_path": "IPO 路径",
-                    "ma_path": "并购退出",
-                    "dividend_or_buyback": "分红 / 回购",
+                    "ipo": "IPO",
+                    "ma": "并购",
+                    "dividend_recovery": "分红回收",
                     "asset_sale": "资产出售",
+                    "equity_transfer": "股权转让",
+                    "strategic_acquisition": "产业方收购",
+                    "expected_exit_time": "退出时间预期",
+                    "comparable_exit_cases": "可比退出案例",
                 },
             ),
             use_container_width=True,
             hide_index=True,
         )
+
+    st.subheader("风险因素")
+    st.dataframe(
+        section_rows(
+            risks,
+            {
+                "technology_risk": "技术风险",
+                "market_risk": "市场风险",
+                "customer_risk": "客户风险",
+                "policy_risk": "政策风险",
+                "financing_risk": "融资风险",
+                "execution_risk": "执行 / 产能爬坡风险",
+                "team_risk": "团队风险",
+                "key_person_risk": "关键人风险",
+                "data_reliability_risk": "数据真实性风险",
+                "compliance_risk": "合规风险",
+            },
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
 
     st.subheader("数据可信度标记")
     st.dataframe(extraction.get("field_assessments", []), use_container_width=True, hide_index=True)
@@ -255,6 +373,7 @@ def render_private_document_upload() -> None:
     col_models, col_missing, col_questions = st.columns(3)
     with col_models:
         render_list("推荐估值模型", readiness.get("recommended_models", []))
+        render_list("暂不可用模型", readiness.get("unavailable_models", []))
     with col_missing:
         render_list("当前可用数据", readiness.get("usable_data", []))
         render_list("缺失数据清单", readiness.get("missing_data", []))

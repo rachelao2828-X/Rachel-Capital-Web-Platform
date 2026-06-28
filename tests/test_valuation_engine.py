@@ -1,5 +1,8 @@
 from datetime import date
 
+import pytest
+
+from app.services.valuation_engine.document_parser import parse_uploaded_document
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
 from app.services.valuation_engine.memo_writer import (
     write_listed_memo,
@@ -193,8 +196,9 @@ def test_extract_private_market_document_recommends_financing_models() -> None:
     parsed = {
         "file_name": "测试AI公司商业计划书.pdf",
         "file_path": "/tmp/测试AI公司商业计划书.pdf",
+        "file_type": "pdf",
         "pages": [{"page_number": 1, "text": "项目名称：测试AI公司\n本轮融资金额：人民币5000万元\n投前估值：人民币5亿元\n核心技术：大模型推理平台\n营业收入：2025年收入3000万元"}],
-        "raw_text": "项目名称：测试AI公司\n本轮融资金额：人民币5000万元\n投前估值：人民币5亿元\n核心技术：大模型推理平台\n营业收入：2025年收入3000万元",
+        "raw_text": "项目名称：测试AI公司\n创始人：张三，前华为AI架构师\n技术负责人：李四\n本轮融资金额：人民币5000万元\n投前估值：人民币5亿元\n核心技术：大模型推理平台\n营业收入：2025年收入3000万元",
         "tables": [],
         "warnings": [],
     }
@@ -203,14 +207,17 @@ def test_extract_private_market_document_recommends_financing_models() -> None:
 
     assert extraction["project_summary"]["project_name"] == "测试AI公司"
     assert extraction["project_summary"]["target_type_guess"] == "一级市场融资标的"
+    assert "founder_team" in extraction
+    assert extraction["founder_team"]["founders"]
     assert "可比融资交易法" in extraction["valuation_readiness"]["recommended_models"]
-    assert any(row["来源"] == "PDF 明确披露" for row in extraction["field_assessments"])
+    assert any(row["来源"] == "资料明确披露" for row in extraction["field_assessments"])
 
 
 def test_write_private_market_document_outputs_public_false(tmp_path) -> None:
     parsed = {
         "file_name": "信宜绿色算力中心BP.pdf",
         "file_path": "/tmp/信宜绿色算力中心BP.pdf",
+        "file_type": "pdf",
         "pages": [{"page_number": 1, "text": "项目名称：信宜绿色算力中心\n项目总投资：10亿元\n建设周期：18个月\n产能：规划3000个机柜"}],
         "raw_text": "项目名称：信宜绿色算力中心\n项目总投资：10亿元\n建设周期：18个月\n产能：规划3000个机柜",
         "tables": [],
@@ -225,4 +232,69 @@ def test_write_private_market_document_outputs_public_false(tmp_path) -> None:
     assert framework_path == tmp_path / "15_估值引擎" / "估值历史" / "未上市一级市场" / "信宜绿色算力中心_2026-06-28_未上市一级市场估值框架.md"
     assert "type: private_market_document_analysis" in analysis_path.read_text(encoding="utf-8")
     assert "public: false" in analysis_path.read_text(encoding="utf-8")
+    assert "## 4. 创始团队信息" in analysis_path.read_text(encoding="utf-8")
+    assert "团队风险引用" in framework_path.read_text(encoding="utf-8")
     assert "public: false" in framework_path.read_text(encoding="utf-8")
+
+
+def test_parse_legacy_ppt_and_doc_warn_without_crashing(tmp_path) -> None:
+    ppt = tmp_path / "old_deck.ppt"
+    doc = tmp_path / "old_doc.doc"
+    ppt.write_bytes(b"legacy ppt")
+    doc.write_bytes(b"legacy doc")
+
+    ppt_result = parse_uploaded_document(ppt)
+    doc_result = parse_uploaded_document(doc)
+
+    assert ppt_result["file_type"] == "ppt"
+    assert ppt_result["extraction_quality"] == "failed"
+    assert "PPTX" in " ".join(ppt_result["warnings"])
+    assert doc_result["file_type"] == "doc"
+    assert doc_result["extraction_quality"] == "failed"
+    assert "DOCX" in " ".join(doc_result["warnings"])
+
+
+def test_parse_docx_extracts_paragraphs_and_tables(tmp_path) -> None:
+    docx = pytest.importorskip("docx")
+    document = docx.Document()
+    document.add_heading("项目名称：DOCX测试项目", level=1)
+    document.add_paragraph("创始人：王五，连续创业者。融资金额：人民币3000万元。")
+    table = document.add_table(rows=2, cols=2)
+    table.cell(0, 0).text = "营业收入"
+    table.cell(0, 1).text = "2025年5000万元"
+    table.cell(1, 0).text = "毛利率"
+    table.cell(1, 1).text = "45%"
+    path = tmp_path / "docx_test.docx"
+    document.save(path)
+
+    result = parse_uploaded_document(path)
+
+    assert result["file_type"] == "docx"
+    assert result["extraction_quality"] in {"medium", "high"}
+    assert "DOCX测试项目" in result["raw_text"]
+    assert result["paragraphs"]
+    assert result["tables"]
+
+
+def test_parse_pptx_extracts_slides_and_tables(tmp_path) -> None:
+    pptx = pytest.importorskip("pptx")
+    presentation = pptx.Presentation()
+    slide = presentation.slides.add_slide(presentation.slide_layouts[1])
+    slide.shapes.title.text = "项目名称：PPTX测试项目"
+    slide.placeholders[1].text = "创始团队：赵六，前产业公司高管。本轮融资金额：人民币8000万元。"
+    table_shape = slide.shapes.add_table(2, 2, 100000, 2500000, 5000000, 1000000)
+    table = table_shape.table
+    table.cell(0, 0).text = "收入"
+    table.cell(0, 1).text = "1亿元"
+    table.cell(1, 0).text = "客户"
+    table.cell(1, 1).text = "产业客户"
+    path = tmp_path / "pptx_test.pptx"
+    presentation.save(path)
+
+    result = parse_uploaded_document(path)
+
+    assert result["file_type"] == "pptx"
+    assert result["extraction_quality"] in {"medium", "high"}
+    assert "PPTX测试项目" in result["raw_text"]
+    assert result["slides"]
+    assert result["tables"]

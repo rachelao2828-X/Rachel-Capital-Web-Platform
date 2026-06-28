@@ -26,6 +26,7 @@ from app.services.valuation_engine.memo_writer import (
     write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
     write_listed_memo,
+    write_multi_model_valuation_report,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
     write_private_market_financial_model_analysis,
@@ -48,6 +49,10 @@ from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_financial_model,
 )
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
+from app.services.valuation_engine.multi_model_valuation import (
+    display_money,
+    run_multi_model_comparison,
+)
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
@@ -212,6 +217,15 @@ def save_basic_valuation_result(valuation_result: dict) -> Path:
     safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
     output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_基础估值计算.json"
     output_path.write_text(json.dumps(valuation_result, ensure_ascii=False, indent=2), encoding="utf-8")
+    return output_path
+
+
+def save_multi_model_valuation_result(multi_model_result: dict) -> Path:
+    PRIVATE_MARKET_CASES_DIR.mkdir(parents=True, exist_ok=True)
+    target_name = multi_model_result.get("target_name") or "未命名项目"
+    safe_name = re.sub(r"[\\/:*?\"<>|\s]+", "_", target_name).strip("_") or "未命名项目"
+    output_path = PRIVATE_MARKET_CASES_DIR / f"{safe_name}_{datetime.now().date().isoformat()}_多模型估值对比.json"
+    output_path.write_text(json.dumps(multi_model_result, ensure_ascii=False, indent=2), encoding="utf-8")
     return output_path
 
 
@@ -497,6 +511,20 @@ def assumption_json_options() -> list[Path]:
     return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_关键假设确认.json"), reverse=True)
 
 
+def load_basic_valuation_json(path: Path) -> dict | None:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        st.error(f"读取基础估值计算 JSON 失败：{exc}")
+        return None
+
+
+def basic_valuation_json_options() -> list[Path]:
+    if not PRIVATE_MARKET_CASES_DIR.exists():
+        return []
+    return sorted(PRIVATE_MARKET_CASES_DIR.glob("*_基础估值计算.json"), reverse=True)
+
+
 def model_results_rows(model_results: list[dict]) -> list[dict[str, str]]:
     return [
         {
@@ -511,6 +539,85 @@ def model_results_rows(model_results: list[dict]) -> list[dict[str, str]]:
         }
         for item in model_results
     ]
+
+
+def multi_model_comparison_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "模型": item.get("model", ""),
+            "适用度": item.get("status", ""),
+            "输入完整度": item.get("input_completeness", ""),
+            "折扣后估值": item.get("discounted_valuation", ""),
+            "置信度": item.get("confidence", ""),
+            "主要依据": item.get("basis", ""),
+            "主要限制": item.get("limitations", ""),
+            "是否可纳入": "是" if item.get("can_include") else "否",
+        }
+        for item in rows
+    ]
+
+
+def weight_editor_rows(rows: list[dict]) -> list[dict]:
+    return [
+        {
+            "模型": item.get("model", ""),
+            "默认权重": float(item.get("default_weight", 0)),
+            "用户调整权重": float(item.get("user_weight", 0)),
+            "是否纳入综合区间": bool(item.get("include_in_range")),
+            "权重原因": item.get("weight_reason", ""),
+            "模型置信度": item.get("model_confidence", ""),
+        }
+        for item in rows
+    ]
+
+
+def user_weighting_from_rows(rows) -> list[dict]:
+    if hasattr(rows, "to_dict"):
+        rows = rows.to_dict("records")
+    return [
+        {
+            "model": row.get("模型", ""),
+            "user_weight": row.get("用户调整权重", 0),
+            "include_in_range": row.get("是否纳入综合区间", False),
+        }
+        for row in rows
+    ]
+
+
+def weighting_display_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [
+        {
+            "模型": item.get("model", ""),
+            "默认权重": f"{item.get('default_weight', 0):.1f}%",
+            "用户调整权重": f"{item.get('user_weight', 0):.1f}%",
+            "归一化权重": f"{item.get('normalized_weight', 0):.1%}",
+            "是否纳入综合区间": "是" if item.get("include_in_range") else "否",
+            "权重原因": item.get("weight_reason", ""),
+            "模型置信度": item.get("model_confidence", ""),
+        }
+        for item in rows
+    ]
+
+
+def model_interval_rows(rows: list[dict]) -> list[dict]:
+    chart_rows = []
+    for row in rows:
+        values = row.get("range_values") or {}
+        if not values:
+            continue
+        chart_rows.append(
+            {
+                "模型": row.get("model", ""),
+                "保守估值": values.get("low"),
+                "中性估值": values.get("base"),
+                "乐观估值": values.get("high"),
+            }
+        )
+    return chart_rows
+
+
+def excluded_model_rows(rows: list[dict]) -> list[dict[str, str]]:
+    return [{"模型": item.get("model", ""), "原因": item.get("reason", "")} for item in rows]
 
 
 def render_basic_valuation_calculation() -> None:
@@ -609,6 +716,147 @@ def render_basic_valuation_calculation() -> None:
         if st.button("生成 Obsidian 基础估值计算报告"):
             try:
                 output_path = write_basic_valuation_calculation_report(valuation_result, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+
+
+def render_multi_model_valuation_comparison() -> None:
+    st.subheader("多模型估值对比与综合区间")
+    st.warning("本模块基于多个估值模型生成综合估值区间。结果仅为内部研究参考，不构成投资建议、投资邀约、买卖依据、目标价或收益承诺。模型结果高度依赖已确认关键假设和数据质量。")
+
+    source_mode = st.radio("V0.6 估值结果来源", ["使用当前页面基础估值计算结果", "读取已保存基础估值计算 JSON"], horizontal=True)
+    valuation_result = None
+    if source_mode == "使用当前页面基础估值计算结果":
+        valuation_result = st.session_state.get("private_basic_valuation_result")
+        if not valuation_result:
+            st.info("当前页面还没有 V0.6 基础估值计算结果，请先运行基础估值自动计算。")
+    else:
+        options = basic_valuation_json_options()
+        if not options:
+            st.info(f"暂未找到已保存基础估值计算 JSON：{PRIVATE_MARKET_CASES_DIR}")
+        else:
+            selected = st.selectbox("选择基础估值计算 JSON", options, format_func=lambda path: path.name)
+            if st.button("读取基础估值计算 JSON"):
+                valuation_result = load_basic_valuation_json(selected)
+                if valuation_result:
+                    st.session_state["private_loaded_basic_valuation_result"] = valuation_result
+            valuation_result = st.session_state.get("private_loaded_basic_valuation_result")
+
+    if not valuation_result:
+        return
+
+    preview_result = run_multi_model_comparison(valuation_result)
+    weighted_range = preview_result.get("weighted_valuation_range", {})
+    readiness = valuation_result.get("input_summary", {})
+
+    st.markdown("### 估值准备度")
+    readiness_cols = st.columns(4)
+    readiness_cols[0].metric("标的类型", preview_result.get("target_type", "未确认"))
+    readiness_cols[1].metric("V0.5 准备度", readiness.get("valuation_readiness_level", "不足"))
+    readiness_cols[2].metric("可纳入模型", weighted_range.get("included_model_count", 0))
+    readiness_cols[3].metric("暂不纳入模型", weighted_range.get("excluded_model_count", 0))
+    if weighted_range.get("included_model_count", 0) < 2:
+        st.warning("可计算模型少于 2 个，仍可查看单模型结果，但综合区间置信度较低。")
+
+    st.markdown("### 可纳入模型列表")
+    included_models = [row.get("model", "") for row in preview_result.get("weighting_table", []) if row.get("include_in_range")]
+    render_list("模型", included_models)
+
+    st.markdown("### 不可纳入模型列表")
+    st.dataframe(excluded_model_rows(preview_result.get("excluded_models", [])), use_container_width=True, hide_index=True)
+
+    st.markdown("### 用户可编辑模型权重表")
+    edited_rows = st.data_editor(
+        weight_editor_rows(preview_result.get("weighting_table", [])),
+        key="multi_model_weight_editor",
+        use_container_width=True,
+        hide_index=True,
+        disabled=["模型", "默认权重", "权重原因", "模型置信度"],
+        column_config={
+            "用户调整权重": st.column_config.NumberColumn("用户调整权重", min_value=0.0, step=1.0, format="%.1f%%"),
+            "是否纳入综合区间": st.column_config.CheckboxColumn("是否纳入综合区间"),
+        },
+    )
+    st.caption("权重总和不等于 100% 时，系统会在纳入模型之间自动归一化。")
+
+    if st.button("生成多模型综合区间"):
+        user_weighting = user_weighting_from_rows(edited_rows)
+        st.session_state["private_multi_model_valuation_result"] = run_multi_model_comparison(valuation_result, user_weighting)
+
+    multi_model_result = st.session_state.get("private_multi_model_valuation_result")
+    if not multi_model_result:
+        return
+
+    st.markdown("### 模型结果对比表")
+    st.dataframe(multi_model_comparison_rows(multi_model_result.get("model_comparison", [])), use_container_width=True, hide_index=True)
+
+    st.markdown("### 模型权重表")
+    st.dataframe(weighting_display_rows(multi_model_result.get("weighting_table", [])), use_container_width=True, hide_index=True)
+
+    st.markdown("### 模型估值结果柱状图")
+    interval_rows = model_interval_rows(multi_model_result.get("weighting_table", []))
+    base_chart_rows = [{"模型": row["模型"], "base估值": row["中性估值"]} for row in interval_rows]
+    if base_chart_rows:
+        st.bar_chart(base_chart_rows, x="模型", y="base估值")
+    else:
+        st.info("暂无可用于图表展示的模型 base 估值。")
+
+    st.markdown("### 模型区间对比图")
+    if interval_rows:
+        st.bar_chart(interval_rows, x="模型", y=["保守估值", "中性估值", "乐观估值"])
+
+    weighted_range = multi_model_result.get("weighted_valuation_range", {})
+    st.markdown("### 加权综合估值区间")
+    range_cols = st.columns(5)
+    range_cols[0].metric("保守估值", display_money(weighted_range.get("low")))
+    range_cols[1].metric("中性估值", display_money(weighted_range.get("base")))
+    range_cols[2].metric("乐观估值", display_money(weighted_range.get("high")))
+    range_cols[3].metric("纳入模型", weighted_range.get("included_model_count", 0))
+    range_cols[4].metric("剔除模型", weighted_range.get("excluded_model_count", 0))
+    st.write(weighted_range.get("weight_source", ""))
+
+    dispersion = multi_model_result.get("model_dispersion", {})
+    st.markdown("### 模型分歧度")
+    dispersion_cols = st.columns(4)
+    dispersion_cols[0].metric("最低模型估值", display_money(dispersion.get("min_value")))
+    dispersion_cols[1].metric("最高模型估值", display_money(dispersion.get("max_value")))
+    spread_ratio = dispersion.get("spread_ratio")
+    dispersion_cols[2].metric("分歧倍数", f"{spread_ratio:.2f}x" if spread_ratio else "无法判断")
+    dispersion_cols[3].metric("分歧等级", dispersion.get("dispersion_level", "无法判断"))
+    st.write(dispersion.get("reason", ""))
+
+    st.markdown("### 综合置信度")
+    st.metric("综合置信度", multi_model_result.get("confidence_level", "仅供框架参考"))
+    st.write(multi_model_result.get("confidence_reason", ""))
+
+    st.markdown("### 主要分歧来源")
+    for item in multi_model_result.get("major_divergence_drivers", []):
+        st.write(f"- {item}")
+
+    st.markdown("### 敏感性提示")
+    for note in multi_model_result.get("sensitivity_notes", []):
+        st.write(f"- {note}")
+
+    st.markdown("### 被剔除模型说明")
+    st.dataframe(excluded_model_rows(multi_model_result.get("excluded_models", [])), use_container_width=True, hide_index=True)
+
+    st.markdown("### 保存与输出")
+    col_save, col_obsidian = st.columns(2)
+    with col_save:
+        st.caption(str(PRIVATE_MARKET_CASES_DIR))
+        if st.button("保存多模型估值 JSON"):
+            output_path = save_multi_model_valuation_result(multi_model_result)
+            st.success(f"已保存：{output_path}")
+            st.code(str(output_path), language="text")
+    with col_obsidian:
+        vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="multi_model_vault_path")
+        st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "多模型估值对比"))
+        if st.button("生成 Obsidian 多模型估值对比报告"):
+            try:
+                output_path = write_multi_model_valuation_report(multi_model_result, vault_path)
             except OSError as exc:
                 st.error(f"生成失败：{exc}")
             else:
@@ -1130,6 +1378,8 @@ with private_tab:
     render_assumption_confirmation_page()
     st.divider()
     render_basic_valuation_calculation()
+    st.divider()
+    render_multi_model_valuation_comparison()
     st.divider()
     render_private_autofill_message()
     st.subheader("标的基本信息")

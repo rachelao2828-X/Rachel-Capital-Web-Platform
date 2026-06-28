@@ -28,9 +28,10 @@ DISCOUNT_FIELDS = {
 
 def run_basic_private_market_valuation(assumption_data: dict[str, Any]) -> dict[str, Any]:
     target_name = assumption_data.get("target_name") or "未命名项目"
+    target_type = target_type_from_assumption(assumption_data)
     readiness = assumption_data.get("readiness_summary", {})
     inputs = assumption_data.get("valuation_inputs") or build_inputs_from_groups(assumption_data.get("assumption_groups", {}))
-    input_summary = summarize_inputs(inputs, readiness)
+    input_summary = summarize_inputs(inputs, readiness, target_type)
     warnings = list(assumption_data.get("warnings", []))
     if not assumption_data.get("ready_for_valuation_calculation", False):
         warnings.append("关键假设准备度不足或仍需确认，本次结果仅作为低置信度试算。")
@@ -67,6 +68,7 @@ def run_basic_private_market_valuation(assumption_data: dict[str, Any]) -> dict[
     ] or [{"折扣项": "未设置风险折扣", "折扣率": "", "原因": "当前未设置风险折扣，因此结果为未折扣估值。", "是否应用": "否"}]
     return {
         "target_name": target_name,
+        "target_type": target_type,
         "valuation_date": date.today().isoformat(),
         "input_summary": input_summary,
         "available_models": available_models,
@@ -385,12 +387,24 @@ def input_completeness_from_missing(missing: list[str], has_values: bool) -> str
     return "低"
 
 
-def summarize_inputs(inputs: dict[str, dict[str, Any]], readiness: dict[str, Any]) -> dict[str, Any]:
+def summarize_inputs(inputs: dict[str, dict[str, Any]], readiness: dict[str, Any], target_type: str | None = None) -> dict[str, Any]:
     return {
+        "target_type": target_type or "未确认",
         "valuation_readiness_level": readiness.get("valuation_readiness_level", "不足"),
         "ready_for_v0_6_calculation": readiness.get("ready_for_v0_6_calculation", False),
         "input_groups": {group: list(values.keys()) for group, values in inputs.items() if values},
     }
+
+
+def target_type_from_assumption(assumption_data: dict[str, Any]) -> str:
+    for item in assumption_data.get("assumption_groups", {}).get("project_basic", []):
+        if item.get("field") == "标的类型" and item.get("confirmed_value"):
+            return str(item.get("confirmed_value"))
+    project_basic = assumption_data.get("valuation_inputs", {}).get("project_basic", {})
+    payload = project_basic.get("标的类型") or project_basic.get("标的类型初选")
+    if payload and payload.get("confirmed_value"):
+        return str(payload.get("confirmed_value"))
+    return str(assumption_data.get("target_type") or "未确认")
 
 
 def collect_missing_data(model_results: list[dict[str, Any]], readiness: dict[str, Any]) -> list[str]:

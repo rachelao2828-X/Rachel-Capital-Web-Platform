@@ -111,6 +111,20 @@ def write_basic_valuation_calculation_report(
     return output_path
 
 
+def write_multi_model_valuation_report(
+    multi_model_result: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = multi_model_result.get("target_name") or "未命名项目"
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "多模型估值对比"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_多模型估值对比.md"
+    output_path.write_text(multi_model_valuation_markdown(multi_model_result, created), encoding="utf-8")
+    return output_path
+
+
 def listed_markdown(profile: ListedCompanyProfile, result: ListedValuationResult, created: date) -> str:
     return f"""---
 type: listed_company_valuation
@@ -796,6 +810,106 @@ tags:
 """
 
 
+def multi_model_valuation_markdown(multi_model_result: dict[str, Any], created: date) -> str:
+    project_name = multi_model_result.get("target_name") or "未命名项目"
+    weighted_range = multi_model_result.get("weighted_valuation_range", {})
+    dispersion = multi_model_result.get("model_dispersion", {})
+    return f"""---
+type: private_market_multi_model_valuation
+title: {project_name}多模型估值对比
+status: draft
+public: false
+created: {created.isoformat()}
+target_name: {project_name}
+valuation_confidence: {multi_model_result.get("confidence_level", "仅供框架参考")}
+tags:
+  - 一级市场
+  - 多模型估值对比
+  - 估值引擎
+---
+
+# {project_name}多模型估值对比
+
+## 1. 输入来源
+
+- 输入来源：{multi_model_result.get("input_source", "V0.6 基础估值计算结果")}
+- 标的类型：{multi_model_result.get("target_type", "未确认")}
+- 估值日期：{multi_model_result.get("valuation_date", created.isoformat())}
+
+## 2. V0.6 基础估值结果摘要
+
+本报告基于 V0.6 基础估值计算结果生成，所有模型结果需人工确认，不构成最终投资结论。
+
+## 3. 纳入综合区间的模型
+
+{included_models_markdown(multi_model_result.get("weighting_table", []))}
+
+## 4. 未纳入模型及原因
+
+{excluded_models_markdown(multi_model_result.get("excluded_models", []))}
+
+## 5. 模型权重表
+
+{weighting_table_markdown(multi_model_result.get("weighting_table", []))}
+
+## 6. 模型结果对比
+
+{multi_model_comparison_markdown(multi_model_result.get("model_comparison", []))}
+
+## 7. 加权综合估值区间
+
+- 保守估值：{format_report_money(weighted_range.get("low"))}
+- 中性估值：{format_report_money(weighted_range.get("base"))}
+- 乐观估值：{format_report_money(weighted_range.get("high"))}
+- 区间展示：{weighted_range.get("display", "暂不生成综合区间")}
+- 货币单位：{weighted_range.get("currency", "万元 RMB")}
+- 生成方法：{weighted_range.get("method", "")}
+- 权重来源：{weighted_range.get("weight_source", "")}
+- 纳入模型数量：{weighted_range.get("included_model_count", 0)}
+- 剔除模型数量：{weighted_range.get("excluded_model_count", 0)}
+
+## 8. 模型分歧度
+
+- 最低模型估值：{format_report_money(dispersion.get("min_value"))}
+- 最高模型估值：{format_report_money(dispersion.get("max_value"))}
+- 分歧倍数：{format_ratio(dispersion.get("spread_ratio"))}
+- 分歧等级：{dispersion.get("dispersion_level", "无法判断")}
+- 主要原因：{dispersion.get("reason", "待确认")}
+
+## 9. 综合置信度
+
+- 综合置信度：{multi_model_result.get("confidence_level", "仅供框架参考")}
+- 说明：{multi_model_result.get("confidence_reason", "待确认")}
+
+## 10. 主要分歧来源
+
+{bullet_list(multi_model_result.get("major_divergence_drivers", [])) if multi_model_result.get("major_divergence_drivers") else "- 暂无"}
+
+## 11. 敏感性提示
+
+{bullet_list(multi_model_result.get("sensitivity_notes", [])) if multi_model_result.get("sensitivity_notes") else "- 暂无"}
+
+## 12. 主要限制
+
+{bullet_list(multi_model_result.get("warnings", [])) if multi_model_result.get("warnings") else "- 本阶段仅生成多模型估值对比与综合区间，不构成最终投资结论。"}
+
+## 13. 后续需要补充的数据
+
+{bullet_list(multi_model_result.get("for_v0_8_decision_memo", {}).get("data_gaps", [])) if multi_model_result.get("for_v0_8_decision_memo", {}).get("data_gaps") else "- 暂无"}
+
+## 14. 后续研究任务
+
+- 核验各模型输入数据、口径、期间、权重和剔除原因。
+- 补充可比公司、可比交易、退出路径、现金流和折扣假设。
+- 在 V0.8 中形成投资备忘录草稿前，保留 human review gate。
+- 不输出买入、卖出、推荐、目标价或收益承诺。
+
+## 15. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约、买卖依据、目标价或收益承诺。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -942,6 +1056,85 @@ def unavailable_models_markdown(rows: list[dict[str, Any]]) -> str:
         for row in rows
     ]
     return markdown_table(display_rows, ["模型", "缺失字段", "主要限制"]) if display_rows else "- 暂无"
+
+
+def included_models_markdown(rows: list[dict[str, Any]]) -> str:
+    included = [
+        {
+            "模型": row.get("model", ""),
+            "归一化权重": format_percent(row.get("normalized_weight")),
+            "模型置信度": row.get("model_confidence", ""),
+        }
+        for row in rows
+        if row.get("include_in_range")
+    ]
+    return markdown_table(included, ["模型", "归一化权重", "模型置信度"]) if included else "- 暂无"
+
+
+def excluded_models_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [{"模型": row.get("model", ""), "原因": row.get("reason", "")} for row in rows]
+    return markdown_table(display_rows, ["模型", "原因"]) if display_rows else "- 暂无"
+
+
+def weighting_table_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "模型": row.get("model", ""),
+            "默认权重": f"{row.get('default_weight', 0):.1f}%",
+            "用户调整权重": f"{row.get('user_weight', 0):.1f}%",
+            "归一化权重": format_percent(row.get("normalized_weight")),
+            "是否纳入综合区间": "是" if row.get("include_in_range") else "否",
+            "权重原因": row.get("weight_reason", ""),
+            "模型置信度": row.get("model_confidence", ""),
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["模型", "默认权重", "用户调整权重", "归一化权重", "是否纳入综合区间", "权重原因", "模型置信度"]) if display_rows else "- 暂无"
+
+
+def multi_model_comparison_markdown(rows: list[dict[str, Any]]) -> str:
+    display_rows = [
+        {
+            "模型": row.get("model", ""),
+            "适用度": row.get("status", ""),
+            "输入完整度": row.get("input_completeness", ""),
+            "折扣后估值": row.get("discounted_valuation", ""),
+            "置信度": row.get("confidence", ""),
+            "主要依据": row.get("basis", ""),
+            "主要限制": row.get("limitations", ""),
+            "是否可纳入": "是" if row.get("can_include") else "否",
+        }
+        for row in rows
+    ]
+    return markdown_table(display_rows, ["模型", "适用度", "输入完整度", "折扣后估值", "置信度", "主要依据", "主要限制", "是否可纳入"]) if display_rows else "- 暂无"
+
+
+def format_report_money(value: Any) -> str:
+    if value is None:
+        return "缺失"
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    if abs(numeric) >= 10000:
+        return f"{numeric / 10000:.2f} 亿元"
+    return f"{numeric:.2f} 万元"
+
+
+def format_ratio(value: Any) -> str:
+    if value is None:
+        return "无法判断"
+    try:
+        return f"{float(value):.2f}x"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def format_percent(value: Any) -> str:
+    try:
+        return f"{float(value):.1%}"
+    except (TypeError, ValueError):
+        return ""
 
 
 def financial_model_supplement_markdown(financial_model: dict[str, Any] | None) -> str:

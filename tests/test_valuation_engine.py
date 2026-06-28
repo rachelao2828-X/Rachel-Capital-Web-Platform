@@ -9,6 +9,7 @@ from app.services.valuation_engine.memo_writer import (
     write_basic_valuation_calculation_report,
     write_assumption_confirmation_report,
     write_listed_memo,
+    write_multi_model_valuation_report,
     write_private_market_document_analysis,
     write_private_market_document_valuation_framework,
     write_private_market_financial_model_analysis,
@@ -25,6 +26,7 @@ from app.services.valuation_engine.private_market_autofill import (
     build_private_market_autofill_from_financial_model,
 )
 from app.services.valuation_engine.private_market_extractor import extract_private_market_document
+from app.services.valuation_engine.multi_model_valuation import run_multi_model_comparison
 from app.services.valuation_engine.valuation_calculator import run_basic_private_market_valuation
 
 
@@ -650,4 +652,57 @@ def test_write_basic_valuation_calculation_report_public_false(tmp_path) -> None
     assert "type: private_market_basic_valuation_calculation" in content
     assert "public: false" in content
     assert "## 8. 初步估值区间" in content
+    assert "本文件仅用于 Rachel Capital OS 内部研究" in content
+
+
+def test_run_multi_model_comparison_default_weights_and_range() -> None:
+    basic_result = run_basic_private_market_valuation(basic_assumption_data())
+
+    result = run_multi_model_comparison(basic_result)
+
+    assert result["target_name"] == "测试项目"
+    assert result["weighted_valuation_range"]["method"] == "weighted_multi_model"
+    assert result["weighted_valuation_range"]["base"] is not None
+    assert result["weighted_valuation_range"]["included_model_count"] >= 2
+    assert result["model_dispersion"]["dispersion_level"] in {"低", "中", "高", "极高"}
+    assert result["confidence_level"] in {"高", "中", "低", "仅供框架参考"}
+    assert result["for_v0_8_decision_memo"]["recommended_research_action"] in {
+        "进入观察池",
+        "需要补充数据",
+        "进入深度研究",
+        "暂不进入估值",
+        "等待更多财务或项目数据",
+    }
+
+
+def test_run_multi_model_comparison_user_weights_normalized() -> None:
+    basic_result = run_basic_private_market_valuation(basic_assumption_data())
+    user_weighting = [
+        {"model": "收入倍数法", "user_weight": 90, "include_in_range": True},
+        {"model": "利润倍数法", "user_weight": 10, "include_in_range": True},
+        {"model": "EBITDA 倍数法", "user_weight": 0, "include_in_range": False},
+        {"model": "订单倍数法", "user_weight": 0, "include_in_range": False},
+        {"model": "DCF 简化法", "user_weight": 0, "include_in_range": False},
+        {"model": "资产重估 / 重置成本法", "user_weight": 0, "include_in_range": False},
+    ]
+
+    result = run_multi_model_comparison(basic_result, user_weighting)
+    included = [row for row in result["weighting_table"] if row["include_in_range"] and row["normalized_weight"] > 0]
+
+    assert len(included) == 2
+    assert round(sum(row["normalized_weight"] for row in included), 6) == 1
+    assert any(row["model"] == "EBITDA 倍数法" for row in result["excluded_models"])
+
+
+def test_write_multi_model_valuation_report_public_false(tmp_path) -> None:
+    basic_result = run_basic_private_market_valuation(basic_assumption_data())
+    result = run_multi_model_comparison(basic_result)
+
+    output = write_multi_model_valuation_report(result, tmp_path, created=date(2026, 6, 28))
+    content = output.read_text(encoding="utf-8")
+
+    assert output == tmp_path / "15_估值引擎" / "多模型估值对比" / "测试项目_2026-06-28_多模型估值对比.md"
+    assert "type: private_market_multi_model_valuation" in content
+    assert "public: false" in content
+    assert "## 7. 加权综合估值区间" in content
     assert "本文件仅用于 Rachel Capital OS 内部研究" in content

@@ -1,0 +1,43 @@
+from pathlib import Path
+
+from app.services.ecosystem_loader import load_ecosystem
+
+
+def test_load_huawei_ecosystem_sections(tmp_path: Path) -> None:
+    ecosystem_dir = tmp_path / "02_战略生态"
+    ecosystem_dir.mkdir()
+    (ecosystem_dir / "华为生态.md").write_text(
+        """---
+id: ECO-HUAWEI-001
+type: ecosystem
+title: 华为生态
+public: false
+tags:
+  - 战略生态
+---
+
+# 华为生态
+
+## 1. 生态定位
+
+华为生态定位内容。
+
+## 2. 核心逻辑
+
+核心逻辑内容。
+
+## 11. 与其他战略生态的关系
+
+关系内容。
+""",
+        encoding="utf-8",
+    )
+
+    document = load_ecosystem("华为生态", vault_path=str(tmp_path))
+
+    assert document.exists is True
+    assert document.status == "已读取"
+    assert document.public is False
+    assert document.sections["生态定位"] == "华为生态定位内容。"
+    assert document.sections["核心逻辑"] == "核心逻辑内容。"
+    assert document.sections["与其他生态关系"] == "关系内容。"

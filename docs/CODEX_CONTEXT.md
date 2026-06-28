@@ -48,6 +48,14 @@ GitHub Pages，但当前阶段不要发布新功能。
 - GitHub Pages 发布需要用户单独明确指令。
 - 等七大战略生态完成后，再统一进行公开版发布审查。
 
+## Strategic Ecosystems Module
+
+- 已完成 AI基础设施生态。
+- 已完成 半导体生态。
+- 已完成 华为生态。
+- 下一个建议建设：机器人生态。
+- 当前模块建设默认只面向 Obsidian + localhost + `develop`，不自动发布 GitHub Pages。
+
 ## 当前重要边界
 
 - 不要合并 main

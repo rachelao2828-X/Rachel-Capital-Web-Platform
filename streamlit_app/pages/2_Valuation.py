@@ -1,6 +1,9 @@
+import json
 import os
 from pathlib import Path
+import re
 import sys
+from datetime import datetime
 
 import streamlit as st
 
@@ -9,8 +12,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from app.core.config import settings
+from app.services.valuation_engine.document_parser import parse_project_document
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
-from app.services.valuation_engine.memo_writer import write_listed_memo, write_private_market_memo
+from app.services.valuation_engine.memo_writer import (
+    write_listed_memo,
+    write_private_market_document_analysis,
+    write_private_market_document_valuation_framework,
+    write_private_market_memo,
+)
 from app.services.valuation_engine.model_registry import (
     ASSET_ATTRIBUTES,
     ECOSYSTEM_OPTIONS,
@@ -23,6 +32,11 @@ from app.services.valuation_engine.model_registry import (
     PRIVATE_TARGET_TYPES,
 )
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
+from app.services.valuation_engine.private_market_extractor import extract_private_market_document
+
+
+PRIVATE_MARKET_UPLOAD_DIR = PROJECT_ROOT / "data" / "uploads" / "private_market"
+PRIVATE_MARKET_EXTRACTED_DIR = PROJECT_ROOT / "data" / "extracted" / "private_market"
 
 
 def default_vault_path() -> str:
@@ -36,6 +50,240 @@ def render_list(title: str, items: list[str]) -> None:
         return
     for item in items:
         st.write(f"- {item}")
+
+
+def safe_upload_filename(file_name: str) -> str:
+    path = Path(file_name)
+    stem = re.sub(r"[\\/:*?\"<>|\s]+", "_", path.stem).strip("_") or "uploaded_project_document"
+    suffix = path.suffix.lower() or ".pdf"
+    return f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{stem}{suffix}"
+
+
+def save_private_market_upload(uploaded_file) -> Path:
+    PRIVATE_MARKET_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = PRIVATE_MARKET_UPLOAD_DIR / safe_upload_filename(uploaded_file.name)
+    output_path.write_bytes(uploaded_file.getbuffer())
+    return output_path
+
+
+def save_private_market_extraction(parsed_document: dict, extraction: dict) -> Path:
+    PRIVATE_MARKET_EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
+    source_stem = Path(parsed_document.get("file_name", "project_document")).stem
+    safe_stem = re.sub(r"[\\/:*?\"<>|\s]+", "_", source_stem).strip("_") or "project_document"
+    output_path = PRIVATE_MARKET_EXTRACTED_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{safe_stem}.json"
+    output_path.write_text(
+        json.dumps({"parsed_document": parsed_document, "extraction": extraction}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return output_path
+
+
+def section_rows(section: dict, labels: dict[str, str]) -> list[dict[str, str]]:
+    rows = []
+    for key, label in labels.items():
+        value = section.get(key, "")
+        if isinstance(value, list):
+            display = "、".join(str(item) for item in value) if value else "未披露"
+        elif value is None or value == "":
+            display = "未披露"
+        else:
+            display = str(value)
+        rows.append({"字段": label, "提取结果": display})
+    return rows
+
+
+def render_private_document_upload() -> None:
+    st.subheader("上传项目资料 / 商业计划书")
+    st.warning("商业计划书通常包含敏感信息，请仅在本地可信环境使用；当前功能不会自动调用外部 API 上传资料。")
+    uploaded_file = st.file_uploader(
+        "上传 PDF 项目资料、商业计划书或可研报告",
+        type=["pdf", "pptx", "docx", "xlsx"],
+        accept_multiple_files=False,
+        key="private_market_document_upload",
+    )
+
+    if uploaded_file and st.button("读取并解析上传资料"):
+        saved_path = save_private_market_upload(uploaded_file)
+        parsed_document = parse_project_document(saved_path)
+        extraction = extract_private_market_document(parsed_document)
+        extracted_path = save_private_market_extraction(parsed_document, extraction)
+        st.session_state["private_document_saved_path"] = saved_path
+        st.session_state["private_document_parsed"] = parsed_document
+        st.session_state["private_document_extraction"] = extraction
+        st.session_state["private_document_extracted_path"] = extracted_path
+
+    parsed_document = st.session_state.get("private_document_parsed")
+    extraction = st.session_state.get("private_document_extraction")
+    saved_path = st.session_state.get("private_document_saved_path")
+    extracted_path = st.session_state.get("private_document_extracted_path")
+    if not parsed_document or not extraction:
+        return
+
+    st.success("文件读取完成。")
+    if saved_path:
+        st.caption(f"上传文件保存路径：{saved_path}")
+    if extracted_path:
+        st.caption(f"解析中间结果保存路径：{extracted_path}")
+    for warning in parsed_document.get("warnings", []):
+        st.warning(warning)
+
+    summary = extraction.get("project_summary", {})
+    readiness = extraction.get("valuation_readiness", {})
+    financing = extraction.get("financing_info", {})
+    operating = extraction.get("operating_data", {})
+    financial = extraction.get("financial_data", {})
+    founder_team = extraction.get("founder_team_info", {})
+    cost_structure = extraction.get("cost_structure", {})
+    exit_path = extraction.get("exit_path", {})
+
+    st.subheader("项目摘要与初判")
+    cols = st.columns(4)
+    cols[0].metric("项目名称", summary.get("project_name") or "待确认")
+    cols[1].metric("标的类型初判", summary.get("target_type_guess") or "待确认")
+    cols[2].metric("Rachel 战略生态", summary.get("rachel_ecosystem_guess") or "待确认")
+    cols[3].metric("估值可用性", readiness.get("confidence_level") or "待确认")
+    st.write(summary.get("one_sentence_summary") or "未提取到一句话摘要。")
+
+    st.subheader("创始团队信息")
+    st.dataframe(
+        section_rows(
+            founder_team,
+            {
+                "founders": "创始人",
+                "management_team": "管理团队",
+                "team_background": "团队背景",
+                "key_person_risk": "关键人风险",
+            },
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.subheader("核心数据提取表")
+    st.dataframe(
+        section_rows(
+            operating,
+            {
+                "products": "产品与服务",
+                "customers": "客户",
+                "orders_or_contracts": "订单 / 合同",
+                "capacity": "产能",
+                "capacity_utilization": "产能利用率",
+                "construction_period": "建设周期",
+                "revenue_model": "收入模式",
+            },
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    col_financing, col_financial = st.columns(2)
+    with col_financing:
+        st.subheader("融资信息提取表")
+        st.dataframe(
+            section_rows(
+                financing,
+                {
+                    "is_fundraising": "是否融资",
+                    "financing_stage": "融资阶段",
+                    "pre_money_valuation": "投前估值",
+                    "post_money_valuation": "投后估值",
+                    "financing_amount": "融资金额",
+                    "equity_offered": "出让股权",
+                    "previous_round": "上一轮融资",
+                },
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+    with col_financial:
+        st.subheader("财务数据提取表")
+        st.dataframe(
+            section_rows(
+                financial,
+                {
+                    "historical_revenue": "历史收入",
+                    "forecast_revenue": "预测收入",
+                    "gross_margin": "毛利率",
+                    "net_margin": "净利率",
+                    "capex": "资本开支",
+                    "opex": "运营成本",
+                    "cash_flow": "现金流",
+                    "payback_period": "回收期",
+                },
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    col_cost, col_exit = st.columns(2)
+    with col_cost:
+        st.subheader("成本结构提取表")
+        st.dataframe(
+            section_rows(
+                cost_structure,
+                {
+                    "raw_material_cost": "原材料成本",
+                    "labor_cost": "人工成本",
+                    "manufacturing_cost": "制造成本",
+                    "sales_and_marketing_cost": "销售 / 获客成本",
+                    "rd_cost": "研发费用",
+                },
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+    with col_exit:
+        st.subheader("退出路径提取表")
+        st.dataframe(
+            section_rows(
+                exit_path,
+                {
+                    "ipo_path": "IPO 路径",
+                    "ma_path": "并购退出",
+                    "dividend_or_buyback": "分红 / 回购",
+                    "asset_sale": "资产出售",
+                },
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.subheader("数据可信度标记")
+    st.dataframe(extraction.get("field_assessments", []), use_container_width=True, hide_index=True)
+
+    col_models, col_missing, col_questions = st.columns(3)
+    with col_models:
+        render_list("推荐估值模型", readiness.get("recommended_models", []))
+    with col_missing:
+        render_list("当前可用数据", readiness.get("usable_data", []))
+        render_list("缺失数据清单", readiness.get("missing_data", []))
+    with col_questions:
+        render_list("建议向项目方追问的问题", readiness.get("questions_for_company", []))
+
+    st.subheader("生成 Obsidian 草稿")
+    vault_path = st.text_input("Obsidian Vault 路径", value=default_vault_path(), key="private_document_vault_path")
+    col_doc, col_framework = st.columns(2)
+    with col_doc:
+        st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "一级市场项目资料解析"))
+        if st.button("生成 Obsidian 项目资料解析报告"):
+            try:
+                output_path = write_private_market_document_analysis(extraction, parsed_document, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
+    with col_framework:
+        st.caption(str(Path(vault_path).expanduser() / "15_估值引擎" / "估值历史" / "未上市一级市场"))
+        if st.button("生成 Obsidian 估值框架草稿"):
+            try:
+                output_path = write_private_market_document_valuation_framework(extraction, parsed_document, vault_path)
+            except OSError as exc:
+                st.error(f"生成失败：{exc}")
+            else:
+                st.success(f"已生成：{output_path}")
+                st.code(str(output_path), language="text")
 
 
 def render_listed_result() -> None:
@@ -226,6 +474,8 @@ with listed_tab:
 with private_tab:
     st.header("未上市 / 一级市场估值")
     st.caption("用于未上市成长公司、融资交易、Pre-IPO、老股转让、项目公司 / SPV、资产型项目。")
+    render_private_document_upload()
+    st.divider()
     st.subheader("标的基本信息")
     col_1, col_2, col_3 = st.columns(3)
     target_name = col_1.text_input("标的名称", placeholder="例如：OpenAI 老股交易 / 信宜绿色算力中心")

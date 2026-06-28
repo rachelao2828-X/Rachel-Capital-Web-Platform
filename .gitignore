@@ -10,6 +10,9 @@ __pycache__/
 postgres_data/
 data/*.db
 data/*.db-*
+data/uploads/
+data/extracted/
+data/private_market_cases/
 .env
 cloudflared
 cloudflared.tgz

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 import re
+from typing import Any
 
 from app.services.valuation_engine.listed import ListedCompanyProfile, ListedValuationResult
 from app.services.valuation_engine.private_market import PrivateMarketProfile, PrivateMarketValuationResult
@@ -33,6 +34,36 @@ def write_private_market_memo(
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{safe_filename(profile.target_name)}_{created.isoformat()}_未上市一级市场估值框架.md"
     output_path.write_text(private_markdown(profile, result, created), encoding="utf-8")
+    return output_path
+
+
+def write_private_market_document_analysis(
+    extraction: dict[str, Any],
+    parsed_document: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = project_name_from_extraction(extraction)
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "一级市场项目资料解析"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_项目资料解析.md"
+    output_path.write_text(private_document_analysis_markdown(extraction, parsed_document, created), encoding="utf-8")
+    return output_path
+
+
+def write_private_market_document_valuation_framework(
+    extraction: dict[str, Any],
+    parsed_document: dict[str, Any],
+    vault_path: str | Path,
+    created: date | None = None,
+) -> Path:
+    created = created or date.today()
+    project_name = project_name_from_extraction(extraction)
+    output_dir = Path(vault_path).expanduser() / "15_估值引擎" / "估值历史" / "未上市一级市场"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{safe_filename(project_name)}_{created.isoformat()}_未上市一级市场估值框架.md"
+    output_path.write_text(private_document_valuation_markdown(extraction, parsed_document, created), encoding="utf-8")
     return output_path
 
 
@@ -208,6 +239,204 @@ tags:
 """
 
 
+def private_document_analysis_markdown(extraction: dict[str, Any], parsed_document: dict[str, Any], created: date) -> str:
+    summary = extraction.get("project_summary", {})
+    financing = extraction.get("financing_info", {})
+    founder_team = extraction.get("founder_team_info", {})
+    operating = extraction.get("operating_data", {})
+    financial = extraction.get("financial_data", {})
+    cost_structure = extraction.get("cost_structure", {})
+    technology = extraction.get("technology_and_barriers", {})
+    market = extraction.get("market_and_competition", {})
+    risks = extraction.get("risk_factors", {})
+    exit_path = extraction.get("exit_path", {})
+    readiness = extraction.get("valuation_readiness", {})
+    project_name = project_name_from_extraction(extraction)
+    target_type = summary.get("target_type_guess") or "未确认"
+    return f"""---
+type: private_market_document_analysis
+title: {project_name}项目资料解析
+status: draft
+public: false
+created: {created.isoformat()}
+source_file: {parsed_document.get("file_name", "")}
+target_name: {project_name}
+target_type: {target_type}
+tags:
+  - 一级市场
+  - 项目资料解析
+  - 估值引擎
+---
+
+# {project_name}项目资料解析
+
+## 1. 文件信息
+
+- 文件名：{parsed_document.get("file_name", "")}
+- 本地路径：{parsed_document.get("file_path", "")}
+- 页数：{len(parsed_document.get("pages", []))}
+- 表格数量：{len(parsed_document.get("tables", []))}
+- 解析提示：{", ".join(parsed_document.get("warnings", [])) or "无"}
+
+## 2. 项目一句话摘要
+
+{summary.get("one_sentence_summary") or "待补充"}
+
+## 3. 标的类型初判
+
+- 初判类型：{target_type}
+- Rachel 战略生态初判：{summary.get("rachel_ecosystem_guess") or "待确认"}
+- 所属行业：{summary.get("industry") or "待确认"}
+- 所在地：{summary.get("location") or "待确认"}
+
+## 4. 商业模式
+
+{summary.get("business_model") or "待补充"}
+
+## 4.1 创始团队信息
+
+{dict_section(founder_team)}
+
+## 5. 核心技术与壁垒
+
+{dict_section(technology)}
+
+## 6. 市场与竞争
+
+{dict_section(market)}
+
+## 7. 融资信息
+
+{dict_section(financing)}
+
+## 8. 经营数据
+
+{dict_section(operating)}
+
+## 9. 财务数据
+
+{dict_section(financial)}
+
+## 9.1 成本结构
+
+{dict_section(cost_structure)}
+
+## 10. 推荐估值模型
+
+{bullet_list(readiness.get("recommended_models", [])) if readiness.get("recommended_models") else "- 待补充"}
+
+## 11. 数据可信度与缺失项
+
+{markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要用户确认"])}
+
+缺失项：
+
+{bullet_list(readiness.get("missing_data", [])) if readiness.get("missing_data") else "- 暂无"}
+
+## 12. 需要向项目方追问的问题
+
+{bullet_list(readiness.get("questions_for_company", [])) if readiness.get("questions_for_company") else "- 暂无"}
+
+## 13. 初步风险提示
+
+{dict_section(risks)}
+
+退出路径线索：
+
+{dict_section(exit_path)}
+
+## 14. 后续研究任务
+
+- 核验项目主体、股权结构、融资条款和历史经营数据。
+- 补齐可比融资交易、可比上市公司和退出路径假设。
+- 对关键数据进行来源标注，区分披露、推断、待确认和缺失。
+- 建立乐观、中性、保守三种情景，不输出最终投资结论。
+
+## 15. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
+
+## 16. 原始资料摘录
+
+{extraction.get("raw_excerpt") or "未能提取有效文本。"}
+"""
+
+
+def private_document_valuation_markdown(extraction: dict[str, Any], parsed_document: dict[str, Any], created: date) -> str:
+    summary = extraction.get("project_summary", {})
+    readiness = extraction.get("valuation_readiness", {})
+    risks = extraction.get("risk_factors", {})
+    project_name = project_name_from_extraction(extraction)
+    target_type = summary.get("target_type_guess") or "未确认"
+    return f"""---
+type: private_market_valuation
+title: {project_name}未上市一级市场估值框架
+status: draft
+public: false
+created: {created.isoformat()}
+source_file: {parsed_document.get("file_name", "")}
+target_name: {project_name}
+target_type: {target_type}
+tags:
+  - 估值引擎
+  - 未上市估值
+  - 一级市场估值
+---
+
+# {project_name}未上市 / 一级市场估值框架
+
+## 1. 项目摘要
+
+- 项目名称：{project_name}
+- 公司名称：{summary.get("company_name") or "待补充"}
+- 一句话摘要：{summary.get("one_sentence_summary") or "待补充"}
+- 行业：{summary.get("industry") or "待确认"}
+- Rachel 战略生态：{summary.get("rachel_ecosystem_guess") or "待确认"}
+
+## 2. 初判分类
+
+- 标的类型初判：{target_type}
+- 分类说明：基于上传资料关键词和已披露信息自动初判，需人工复核。
+
+## 3. 推荐估值模型
+
+{bullet_list(readiness.get("recommended_models", [])) if readiness.get("recommended_models") else "- 待补充"}
+
+## 4. 可用数据
+
+{bullet_list(readiness.get("usable_data", [])) if readiness.get("usable_data") else "- 暂无"}
+
+## 5. 缺失数据
+
+{bullet_list(readiness.get("missing_data", [])) if readiness.get("missing_data") else "- 暂无"}
+
+## 6. 追问清单
+
+{bullet_list(readiness.get("questions_for_company", [])) if readiness.get("questions_for_company") else "- 暂无"}
+
+## 7. 风险提示
+
+{dict_section(risks)}
+
+## 8. 初步估值工作流
+
+- 先核验资料中明确披露的数据，剔除无法确认的宣传性表述。
+- 按主分类选择估值模型，并为每个模型列出所需输入数据。
+- 建立可比交易、可比上市公司和退出路径假设。
+- 输出情景框架和数据缺口，不输出买入、卖出或推荐结论。
+
+## 9. 数据可信度
+
+当前估值可用性：{readiness.get("confidence_level") or "待确认"}
+
+{markdown_table(extraction.get("field_assessments", []), ["分组", "字段", "提取结果", "来源", "可信度", "是否需要用户确认"])}
+
+## 10. 免责声明
+
+本文件仅用于 Rachel Capital OS 内部研究，不构成任何投资建议、投资邀约或买卖依据。
+"""
+
+
 def bullet_list(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
@@ -229,3 +458,21 @@ def escape(value: str) -> str:
 def safe_filename(name: str) -> str:
     cleaned = re.sub(r"[\\/:*?\"<>|]+", "_", name).strip()
     return cleaned or "未命名标的"
+
+
+def project_name_from_extraction(extraction: dict[str, Any]) -> str:
+    summary = extraction.get("project_summary", {})
+    return summary.get("project_name") or summary.get("company_name") or "未命名项目"
+
+
+def dict_section(values: dict[str, Any]) -> str:
+    lines = []
+    for key, value in values.items():
+        if isinstance(value, list):
+            display = "、".join(str(item) for item in value) if value else "待补充"
+        elif value is None or value == "":
+            display = "待补充"
+        else:
+            display = str(value)
+        lines.append(f"- {key}：{display}")
+    return "\n".join(lines) or "- 待补充"

@@ -1,8 +1,14 @@
 from datetime import date
 
 from app.services.valuation_engine.listed import ListedCompanyProfile, analyze_listed_company
-from app.services.valuation_engine.memo_writer import write_listed_memo, write_private_market_memo
+from app.services.valuation_engine.memo_writer import (
+    write_listed_memo,
+    write_private_market_document_analysis,
+    write_private_market_document_valuation_framework,
+    write_private_market_memo,
+)
 from app.services.valuation_engine.private_market import PrivateMarketProfile, analyze_private_market
+from app.services.valuation_engine.private_market_extractor import extract_private_market_document
 
 
 def listed_profile(**overrides) -> ListedCompanyProfile:
@@ -181,3 +187,42 @@ def test_write_private_market_memo_path(tmp_path) -> None:
     assert "type: private_market_valuation" in content
     assert "public: false" in content
     assert "target_type: 项目公司 / SPV" in content
+
+
+def test_extract_private_market_document_recommends_financing_models() -> None:
+    parsed = {
+        "file_name": "测试AI公司商业计划书.pdf",
+        "file_path": "/tmp/测试AI公司商业计划书.pdf",
+        "pages": [{"page_number": 1, "text": "项目名称：测试AI公司\n本轮融资金额：人民币5000万元\n投前估值：人民币5亿元\n核心技术：大模型推理平台\n营业收入：2025年收入3000万元"}],
+        "raw_text": "项目名称：测试AI公司\n本轮融资金额：人民币5000万元\n投前估值：人民币5亿元\n核心技术：大模型推理平台\n营业收入：2025年收入3000万元",
+        "tables": [],
+        "warnings": [],
+    }
+
+    extraction = extract_private_market_document(parsed)
+
+    assert extraction["project_summary"]["project_name"] == "测试AI公司"
+    assert extraction["project_summary"]["target_type_guess"] == "一级市场融资标的"
+    assert "可比融资交易法" in extraction["valuation_readiness"]["recommended_models"]
+    assert any(row["来源"] == "PDF 明确披露" for row in extraction["field_assessments"])
+
+
+def test_write_private_market_document_outputs_public_false(tmp_path) -> None:
+    parsed = {
+        "file_name": "信宜绿色算力中心BP.pdf",
+        "file_path": "/tmp/信宜绿色算力中心BP.pdf",
+        "pages": [{"page_number": 1, "text": "项目名称：信宜绿色算力中心\n项目总投资：10亿元\n建设周期：18个月\n产能：规划3000个机柜"}],
+        "raw_text": "项目名称：信宜绿色算力中心\n项目总投资：10亿元\n建设周期：18个月\n产能：规划3000个机柜",
+        "tables": [],
+        "warnings": [],
+    }
+    extraction = extract_private_market_document(parsed)
+
+    analysis_path = write_private_market_document_analysis(extraction, parsed, tmp_path, created=date(2026, 6, 28))
+    framework_path = write_private_market_document_valuation_framework(extraction, parsed, tmp_path, created=date(2026, 6, 28))
+
+    assert analysis_path == tmp_path / "15_估值引擎" / "一级市场项目资料解析" / "信宜绿色算力中心_2026-06-28_项目资料解析.md"
+    assert framework_path == tmp_path / "15_估值引擎" / "估值历史" / "未上市一级市场" / "信宜绿色算力中心_2026-06-28_未上市一级市场估值框架.md"
+    assert "type: private_market_document_analysis" in analysis_path.read_text(encoding="utf-8")
+    assert "public: false" in analysis_path.read_text(encoding="utf-8")
+    assert "public: false" in framework_path.read_text(encoding="utf-8")

@@ -26,6 +26,10 @@ tags:
 
 核心逻辑内容。
 
+## 核心公司观察池
+
+公司池内容。
+
 ## 11. 与其他战略生态的关系
 
 关系内容。
@@ -40,6 +44,7 @@ tags:
     assert document.public is False
     assert document.sections["生态定位"] == "华为生态定位内容。"
     assert document.sections["核心逻辑"] == "核心逻辑内容。"
+    assert document.sections["代表公司 / 项目类型"] == "公司池内容。"
     assert document.sections["与其他生态关系"] == "关系内容。"
 
 

@@ -18,7 +18,6 @@ const ecosystemSectionOrder = [
   ["questions", "关键问题"],
   ["relations", "与其他生态的关系"],
   ["coze_rules", "Coze 日报自动关联规则"],
-  ["next_tasks", "下一步研究任务"],
 ];
 
 const themeSectionOrder = [
@@ -629,7 +628,6 @@ function openEcosystemDetail(item) {
     questions: sections.questions || sections.key_questions,
     relations: sections.relations || sections.related_ecosystems,
     coze_rules: sections.coze_rules,
-    next_tasks: sections.next_tasks || sections.next_research_tasks || item.next_research_tasks,
   };
   const sectionHtml = ecosystemSectionOrder
     .filter(([key]) => stripSectionHeading(detailSections[key]).length > 0)

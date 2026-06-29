@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from app.services.company_pool_loader import load_company_pool_overview, load_ecosystem_company_pools
 from app.services.ecosystem_loader import (
     SECTION_ALIASES,
     load_ecosystem,
@@ -14,7 +15,7 @@ st.set_page_config(page_title="战略生态 | Rachel Capital OS", layout="wide")
 st.title("战略生态")
 st.caption("本地 Obsidian 研究文件读取视图，仅用于 localhost 内部研究管理。")
 
-overview_tab, cross_map_tab = st.tabs(["七大战略生态", "生态交叉关系"])
+overview_tab, cross_map_tab, company_pool_tab = st.tabs(["七大战略生态", "生态交叉关系", "生态公司池"])
 
 with cross_map_tab:
     cross_map = load_ecosystem_cross_map()
@@ -59,6 +60,65 @@ with cross_map_tab:
 
         st.subheader("原文预览")
         st.text_area("交叉关系图谱原文预览", str(cross_map.get("raw_markdown") or ""), height=360)
+
+with company_pool_tab:
+    overview = load_company_pool_overview()
+    company_pools = load_ecosystem_company_pools()
+
+    st.header("战略生态公司池")
+    st.write(f"总览状态：**{overview['status']}**")
+    st.write(f"总览文件路径：`{overview['file_path']}`")
+    st.info("后续将支持从公司池选择公司或一级市场项目，并跳转到 Valuation Cockpit 进行估值与尽调。")
+    st.write("查看生态交叉关系图谱：`七大战略生态交叉关系图谱`")
+
+    if overview["status"] != "已读取":
+        st.warning("公司池总览待建设。")
+    elif overview.get("public") is not False:
+        st.warning("公司池总览文件应设置 frontmatter：public: false")
+
+    pool_cols = st.columns(2)
+    for index, pool in enumerate(company_pools):
+        with pool_cols[index % 2]:
+            with st.container(border=True):
+                st.subheader(str(pool["name"]))
+                st.caption(str(pool["status"]))
+                st.write(f"所属战略生态：`{pool['ecosystem']}`")
+                st.write(f"Obsidian 文件：`{pool['file_path']}`")
+                public_label = "未标明" if pool.get("public") is None else str(pool.get("public")).lower()
+                st.write(f"`public`: `{public_label}`")
+
+                if pool["status"] != "已读取":
+                    st.warning("待建设")
+                    continue
+                if pool.get("public") is not False:
+                    st.warning("该内部研究文件应设置 frontmatter：public: false")
+
+                companies = pool.get("companies") or []
+                st.write(f"公司池表格预览：{len(companies)} 条")
+                if companies:
+                    st.dataframe(pd.DataFrame(companies), use_container_width=True, hide_index=True)
+                else:
+                    st.info("暂未解析到公司池表格。")
+
+                detail_tabs = st.tabs(["细分环节", "高优先级跟踪对象", "待补充清单", "原文预览"])
+                with detail_tabs[0]:
+                    segments = pool.get("segments") or []
+                    st.markdown("\n".join(f"- {item}" for item in segments) if segments else "暂无内容。")
+                with detail_tabs[1]:
+                    priority_targets = pool.get("priority_targets") or []
+                    st.markdown(
+                        "\n".join(f"- {item}" for item in priority_targets) if priority_targets else "暂无内容。"
+                    )
+                with detail_tabs[2]:
+                    to_fill = pool.get("to_fill") or []
+                    st.markdown("\n".join(f"- {item}" for item in to_fill) if to_fill else "暂无内容。")
+                with detail_tabs[3]:
+                    st.text_area(
+                        "公司池原文预览",
+                        str(pool.get("raw_markdown") or ""),
+                        height=260,
+                        key=f"company_pool_preview_{pool['ecosystem']}",
+                    )
 
 with overview_tab:
     ecosystems = load_ecosystems()

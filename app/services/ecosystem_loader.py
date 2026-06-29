@@ -9,6 +9,7 @@ from app.services.valuation_engine.model_registry import ECOSYSTEM_OPTIONS
 
 
 ECOSYSTEM_SOURCE_DIR = "02_战略生态"
+CROSS_MAP_NAME = "七大战略生态交叉关系图谱"
 SECTION_ALIASES = {
     "生态定位": ["生态定位", "生态定义"],
     "核心逻辑": ["核心逻辑"],
@@ -21,6 +22,12 @@ SECTION_ALIASES = {
     "跟踪指标": ["跟踪指标", "长期跟踪指标"],
     "研究任务": ["研究任务", "下一步研究任务"],
     "与其他生态关系": ["与其他战略生态的关系", "与其他生态的关系"],
+}
+CROSS_MAP_SECTION_ALIASES = {
+    "summary": ["核心定位", "总体关系框架"],
+    "cross_matrix": ["生态交叉矩阵"],
+    "priority_themes": ["高优先级交叉主题"],
+    "tracking_indicators": ["交叉关系跟踪指标"],
 }
 
 
@@ -47,6 +54,10 @@ def ecosystem_root(vault_path: str | None = None) -> Path:
 
 def ecosystem_path(name: str, vault_path: str | None = None) -> Path:
     return ecosystem_root(vault_path) / f"{name}.md"
+
+
+def ecosystem_cross_map_path(vault_path: str | None = None) -> Path:
+    return ecosystem_path(CROSS_MAP_NAME, vault_path=vault_path)
 
 
 def load_ecosystems(vault_path: str | None = None) -> list[EcosystemDocument]:
@@ -85,6 +96,57 @@ def load_ecosystem(name: str, vault_path: str | None = None) -> EcosystemDocumen
         sections=normalized_sections,
         raw_preview=preview,
     )
+
+
+def load_ecosystem_cross_map(vault_path: str | None = None) -> dict[str, object]:
+    path = ecosystem_cross_map_path(vault_path=vault_path)
+    if not path.exists():
+        return {
+            "name": CROSS_MAP_NAME,
+            "file_path": str(path),
+            "status": "待建设",
+            "public": None,
+            "summary": "",
+            "cross_matrix": [],
+            "priority_themes": [],
+            "tracking_indicators": [],
+            "raw_markdown": "",
+        }
+
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except OSError:
+        return {
+            "name": CROSS_MAP_NAME,
+            "file_path": str(path),
+            "status": "读取失败",
+            "public": None,
+            "summary": "",
+            "cross_matrix": [],
+            "priority_themes": [],
+            "tracking_indicators": [],
+            "raw_markdown": "",
+        }
+
+    metadata, body = split_frontmatter(raw)
+    sections = extract_sections(body)
+    public = parse_bool(metadata.get("public"))
+    summary = first_matching_section(sections, CROSS_MAP_SECTION_ALIASES["summary"])
+    matrix_section = first_matching_section(sections, CROSS_MAP_SECTION_ALIASES["cross_matrix"])
+    themes_section = first_matching_section(sections, CROSS_MAP_SECTION_ALIASES["priority_themes"])
+    indicators_section = first_matching_section(sections, CROSS_MAP_SECTION_ALIASES["tracking_indicators"])
+
+    return {
+        "name": str(metadata.get("title") or first_heading(body) or CROSS_MAP_NAME),
+        "file_path": str(path),
+        "status": "已读取",
+        "public": public,
+        "summary": summary,
+        "cross_matrix": parse_markdown_table(matrix_section),
+        "priority_themes": extract_subsections(themes_section),
+        "tracking_indicators": extract_subsections(indicators_section),
+        "raw_markdown": body.strip()[:2400],
+    }
 
 
 def split_frontmatter(raw: str) -> tuple[dict[str, object], str]:
@@ -191,3 +253,48 @@ def normalize_sections(sections: dict[str, str]) -> dict[str, str]:
                 normalized[canonical] = sections[alias].strip()
                 break
     return normalized
+
+
+def first_matching_section(sections: dict[str, str], aliases: list[str]) -> str:
+    for alias in aliases:
+        if alias in sections and sections[alias].strip():
+            return sections[alias].strip()
+    return ""
+
+
+def parse_markdown_table(markdown: str) -> list[dict[str, str]]:
+    lines = [line.strip() for line in markdown.splitlines() if line.strip().startswith("|")]
+    if len(lines) < 3:
+        return []
+
+    headers = [cell.strip() for cell in lines[0].strip("|").split("|")]
+    rows: list[dict[str, str]] = []
+    for line in lines[2:]:
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) != len(headers):
+            continue
+        rows.append(dict(zip(headers, cells, strict=True)))
+    return rows
+
+
+def extract_subsections(markdown: str) -> list[dict[str, str]]:
+    items: list[dict[str, str]] = []
+    current_title: str | None = None
+    current_lines: list[str] = []
+
+    for line in markdown.splitlines():
+        if line.startswith("### "):
+            if current_title:
+                items.append({"title": current_title, "content": "\n".join(current_lines).strip()})
+            current_title = re.sub(r"^\d+(?:\.\d+)*[.、]?\s*", "", line[4:].strip())
+            current_lines = []
+            continue
+        if current_title:
+            current_lines.append(line)
+
+    if current_title:
+        items.append({"title": current_title, "content": "\n".join(current_lines).strip()})
+
+    if items:
+        return items
+    return [{"title": "内容", "content": markdown.strip()}] if markdown.strip() else []

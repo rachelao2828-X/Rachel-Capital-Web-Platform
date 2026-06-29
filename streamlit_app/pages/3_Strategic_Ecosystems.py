@@ -12,6 +12,46 @@ from app.services.quarterly_tracking_loader import (
     load_ecosystem_quarterly_trackings,
     load_quarterly_tracking_overview,
 )
+from research_engine.company_database_loader import (
+    build_company_database_linkage,
+    ecosystem_statistics_rows,
+    market_statistics_rows,
+)
+
+
+def company_link_table_row(row: dict) -> dict:
+    return {
+        "公司 / 项目": row.get("company_name", ""),
+        "市场类型": row.get("market_type", ""),
+        "代码": row.get("ticker", ""),
+        "细分环节": row.get("segment", ""),
+        "生态相关性": row.get("ecosystem_relevance", ""),
+        "研究优先级": row.get("research_priority", ""),
+        "当前研究状态": row.get("research_status", ""),
+        "匹配方式": row.get("match_type", ""),
+        "关联文件": row.get("linked_file") or "待建档",
+        "来源状态": row.get("source_status", ""),
+    }
+
+
+def ecosystem_detail_link_row(row: dict) -> dict:
+    return {
+        "公司 / 项目": row.get("company_name", ""),
+        "市场类型": row.get("market_type", ""),
+        "代码": row.get("ticker", ""),
+        "细分环节": row.get("segment", ""),
+        "生态相关性": row.get("ecosystem_relevance", ""),
+        "研究优先级": row.get("research_priority", ""),
+        "当前研究状态": row.get("research_status", ""),
+        "匹配方式": row.get("match_type", ""),
+        "关联文件": row.get("linked_file") or "待建档",
+    }
+
+
+def company_option_label(row: dict) -> str:
+    ticker = row.get("ticker") or "无代码"
+    source_status = row.get("source_status") or "待完善"
+    return f"{row.get('company_name') or '未命名'}｜{row.get('market_type') or '其他'}｜{ticker}｜{source_status}"
 
 
 st.set_page_config(page_title="战略生态 | Rachel Capital OS", layout="wide")
@@ -22,6 +62,9 @@ st.caption("本地 Obsidian 研究文件读取视图，仅用于 localhost 内�
 overview_tab, cross_map_tab, company_pool_tab, quarterly_tracking_tab = st.tabs(
     ["七大战略生态", "生态交叉关系", "生态公司池", "生态季度跟踪"]
 )
+
+company_pools_for_linkage = load_ecosystem_company_pools()
+company_database_linkage = build_company_database_linkage(None, company_pools_for_linkage)
 
 with cross_map_tab:
     cross_map = load_ecosystem_cross_map()
@@ -69,7 +112,7 @@ with cross_map_tab:
 
 with company_pool_tab:
     overview = load_company_pool_overview()
-    company_pools = load_ecosystem_company_pools()
+    company_pools = company_pools_for_linkage
 
     st.header("战略生态公司池")
     st.write(f"总览状态：**{overview['status']}**")
@@ -81,6 +124,28 @@ with company_pool_tab:
         st.warning("公司池总览待建设。")
     elif overview.get("public") is not False:
         st.warning("公司池总览文件应设置 frontmatter：public: false")
+
+    st.subheader("公司数据库联动")
+    st.write(f"公司数据库状态：**{company_database_linkage['status']}**")
+    st.write(f"读取路径：`{company_database_linkage['root_path']}`")
+    metric_cols = st.columns(4)
+    metric_cols[0].metric("已读取公司 / 项目", int(company_database_linkage.get("company_count") or 0))
+    metric_cols[1].metric("未匹配公司", len(company_database_linkage.get("unmatched_companies") or []))
+    metric_cols[2].metric("待人工确认", len(company_database_linkage.get("pending_confirmation") or []))
+    metric_cols[3].metric("公司池数量", len(company_pools))
+
+    linkage_tabs = st.tabs(["按市场类型统计", "按战略生态统计", "读取提示"])
+    with linkage_tabs[0]:
+        st.dataframe(pd.DataFrame(market_statistics_rows(company_database_linkage)), use_container_width=True, hide_index=True)
+    with linkage_tabs[1]:
+        st.dataframe(
+            pd.DataFrame(ecosystem_statistics_rows(company_database_linkage)),
+            use_container_width=True,
+            hide_index=True,
+        )
+    with linkage_tabs[2]:
+        warnings = company_database_linkage.get("warnings") or []
+        st.markdown("\n".join(f"- {item}" for item in warnings) if warnings else "暂无读取提示。")
 
     pool_cols = st.columns(2)
     for index, pool in enumerate(company_pools):
@@ -106,6 +171,21 @@ with company_pool_tab:
                 else:
                     st.info("暂未解析到公司池表格。")
 
+                linked_rows = (
+                    (company_database_linkage.get("matches") or {})
+                    .get(str(pool.get("ecosystem") or ""), {})
+                    .get("matched_companies", [])
+                )
+                if linked_rows:
+                    st.write(f"关联公司 / 项目：{len(linked_rows)} 条")
+                    st.dataframe(
+                        pd.DataFrame([company_link_table_row(row) for row in linked_rows]),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                else:
+                    st.info("暂未匹配到关联公司 / 项目。")
+
                 detail_tabs = st.tabs(["细分环节", "高优先级跟踪对象", "待补充清单", "原文预览"])
                 with detail_tabs[0]:
                     segments = pool.get("segments") or []
@@ -125,6 +205,42 @@ with company_pool_tab:
                         height=260,
                         key=f"company_pool_preview_{pool['ecosystem']}",
                     )
+
+    all_linked_rows = [
+        row
+        for match in (company_database_linkage.get("matches") or {}).values()
+        for row in match.get("matched_companies", [])
+    ]
+    st.subheader("公司卡片摘要预览")
+    if all_linked_rows:
+        selected_label = st.selectbox(
+            "选择公司 / 项目",
+            [company_option_label(row) for row in all_linked_rows],
+            key="company_pool_linked_company_selector",
+        )
+        selected_index = [company_option_label(row) for row in all_linked_rows].index(selected_label)
+        selected_company = all_linked_rows[selected_index]
+        preview_cols = st.columns(3)
+        preview_cols[0].write(f"公司名称：`{selected_company.get('company_name') or ''}`")
+        preview_cols[1].write(f"市场类型：`{selected_company.get('market_type') or ''}`")
+        preview_cols[2].write(f"代码：`{selected_company.get('ticker') or ''}`")
+        st.write(f"核心业务：{selected_company.get('core_business') or selected_company.get('summary') or '待补充'}")
+        st.write(f"研究状态：`{selected_company.get('research_status') or '待补充'}`")
+        st.write(f"研究优先级：`{selected_company.get('research_priority') or '待补充'}`")
+        st.write(f"关联文件：`{selected_company.get('linked_file') or '待建档'}`")
+        st.write(f"来源状态：`{selected_company.get('source_status') or '待完善'}`")
+        st.markdown("#### 估值驾驶舱联动")
+        st.info("后续将支持从公司数据库或战略生态公司池选择公司 / 项目，并进入 Valuation Cockpit 进行估值与尽调。")
+        if st.button("发送到估值驾驶舱（预留）", key="send_company_to_valuation"):
+            st.session_state["selected_company_for_valuation"] = selected_company
+            st.success("已写入 session_state，等待后续 Valuation Cockpit 联动。")
+        st.text_area(
+            "原始 Markdown 预览",
+            str(selected_company.get("raw_markdown") or selected_company.get("summary") or "暂无公司卡片原文。"),
+            height=260,
+        )
+    else:
+        st.info("暂无可预览公司 / 项目。")
 
 with quarterly_tracking_tab:
     tracking_overview = load_quarterly_tracking_overview()
@@ -245,7 +361,7 @@ with overview_tab:
             st.warning("该内部研究文件应设置 frontmatter：public: false")
 
         section_order = list(SECTION_ALIASES.keys())
-        tabs = st.tabs(section_order + ["原文预览"])
+        tabs = st.tabs(section_order + ["关联公司 / 项目", "原文预览"])
         for tab, section_name in zip(tabs[:-1], section_order):
             with tab:
                 content = detail.sections.get(section_name)
@@ -253,6 +369,21 @@ with overview_tab:
                     st.markdown(content)
                 else:
                     st.info("该章节尚未解析到内容。")
+
+        with tabs[-2]:
+            ecosystem_rows = (
+                (company_database_linkage.get("matches") or {})
+                .get(selected_title, {})
+                .get("matched_companies", [])
+            )
+            if ecosystem_rows:
+                st.dataframe(
+                    pd.DataFrame([ecosystem_detail_link_row(row) for row in ecosystem_rows]),
+                    use_container_width=True,
+                    hide_index=True,
+                )
+            else:
+                st.info("暂未匹配到关联公司 / 项目。")
 
         with tabs[-1]:
             st.text_area("原文预览", detail.raw_preview, height=360)

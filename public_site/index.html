@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rachel Capital | 科技动向与产业研究</title>
+    <title>Rachel Capital OS Public Research Portal</title>
     <meta
       name="description"
-      content="Rachel Capital 公开展示科技动向日报、战略生态、合作机会与研究报告。"
+      content="Rachel Capital 公开科技动向与产业研究展示站。"
     />
-    <link rel="stylesheet" href="assets/styles.css?v=20260629-cooperation-1" />
+    <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body>
     <header class="site-header">
@@ -18,10 +18,10 @@
       </div>
       <nav aria-label="主导航">
         <a href="#home">首页</a>
-        <a href="#daily-intelligence">科技动向日报</a>
-        <a href="#strategic-ecosystems">战略生态</a>
-        <a href="#cooperation-opportunities">合作机会</a>
-        <a href="#research-reports">研究报告</a>
+        <a href="#daily">科技动向日报</a>
+        <a href="#ecosystems">战略生态</a>
+        <a href="#companies">公司观察</a>
+        <a href="#reports">研究报告</a>
         <a href="#about">关于平台</a>
       </nav>
     </header>
@@ -42,7 +42,7 @@
           <section class="panel">
             <div class="panel-heading">
               <h3>今日科技动向日报</h3>
-              <a href="#daily-intelligence">查看全部</a>
+              <a href="#daily">查看全部</a>
             </div>
             <div id="home-daily" class="stack"></div>
           </section>
@@ -50,7 +50,7 @@
           <section class="panel">
             <div class="panel-heading">
               <h3>七大战略生态</h3>
-              <a href="#strategic-ecosystems">查看全部生态</a>
+              <a href="#ecosystems">查看全部生态</a>
             </div>
             <div id="home-ecosystems" class="tag-grid"></div>
           </section>
@@ -60,22 +60,22 @@
           <section class="panel">
             <div class="panel-heading">
               <h3>最新研究</h3>
-              <a href="#research-reports">查看全部</a>
+              <a href="#reports">查看全部</a>
             </div>
             <div id="home-reports" class="stack"></div>
           </section>
 
           <section class="panel">
             <div class="panel-heading">
-              <h3>合作机会</h3>
-              <a href="#cooperation-opportunities">查看全部</a>
+              <h3>精选公司观察</h3>
+              <a href="#companies">查看全部</a>
             </div>
-            <div id="home-cooperation" class="stack"></div>
+            <div id="home-companies" class="stack"></div>
           </section>
         </div>
 
         <section class="notice">
-          文中涉及公司、行业、项目方向和合作线索仅为公开研究交流，不构成任何投资建议、融资承诺、项目背书、买卖依据、目标价或收益承诺。
+          文中涉及公司、行业、标的仅为信息整理与研究观察，不构成任何投资建议。投资有风险，决策需谨慎。
         </section>
       </section>
 
@@ -101,69 +101,20 @@
         <div id="ecosystem-detail" class="daily-detail"></div>
       </section>
 
-      <section id="cooperation-opportunities" class="view" data-route="cooperation-opportunities">
-        <div id="cooperation-list-view">
-          <div class="section-heading">
-            <h2>合作机会</h2>
-            <p>以文章形式展示可公开或脱敏的产业合作方向。</p>
-          </div>
-
-          <section class="panel cooperation-intro">
-            <h3>栏目说明</h3>
-            <p>
-              Rachel 基于长期产业研究，持续识别一级市场项目、上市公司产业需求、地方政府产业机会、算力基础设施合作和技术供应链协同机会。
-            </p>
-            <p>
-              本栏目以文章形式发布可公开或脱敏的合作方向。每一篇文章对应一个合作机会，可能来自项目方向、产业需求、地方产业机会、AI算力与数据中心合作、硬科技供应链协同、技术商业化需求、产业资本合作、出海与渠道合作。
-            </p>
-          </section>
-
-          <section class="panel">
-            <div class="panel-heading">
-              <h3>合作机会文章</h3>
-            </div>
-            <div id="cooperation-list" class="stack"></div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-heading">
-              <h3>当前重点方向</h3>
-            </div>
-            <div class="meta focus-tags" aria-label="当前重点方向">
-              <span class="tag">AI基础设施</span>
-              <span class="tag">半导体国产替代</span>
-              <span class="tag">华为生态</span>
-              <span class="tag">机器人与具身智能</span>
-              <span class="tag">高端材料</span>
-              <span class="tag">绿色算力中心</span>
-              <span class="tag">医疗科技</span>
-              <span class="tag">中国制造出海</span>
-            </div>
-          </section>
-
-          <section class="panel">
-            <h3>联系方式</h3>
-            <p>微信：rachelao</p>
-          </section>
-
-          <section class="notice large">
-            <h3>免责声明</h3>
-            <p>本页面仅用于产业研究、合作交流和商业机会对接，不构成任何投资建议、融资承诺、项目背书、买卖依据、目标价或收益承诺。</p>
-            <p>页面中涉及的一级市场项目、上市公司需求或产业合作方向，如未明确授权公开，将以脱敏方式展示。具体合作需以双方进一步沟通、尽调、协议和合规审查为准。</p>
-          </section>
+      <section id="companies" class="view" data-route="companies">
+        <div class="section-heading">
+          <h2>公司观察</h2>
+          <p>公开公司研究摘要。不展示内部评分、仓位或完整估值模型。</p>
         </div>
-        <div id="cooperation-detail" class="daily-detail"></div>
+        <div id="company-list" class="stack"></div>
       </section>
 
       <section id="reports" class="view" data-route="reports">
-        <div id="report-list-view">
-          <div class="section-heading">
-            <h2>研究报告</h2>
-            <p>长期专题、月度产业观察与精选知识图谱。</p>
-          </div>
-          <div id="report-list" class="stack"></div>
+        <div class="section-heading">
+          <h2>研究报告</h2>
+          <p>月度产业权力迁移报告与精选知识图谱。</p>
         </div>
-        <div id="report-detail" class="daily-detail"></div>
+        <div id="report-list" class="stack"></div>
       </section>
 
       <section id="about" class="view" data-route="about">
@@ -178,7 +129,7 @@
             Rachel Capital 是一个针对科技与产业的个人研究平台，长期关注 AI、半导体、机器人、高端制造、新材料、医疗科技、船舶与国防等方向。
           </p>
           <p>
-            本网站主要展示经过筛选、适合公开发布的研究内容，包括科技动向日报、战略生态观察、合作机会文章和研究报告。
+            本网站主要展示经过筛选、适合公开发布的研究内容，包括科技动向日报、产业生态观察、公司研究摘要和月度研究报告。
           </p>
           <p>
             内部持仓、私人决策日志、完整估值模型、一级项目敏感资料不会在此公开展示。
@@ -224,7 +175,7 @@
           <h3>免责声明</h3>
           <p>本网站所有内容仅供研究交流与信息分享使用。</p>
           <p>
-            文中涉及的企业、行业、市场、项目方向和合作线索仅为公开资料整理与研究观察，不构成任何投资建议、投资邀约、融资承诺、项目背书、目标价、收益承诺或买卖依据。
+            文中涉及的企业、行业、市场及证券信息仅为公开资料整理与研究观察，不构成任何投资建议、投资邀约、收益承诺或买卖依据。
           </p>
           <p>投资有风险，决策需独立判断，风险由投资者自行承担。</p>
         </section>
@@ -235,11 +186,11 @@
       <div class="footer-main">
         <p>Rachel Capital OS · 科技与产业研究观察</p>
         <p>联系邮箱：<a href="mailto:rachelaowei@qq.com">rachelaowei@qq.com</a> · WeChat：rachelao</p>
-        <p>内容仅供研究交流与合作沟通，不构成投资建议、融资承诺、项目背书、目标价或收益承诺。</p>
+        <p>内容仅供研究交流，不构成投资建议。</p>
       </div>
       <span id="last-updated">正在加载公开数据...</span>
     </footer>
 
-    <script src="assets/site.js?v=20260629-cooperation-1"></script>
+    <script src="assets/site.js"></script>
   </body>
 </html>

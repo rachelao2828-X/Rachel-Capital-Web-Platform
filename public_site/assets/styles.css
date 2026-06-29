@@ -232,50 +232,6 @@ h4 {
   padding: 8px 10px;
 }
 
-.focus-tags {
-  gap: 10px;
-  margin-bottom: 0;
-}
-
-.cooperation-intro {
-  margin-bottom: 18px;
-}
-
-.table-wrap {
-  overflow-x: auto;
-}
-
-.opportunity-table {
-  border-collapse: collapse;
-  min-width: 780px;
-  width: 100%;
-}
-
-.opportunity-table th,
-.opportunity-table td {
-  border: 1px solid var(--line);
-  padding: 12px;
-  text-align: left;
-  vertical-align: top;
-}
-
-.opportunity-table th {
-  background: var(--surface-muted);
-  color: var(--text);
-  font-size: 13px;
-}
-
-.opportunity-table td {
-  color: var(--muted);
-  line-height: 1.55;
-}
-
-.opportunity-table td:first-child {
-  color: var(--text);
-  font-weight: 700;
-  min-width: 190px;
-}
-
 .mini-card {
   background: #fbfcfd;
   border: 1px solid var(--line);
@@ -438,12 +394,6 @@ button {
 
 .markdown-body p {
   color: var(--text);
-}
-
-.markdown-body .lead {
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1.7;
 }
 
 .markdown-body ul {

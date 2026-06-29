@@ -13,7 +13,7 @@ const ecosystemSectionOrder = [
   ["industry_chain", "产业链结构"],
   ["value_chain", "核心价值链"],
   ["sub_chains", "子链条拆解"],
-  ["companies", "关键公司观察池"],
+  ["companies", "关键公司研究池"],
   ["indicators", "长期跟踪指标"],
   ["questions", "关键问题"],
   ["relations", "与其他生态的关系"],
@@ -37,6 +37,7 @@ const state = {
   content: [],
   ecosystems: [],
   themes: [],
+  cooperation: [],
   grouped: {
     daily: [],
     companies: [],
@@ -72,7 +73,8 @@ function displaySource(value) {
 function displayType(value) {
   const labels = {
     daily_intelligence: "科技动向日报",
-    company: "公司观察",
+    company: "合作机会",
+    cooperation_opportunity: "合作机会",
     ecosystem: "战略生态",
     report: "研究报告",
     knowledge_graph: "知识图谱",
@@ -81,15 +83,47 @@ function displayType(value) {
 }
 
 function dailyUrl(item) {
-  return item?.date ? `#/daily/${encodeURIComponent(item.date)}` : "#daily";
+  return item?.date ? `#/daily-intelligence/${encodeURIComponent(item.date)}` : "#daily-intelligence";
 }
 
 function ecosystemUrl(item) {
-  return item?.title ? `#/ecosystems/${encodeURIComponent(item.title)}` : "#ecosystems";
+  return item?.title ? `#/strategic-ecosystems/${encodeURIComponent(item.title)}` : "#strategic-ecosystems";
 }
 
 function themeUrl(item) {
-  return item?.title ? `#/themes/${encodeURIComponent(item.title)}` : "#reports";
+  return item?.title ? `#/research-reports/${encodeURIComponent(item.title)}` : "#research-reports";
+}
+
+function cooperationUrl(item) {
+  return item?.slug
+    ? `#/cooperation-opportunities/${encodeURIComponent(item.slug)}`
+    : "#cooperation-opportunities";
+}
+
+function updateDocumentMeta(route, item) {
+  const metaDescription = document.querySelector('meta[name="description"]');
+  const titles = {
+    home: "Rachel Capital | 科技动向与产业研究",
+    daily: "科技动向日报 | Rachel Capital",
+    ecosystems: "战略生态 | Rachel Capital",
+    "cooperation-opportunities": item?.title
+      ? `${item.title} | 合作机会 | Rachel Capital`
+      : "合作机会 | Rachel Capital",
+    reports: "研究报告 | Rachel Capital",
+    about: "关于平台 | Rachel Capital",
+  };
+  const descriptions = {
+    home: "Rachel Capital 公开展示科技动向日报、战略生态、合作机会与研究报告。",
+    daily: "Rachel Capital 公开展示经过筛选后的科技动向日报内容。",
+    ecosystems: "Rachel Capital 公开展示七大战略生态的产业研究摘要与长期观察。",
+    "cooperation-opportunities": "Rachel 基于长期产业研究展示可公开的产业合作方向，包括一级市场项目方向、上市公司产业需求、算力与AI基础设施合作、政府园区产业机会和技术供应链协同。",
+    reports: "Rachel Capital 公开展示经过筛选的研究报告、长期专题与知识图谱。",
+    about: "Rachel Capital OS Public Research Portal 的公开边界与联系方式。",
+  };
+  document.title = titles[route] || titles.home;
+  if (metaDescription) {
+    metaDescription.setAttribute("content", descriptions[route] || descriptions.home);
+  }
 }
 
 function formatTags(values) {
@@ -224,6 +258,57 @@ function homeEcosystemCard(item) {
   `;
 }
 
+function homeCooperationCard(item) {
+  const title = escapeHtml(item?.title || "未命名合作机会");
+  const summary = escapeHtml(item?.summary || "");
+  const url = cooperationUrl(item);
+  return `
+    <a class="card card-link" href="${url}">
+      <article>
+        <h3>${title}</h3>
+        <div class="meta">
+          ${item?.ecosystem ? `<span>${escapeHtml(formatMetaValue(item.ecosystem))}</span>` : ""}
+          ${item?.opportunity_type ? `<span>${escapeHtml(item.opportunity_type)}</span>` : ""}
+        </div>
+        ${summary ? `<p>${summary}</p>` : ""}
+        <span class="text-button">查看合作机会</span>
+      </article>
+    </a>
+  `;
+}
+
+function cooperationTable(items) {
+  if (!items.length) return emptyState("暂无公开合作机会文章。");
+  const rows = items.map((item) => {
+    const url = cooperationUrl(item);
+    return `
+      <tr>
+        <td><a href="${url}">${escapeHtml(item.title || "未命名合作机会")}</a></td>
+        <td>${escapeHtml(formatMetaValue(item.ecosystem))}</td>
+        <td>${escapeHtml(item.opportunity_type || "")}</td>
+        <td>${escapeHtml(item.date || "")}</td>
+        <td>${escapeHtml(item.public_status || "")}</td>
+      </tr>
+    `;
+  });
+  return `
+    <div class="table-wrap">
+      <table class="opportunity-table">
+        <thead>
+          <tr>
+            <th>标题</th>
+            <th>所属战略生态</th>
+            <th>机会类型</th>
+            <th>发布时间</th>
+            <th>公开状态</th>
+          </tr>
+        </thead>
+        <tbody>${rows.join("")}</tbody>
+      </table>
+    </div>
+  `;
+}
+
 function groupContent(items) {
   state.grouped.daily = items.filter((item) => item.type === "daily_intelligence");
   state.grouped.companies = items.filter((item) => item.type === "company");
@@ -234,7 +319,7 @@ function groupContent(items) {
 function renderHome() {
   const latestDaily = state.grouped.daily.slice(0, 1);
   const latestReports = [...state.themes, ...state.grouped.reports].slice(0, 3);
-  const latestCompanies = state.grouped.companies.slice(0, 4);
+  const latestCooperation = state.cooperation.slice(0, 3);
 
   document.querySelector("#home-daily").innerHTML = latestDaily.length
     ? latestDaily.map((item) => homeDailyCard(item)).join("")
@@ -250,9 +335,9 @@ function renderHome() {
     ? latestReports.map((item) => (item.sections ? themeCard(item) : itemCard(item))).join("")
     : emptyState("暂无公开研究报告。");
 
-  document.querySelector("#home-companies").innerHTML = latestCompanies.length
-    ? latestCompanies.map((item) => itemCard(item)).join("")
-    : emptyState("暂无公开公司观察。");
+  document.querySelector("#home-cooperation").innerHTML = latestCooperation.length
+    ? latestCooperation.map((item) => homeCooperationCard(item)).join("")
+    : emptyState("暂无公开合作机会文章。");
 }
 
 function renderDaily() {
@@ -434,6 +519,10 @@ function findThemeByTitle(title) {
   return state.themes.find((item) => item.title === title);
 }
 
+function findCooperationBySlug(slug) {
+  return state.cooperation.find((item) => item.slug === slug);
+}
+
 async function openDailyDetail(item) {
   const detail = document.querySelector("#daily-detail");
   const listView = document.querySelector("#daily-list-view");
@@ -442,7 +531,7 @@ async function openDailyDetail(item) {
   if (!item) {
     detail.innerHTML = `
       <section class="panel">
-        <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+        <a class="text-button secondary" href="#daily-intelligence">返回科技动向日报列表</a>
         <p>未找到对应日期的科技动向日报。</p>
       </section>
     `;
@@ -452,7 +541,7 @@ async function openDailyDetail(item) {
   if (!item.path) {
     detail.innerHTML = `
       <section class="panel">
-        <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+        <a class="text-button secondary" href="#daily-intelligence">返回科技动向日报列表</a>
         <p>该日报缺少 Markdown 路径。</p>
       </section>
     `;
@@ -467,7 +556,7 @@ async function openDailyDetail(item) {
     detail.innerHTML = `
       <section class="panel markdown-body">
         <div class="daily-detail-header">
-          <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+          <a class="text-button secondary" href="#daily-intelligence">返回科技动向日报列表</a>
           <h2>科技动向日报</h2>
           <div class="meta">
             <span>日期：${escapeHtml(item.date || "未标明")}</span>
@@ -481,7 +570,7 @@ async function openDailyDetail(item) {
   } catch (error) {
     detail.innerHTML = `
       <section class="panel">
-        <a class="text-button secondary" href="#daily">返回科技动向日报列表</a>
+        <a class="text-button secondary" href="#daily-intelligence">返回科技动向日报列表</a>
         <p>无法加载 Markdown 全文：${escapeHtml(error.message)}</p>
       </section>
     `;
@@ -522,7 +611,7 @@ function openEcosystemDetail(item) {
   if (!item) {
     detail.innerHTML = `
       <section class="panel">
-        <a class="text-button secondary" href="#ecosystems">返回战略生态列表</a>
+        <a class="text-button secondary" href="#strategic-ecosystems">返回战略生态列表</a>
         <p>未找到对应战略生态。</p>
       </section>
     `;
@@ -549,7 +638,7 @@ function openEcosystemDetail(item) {
   detail.innerHTML = `
     <section class="panel markdown-body ecosystem-detail">
       <div class="daily-detail-header">
-        <a class="text-button secondary" href="#ecosystems">返回战略生态列表</a>
+        <a class="text-button secondary" href="#strategic-ecosystems">返回战略生态列表</a>
         <h2>${escapeHtml(item.title || "战略生态")}</h2>
         <div class="meta">
           <span>重点公司数量：${Number(item.company_count ?? asArray(item.linked_companies).length ?? 0)}</span>
@@ -571,7 +660,7 @@ function openThemeDetail(item) {
   if (!item) {
     detail.innerHTML = `
       <section class="panel">
-        <a class="text-button secondary" href="#reports">返回研究报告列表</a>
+        <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
         <p>未找到对应专题。</p>
       </section>
     `;
@@ -587,7 +676,7 @@ function openThemeDetail(item) {
   detail.innerHTML = `
     <section class="panel markdown-body ecosystem-detail">
       <div class="daily-detail-header">
-        <a class="text-button secondary" href="#reports">返回研究报告列表</a>
+        <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
         <h2>${escapeHtml(item.title || "长期专题")}</h2>
         <div class="meta">
           ${item.source_path ? `<span>来源：${escapeHtml(item.source_path)}</span>` : ""}
@@ -601,10 +690,51 @@ function openThemeDetail(item) {
   detail.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function renderCompanies() {
-  document.querySelector("#company-list").innerHTML = state.grouped.companies.length
-    ? state.grouped.companies.map((item) => itemCard(item, { detail: true })).join("")
-    : emptyState("暂无公开公司研究摘要。");
+function renderCooperation() {
+  document.querySelector("#cooperation-list").innerHTML = cooperationTable(state.cooperation);
+  document.querySelector("#cooperation-detail").innerHTML = "";
+}
+
+function openCooperationDetail(item) {
+  const detail = document.querySelector("#cooperation-detail");
+  const listView = document.querySelector("#cooperation-list-view");
+  listView.hidden = true;
+
+  if (!item) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#cooperation-opportunities">返回合作机会列表</a>
+        <p>未找到对应合作机会文章。</p>
+      </section>
+    `;
+    return;
+  }
+
+  detail.innerHTML = `
+    <section class="panel markdown-body cooperation-detail">
+      <div class="daily-detail-header">
+        <a class="text-button secondary" href="#cooperation-opportunities">返回合作机会列表</a>
+        <h2>${escapeHtml(item.title || "合作机会")}</h2>
+        <div class="meta">
+          ${item.date ? `<span>发布日期：${escapeHtml(item.date)}</span>` : ""}
+          ${item.ecosystem ? `<span>所属战略生态：${escapeHtml(formatMetaValue(item.ecosystem))}</span>` : ""}
+          ${item.opportunity_type ? `<span>机会类型：${escapeHtml(item.opportunity_type)}</span>` : ""}
+          ${item.public_status ? `<span>公开状态：${escapeHtml(item.public_status)}</span>` : ""}
+        </div>
+      </div>
+      ${item.summary ? `<p class="lead">${escapeHtml(item.summary)}</p>` : ""}
+      ${item.content ? renderMarkdown(item.content) : ""}
+      <section class="ecosystem-section">
+        <h3 class="ecosystem-section-title">联系方式</h3>
+        <p>${escapeHtml(item.contact_note || "微信：rachelao")}</p>
+      </section>
+      <section class="notice large">
+        <h3>免责声明</h3>
+        <p>${escapeHtml(item.disclaimer || "本文章仅用于产业研究、合作交流和商业机会对接。")}</p>
+      </section>
+    </section>
+  `;
+  detail.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderReports() {
@@ -620,25 +750,64 @@ function renderReports() {
 
 function navigate() {
   const rawHash = decodeURIComponent(location.hash || "#home");
-  const dailyDetailMatch = rawHash.match(/^#\/daily\/([^/]+)$/);
-  const ecosystemDetailMatch = rawHash.match(/^#\/ecosystems\/([^/]+)$/);
-  const themeDetailMatch = rawHash.match(/^#\/themes\/([^/]+)$/);
+  const dailyDetailMatch = rawHash.match(/^#\/daily-intelligence\/([^/]+)$/)
+    || rawHash.match(/^#\/daily\/([^/]+)$/);
+  const ecosystemDetailMatch = rawHash.match(/^#\/strategic-ecosystems\/([^/]+)$/)
+    || rawHash.match(/^#\/ecosystems\/([^/]+)$/);
+  const themeDetailMatch = rawHash.match(/^#\/research-reports\/([^/]+)$/)
+    || rawHash.match(/^#\/themes\/([^/]+)$/);
+  const cooperationDetailMatch = rawHash.match(/^#\/cooperation-opportunities\/([^/]+)$/)
+    || rawHash.match(/^#\/company-observations\/([^/]+)$/)
+    || rawHash.match(/^#\/companies\/([^/]+)$/);
   const hashRoute = rawHash.replace("#", "") || "home";
+  const routeAliases = {
+    daily: "daily",
+    "daily-intelligence": "daily",
+    "/daily": "daily",
+    "/daily-intelligence": "daily",
+    ecosystems: "ecosystems",
+    "strategic-ecosystems": "ecosystems",
+    "/ecosystems": "ecosystems",
+    "/strategic-ecosystems": "ecosystems",
+    reports: "reports",
+    themes: "reports",
+    "research-reports": "reports",
+    "/reports": "reports",
+    "/themes": "reports",
+    "/research-reports": "reports",
+    companies: "cooperation-opportunities",
+    "company-observations": "cooperation-opportunities",
+    "/companies": "cooperation-opportunities",
+    "/company-observations": "cooperation-opportunities",
+    "cooperation-opportunities": "cooperation-opportunities",
+    "/cooperation-opportunities": "cooperation-opportunities",
+  };
+  const normalizedHashRoute = routeAliases[hashRoute] || hashRoute;
   const route = dailyDetailMatch
     ? "daily"
     : ecosystemDetailMatch
       ? "ecosystems"
       : themeDetailMatch
         ? "reports"
-        : hashRoute === "disclaimer"
+        : cooperationDetailMatch
+          ? "cooperation-opportunities"
+          : normalizedHashRoute === "disclaimer"
           ? "about"
-          : hashRoute;
+          : normalizedHashRoute;
 
   document.querySelectorAll(".view").forEach((view) => {
     view.classList.toggle("is-active", view.dataset.route === route);
   });
   document.querySelectorAll("nav a").forEach((link) => {
-    const navRoute = route === "daily" ? "#daily" : route === "ecosystems" ? "#ecosystems" : `#${route}`;
+    const navRoute = route === "daily"
+      ? "#daily-intelligence"
+      : route === "ecosystems"
+        ? "#strategic-ecosystems"
+        : route === "cooperation-opportunities"
+          ? "#cooperation-opportunities"
+          : route === "reports"
+            ? "#research-reports"
+          : `#${route}`;
     link.classList.toggle("is-active", link.getAttribute("href") === navRoute);
   });
 
@@ -648,6 +817,8 @@ function navigate() {
   const ecosystemDetail = document.querySelector("#ecosystem-detail");
   const reportListView = document.querySelector("#report-list-view");
   const reportDetail = document.querySelector("#report-detail");
+  const cooperationListView = document.querySelector("#cooperation-list-view");
+  const cooperationDetail = document.querySelector("#cooperation-detail");
   if (route !== "daily") {
     dailyListView.hidden = false;
     dailyDetail.innerHTML = "";
@@ -663,10 +834,18 @@ function navigate() {
     reportDetail.innerHTML = "";
   }
 
+  if (route !== "cooperation-opportunities") {
+    cooperationListView.hidden = false;
+    cooperationDetail.innerHTML = "";
+  }
+
   if (route === "daily") {
     if (dailyDetailMatch) {
-      openDailyDetail(findDailyByDate(dailyDetailMatch[1]));
+      const dailyItem = findDailyByDate(dailyDetailMatch[1]);
+      updateDocumentMeta(route, dailyItem);
+      openDailyDetail(dailyItem);
     } else {
+      updateDocumentMeta(route);
       dailyListView.hidden = false;
       dailyDetail.innerHTML = "";
     }
@@ -674,8 +853,11 @@ function navigate() {
 
   if (route === "ecosystems") {
     if (ecosystemDetailMatch) {
-      openEcosystemDetail(findEcosystemByTitle(ecosystemDetailMatch[1]));
+      const ecosystemItem = findEcosystemByTitle(ecosystemDetailMatch[1]);
+      updateDocumentMeta(route, ecosystemItem);
+      openEcosystemDetail(ecosystemItem);
     } else {
+      updateDocumentMeta(route);
       ecosystemListView.hidden = false;
       ecosystemDetail.innerHTML = "";
     }
@@ -683,30 +865,57 @@ function navigate() {
 
   if (route === "reports") {
     if (themeDetailMatch) {
-      openThemeDetail(findThemeByTitle(themeDetailMatch[1]));
+      const themeItem = findThemeByTitle(themeDetailMatch[1]);
+      updateDocumentMeta(route, themeItem);
+      openThemeDetail(themeItem);
     } else {
+      updateDocumentMeta(route);
       reportListView.hidden = false;
       reportDetail.innerHTML = "";
     }
+  }
+
+  if (route === "cooperation-opportunities") {
+    if (cooperationDetailMatch) {
+      const cooperationItem = findCooperationBySlug(cooperationDetailMatch[1]);
+      updateDocumentMeta(route, cooperationItem);
+      openCooperationDetail(cooperationItem);
+    } else {
+      updateDocumentMeta(route);
+      cooperationListView.hidden = false;
+      cooperationDetail.innerHTML = "";
+    }
+  }
+
+  if (!["daily", "ecosystems", "reports", "cooperation-opportunities"].includes(route)) {
+    updateDocumentMeta(route);
   }
 }
 
 async function loadContent() {
   try {
-    const [contentResponse, ecosystemResponse, themeResponse] = await Promise.all([
+    const [contentResponse, ecosystemResponse, themeResponse, cooperationResponse] = await Promise.all([
       fetch("data/public_content.json", { cache: "no-cache" }),
       fetch("data/ecosystems.json", { cache: "no-cache" }),
       fetch("data/themes.json", { cache: "no-cache" }),
+      fetch("data/cooperation_opportunities.json", { cache: "no-cache" }),
     ]);
     if (!contentResponse.ok) throw new Error(`public_content HTTP ${contentResponse.status}`);
     if (!ecosystemResponse.ok) throw new Error(`ecosystems HTTP ${ecosystemResponse.status}`);
     if (!themeResponse.ok) throw new Error(`themes HTTP ${themeResponse.status}`);
+    if (!cooperationResponse.ok) throw new Error(`cooperation_opportunities HTTP ${cooperationResponse.status}`);
     const payload = await contentResponse.json();
     const ecosystemsPayload = await ecosystemResponse.json();
     const themesPayload = await themeResponse.json();
+    const cooperationPayload = await cooperationResponse.json();
     state.content = Array.isArray(payload.items) ? payload.items : [];
     state.ecosystems = Array.isArray(ecosystemsPayload) ? ecosystemsPayload : [];
     state.themes = Array.isArray(themesPayload) ? themesPayload : [];
+    state.cooperation = Array.isArray(cooperationPayload)
+      ? cooperationPayload
+      : Array.isArray(cooperationPayload.items)
+        ? cooperationPayload.items
+        : [];
     document.querySelector("#last-updated").textContent = payload.generated_at
       ? `公开数据更新时间：${payload.generated_at}`
       : "公开数据已加载";
@@ -714,6 +923,7 @@ async function loadContent() {
     state.content = [];
     state.ecosystems = [];
     state.themes = [];
+    state.cooperation = [];
     document.querySelector("#last-updated").textContent = "尚未导出公开数据";
   }
 
@@ -724,7 +934,7 @@ async function loadContent() {
   renderHome();
   renderDaily();
   renderEcosystems();
-  renderCompanies();
+  renderCooperation();
   renderReports();
   navigate();
 }

@@ -75,6 +75,22 @@ GitHub Pages，但当前阶段不要发布新功能。
 - 后续建议建设：公司数据库联动、日报事件输入、公开版发布审查。
 - 当前模块建设默认只面向 Obsidian + localhost + `develop`，不自动发布 GitHub Pages。
 
+## GitHub Pages / public_site 公开导航与合作机会栏目
+
+- GitHub Pages / `public_site` 的公开导航统一为：首页、科技动向日报、战略生态、合作机会、研究报告、关于平台。
+- 原公开栏目“公司观察”已升级为“合作机会”栏目。
+- 合作机会栏目不再做复杂子分类页面，而是文章列表型栏目。
+- 未来每一个合作机会以单篇文章形式发布。
+- 合作机会文章可展示一级市场项目方向、上市公司产业需求、算力与AI基础设施合作、政府园区产业机会、技术供应链协同、出海合作和资本合作等公开或脱敏内容。
+- 合作机会公开数据源为 `public_site/data/cooperation_opportunities.json`。
+- 合作机会文章模板为 `public_site/content/cooperation-opportunities/_template.md`。
+- 旧 `company-observations` / `companies` 入口仅用于兼容跳转或路由兼容，不作为新的用户可见栏目。
+- 未授权一级市场项目不得公开真实名称、融资金额、商业机密或未公开财务数据。
+- `public_site` 不得公开内部公司数据库、估值引擎、投资决策引擎、日报事件输入、持仓、投委会内容或私密项目资料。
+- 合作机会栏目不是投资推荐栏目，不展示买入、卖出、推荐、目标价或收益承诺。
+- 本次仅调整 `develop` 分支的 `public_site` 源码与文档，不发布 GitHub Pages。
+- GitHub Pages 发布仍需要用户单独明确指令。
+
 ## Foundation Files / 01_基石文件
 
 - `01_基石文件` 是 Rachel Capital OS 的世界观与方法论底座。

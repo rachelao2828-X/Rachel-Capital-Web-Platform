@@ -266,7 +266,6 @@ function homeCooperationCard(item) {
       <article>
         <h3>${title}</h3>
         <div class="meta">
-          ${item?.ecosystem ? `<span>${escapeHtml(formatMetaValue(item.ecosystem))}</span>` : ""}
           ${item?.opportunity_type ? `<span>${escapeHtml(item.opportunity_type)}</span>` : ""}
         </div>
         ${summary ? `<p>${summary}</p>` : ""}
@@ -711,9 +710,7 @@ function openCooperationDetail(item) {
         <h2>${escapeHtml(item.title || "合作机会")}</h2>
         <div class="meta">
           ${item.date ? `<span>发布日期：${escapeHtml(item.date)}</span>` : ""}
-          ${item.ecosystem ? `<span>所属战略生态：${escapeHtml(formatMetaValue(item.ecosystem))}</span>` : ""}
           ${item.opportunity_type ? `<span>机会类型：${escapeHtml(item.opportunity_type)}</span>` : ""}
-          ${item.public_status ? `<span>公开状态：${escapeHtml(item.public_status)}</span>` : ""}
         </div>
       </div>
       ${item.summary ? `<p class="lead">${escapeHtml(item.summary)}</p>` : ""}

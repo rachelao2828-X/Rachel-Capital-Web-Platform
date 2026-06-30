@@ -21,15 +21,12 @@ const ecosystemSectionOrder = [
 ];
 
 const themeSectionOrder = [
-  ["definition", "专题定义"],
-  ["why_track", "为什么需要长期跟踪"],
-  ["pdf_fusion", "PDF融合后的核心结论"],
-  ["categories", "一级分类"],
+  ["overview", "专题概述"],
+  ["why_track", "为什么值得长期关注"],
+  ["focus_areas", "重点观察方向"],
+  ["stage_observations", "当前阶段观察"],
   ["ecosystem_relations", "与七大战略生态的关系"],
-  ["tech_matrix_summary", "关键技术矩阵摘要"],
-  ["research_gap_position", "查漏补缺清单定位"],
-  ["public_summary", "公开展示摘要"],
-  ["next_tasks", "下一步研究任务"],
+  ["public_boundary", "公开边界"],
 ];
 
 const state = {
@@ -238,7 +235,6 @@ function themeCard(item) {
       ${tags}
       <div class="meta">
         ${ecosystemCount ? `<span>关联生态数量：${ecosystemCount}</span>` : ""}
-        ${item?.source_path ? `<span>来源：${escapeHtml(item.source_path)}</span>` : ""}
       </div>
       <a class="text-button" href="${themeUrl(item)}">查看专题</a>
     </article>
@@ -671,10 +667,6 @@ function openThemeDetail(item) {
       <div class="daily-detail-header">
         <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
         <h2>${escapeHtml(item.title || "长期专题")}</h2>
-        <div class="meta">
-          ${item.source_path ? `<span>来源：${escapeHtml(item.source_path)}</span>` : ""}
-          ${item.publish_scope ? `<span>公开范围：${escapeHtml(item.publish_scope)}</span>` : ""}
-        </div>
         ${formatTags(item.tags)}
       </div>
       ${sectionHtml}
@@ -729,9 +721,16 @@ function openCooperationDetail(item) {
 }
 
 function renderReports() {
+  const publicThemeTags = new Set(state.themes.flatMap((item) => asArray(item.tags)));
+  const standaloneReports = state.grouped.reports.filter((item) => {
+    const tags = asArray(item.tags);
+    const overlapsTheme = tags.some((tag) => publicThemeTags.has(tag));
+    const sameThemeTitle = state.themes.some((theme) => item.title === theme.title);
+    return !overlapsTheme && !sameThemeTitle;
+  });
   const reportItems = [
     ...state.themes.map((item) => themeCard(item)),
-    ...state.grouped.reports.map((item) => itemCard(item, { detail: true })),
+    ...standaloneReports.map((item) => itemCard(item, { detail: true })),
   ];
   document.querySelector("#report-list").innerHTML = reportItems.length
     ? reportItems.join("")

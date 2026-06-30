@@ -23,6 +23,7 @@ const ecosystemSectionOrder = [
 const themeSectionOrder = [
   ["overview", "专题概述"],
   ["why_track", "为什么值得长期关注"],
+  ["specific_technologies", "具体关键攻关技术列表"],
   ["focus_areas", "重点观察方向"],
   ["stage_observations", "当前阶段观察"],
   ["ecosystem_relations", "与七大战略生态的关系"],

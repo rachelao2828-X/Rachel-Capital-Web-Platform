@@ -242,38 +242,73 @@ h4 {
 }
 
 .table-wrap {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   overflow-x: auto;
 }
 
 .opportunity-table {
-  border-collapse: collapse;
-  min-width: 780px;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 720px;
+  table-layout: fixed;
   width: 100%;
 }
 
 .opportunity-table th,
 .opportunity-table td {
-  border: 1px solid var(--line);
-  padding: 12px;
+  border: 0;
+  padding: 16px 18px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .opportunity-table th {
   background: var(--surface-muted);
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.opportunity-table tbody tr + tr td {
+  border-top: 1px solid var(--line);
 }
 
 .opportunity-table td {
   color: var(--muted);
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
-.opportunity-table td:first-child {
+.opportunity-table th:nth-child(1),
+.opportunity-table td:nth-child(1) {
+  width: 38%;
+}
+
+.opportunity-table th:nth-child(2),
+.opportunity-table td:nth-child(2) {
+  width: 44%;
+}
+
+.opportunity-table th:nth-child(3),
+.opportunity-table td:nth-child(3) {
+  width: 18%;
+  white-space: nowrap;
+}
+
+.opportunity-table td:first-child a {
   color: var(--text);
+  display: inline-block;
   font-weight: 700;
-  min-width: 190px;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.opportunity-table td:first-child a:hover {
+  color: var(--accent);
 }
 
 .mini-card {

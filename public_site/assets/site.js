@@ -283,10 +283,8 @@ function cooperationTable(items) {
     return `
       <tr>
         <td><a href="${url}">${escapeHtml(item.title || "未命名合作机会")}</a></td>
-        <td>${escapeHtml(formatMetaValue(item.ecosystem))}</td>
         <td>${escapeHtml(item.opportunity_type || "")}</td>
         <td>${escapeHtml(item.date || "")}</td>
-        <td>${escapeHtml(item.public_status || "")}</td>
       </tr>
     `;
   });
@@ -296,10 +294,8 @@ function cooperationTable(items) {
         <thead>
           <tr>
             <th>标题</th>
-            <th>所属战略生态</th>
             <th>机会类型</th>
             <th>发布时间</th>
-            <th>公开状态</th>
           </tr>
         </thead>
         <tbody>${rows.join("")}</tbody>

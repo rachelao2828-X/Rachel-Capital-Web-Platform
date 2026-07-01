@@ -91,6 +91,10 @@ function themeUrl(item) {
   return item?.title ? `#/research-reports/${encodeURIComponent(item.title)}` : "#research-reports";
 }
 
+function reportUrl(item) {
+  return item?.title ? `#/research-reports/${encodeURIComponent(item.title)}` : "#research-reports";
+}
+
 function cooperationUrl(item) {
   return item?.slug
     ? `#/cooperation-opportunities/${encodeURIComponent(item.slug)}`
@@ -242,6 +246,26 @@ function themeCard(item) {
   `;
 }
 
+function reportCard(item) {
+  const title = escapeHtml(item?.title || "未命名报告");
+  const summary = escapeHtml(item?.summary || item?.excerpt || "待发布公开报告摘要。");
+  const tags = formatTags(item?.tags || []);
+  const url = reportUrl(item);
+
+  return `
+    <article class="card theme-card">
+      <h3><a href="${url}">${title}</a></h3>
+      <p><a href="${url}">${summary}</a></p>
+      ${tags}
+      <div class="meta">
+        ${item?.date ? `<span>${escapeHtml(item.date)}</span>` : ""}
+        ${item?.updated ? `<span>更新：${escapeHtml(item.updated)}</span>` : ""}
+      </div>
+      <a class="text-button" href="${url}">阅读报告</a>
+    </article>
+  `;
+}
+
 function homeEcosystemCard(item) {
   const title = escapeHtml(item?.title || "未命名生态");
   const summary = escapeHtml(item?.summary || item?.public_summary || item?.excerpt || "待发布公开生态观察。");
@@ -323,7 +347,7 @@ function renderHome() {
     .join("") || emptyState("暂无公开战略生态。");
 
   document.querySelector("#home-reports").innerHTML = latestReports.length
-    ? latestReports.map((item) => (item.sections ? themeCard(item) : itemCard(item))).join("")
+    ? latestReports.map((item) => (item.sections ? themeCard(item) : reportCard(item))).join("")
     : emptyState("暂无公开研究报告。");
 
   document.querySelector("#home-cooperation").innerHTML = latestCooperation.length
@@ -510,6 +534,10 @@ function findThemeByTitle(title) {
   return state.themes.find((item) => item.title === title);
 }
 
+function findReportByTitle(title) {
+  return state.grouped.reports.find((item) => item.title === title);
+}
+
 function findCooperationBySlug(slug) {
   return state.cooperation.find((item) => item.slug === slug);
 }
@@ -676,6 +704,57 @@ function openThemeDetail(item) {
   detail.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+async function openReportDetail(item) {
+  const detail = document.querySelector("#report-detail");
+  const listView = document.querySelector("#report-list-view");
+  listView.hidden = true;
+
+  if (!item) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
+        <p>未找到对应研究报告。</p>
+      </section>
+    `;
+    return;
+  }
+
+  if (!item.path) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
+        <p>该研究报告缺少 Markdown 路径。</p>
+      </section>
+    `;
+    return;
+  }
+
+  detail.innerHTML = `<section class="panel"><p>正在加载研究报告...</p></section>`;
+  try {
+    const response = await fetch(item.path, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const markdown = await response.text();
+    detail.innerHTML = `
+      <section class="panel markdown-body ecosystem-detail">
+        <div class="daily-detail-header">
+          <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
+          <h2>${escapeHtml(item.title || "研究报告")}</h2>
+          ${formatTags(item.tags)}
+        </div>
+        ${renderMarkdown(markdown)}
+      </section>
+    `;
+    detail.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#research-reports">返回研究报告列表</a>
+        <p>无法加载研究报告：${escapeHtml(error.message)}</p>
+      </section>
+    `;
+  }
+}
+
 function renderCooperation() {
   document.querySelector("#cooperation-list").innerHTML = cooperationTable(state.cooperation);
   document.querySelector("#cooperation-detail").innerHTML = "";
@@ -731,7 +810,7 @@ function renderReports() {
   });
   const reportItems = [
     ...state.themes.map((item) => themeCard(item)),
-    ...standaloneReports.map((item) => itemCard(item, { detail: true })),
+    ...standaloneReports.map((item) => reportCard(item)),
   ];
   document.querySelector("#report-list").innerHTML = reportItems.length
     ? reportItems.join("")
@@ -857,8 +936,13 @@ function navigate() {
   if (route === "reports") {
     if (themeDetailMatch) {
       const themeItem = findThemeByTitle(themeDetailMatch[1]);
-      updateDocumentMeta(route, themeItem);
-      openThemeDetail(themeItem);
+      const reportItem = themeItem ? null : findReportByTitle(themeDetailMatch[1]);
+      updateDocumentMeta(route, themeItem || reportItem);
+      if (themeItem) {
+        openThemeDetail(themeItem);
+      } else {
+        openReportDetail(reportItem);
+      }
     } else {
       updateDocumentMeta(route);
       reportListView.hidden = false;

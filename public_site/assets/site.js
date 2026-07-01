@@ -232,16 +232,17 @@ function themeCard(item) {
   const summary = escapeHtml(item?.summary || item?.excerpt || "待发布公开专题摘要。");
   const tags = formatTags(item?.tags || ["关键核心技术", "自主可控", "国产替代", "十五五"]);
   const ecosystemCount = asArray(item?.linked_ecosystems).length;
+  const url = themeUrl(item);
 
   return `
     <article class="card theme-card">
-      <h3>${title}</h3>
-      <p>${summary}</p>
+      <h3><a href="${url}">${title}</a></h3>
+      <p><a href="${url}">${summary}</a></p>
       ${tags}
       <div class="meta">
         ${ecosystemCount ? `<span>关联生态数量：${ecosystemCount}</span>` : ""}
       </div>
-      <a class="text-button" href="${themeUrl(item)}">查看专题</a>
+      <a class="text-button" href="${url}">阅读报告</a>
     </article>
   `;
 }

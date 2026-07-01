@@ -801,12 +801,9 @@ function openCooperationDetail(item) {
 }
 
 function renderReports() {
-  const publicThemeTags = new Set(state.themes.flatMap((item) => asArray(item.tags)));
   const standaloneReports = state.grouped.reports.filter((item) => {
-    const tags = asArray(item.tags);
-    const overlapsTheme = tags.some((tag) => publicThemeTags.has(tag));
     const sameThemeTitle = state.themes.some((theme) => item.title === theme.title);
-    return !overlapsTheme && !sameThemeTitle;
+    return !sameThemeTitle;
   });
   const reportItems = [
     ...state.themes.map((item) => themeCard(item)),

@@ -1,24 +1,28 @@
-# Local Obsidian Auto Sync Guide
+# Local Obsidian Daily Intelligence Backfill Guide
 
-## Goal
+## Purpose
 
-Make Coze daily reports appear in the local Obsidian vault automatically after they are published to GitHub Pages.
+This guide documents the local repair workflow for missing Obsidian daily reports.
 
-Pipeline:
+It is not the standard publishing flow.
+
+The standard publishing flow is:
 
 ```text
-Coze -> GitHub main -> GitHub Pages -> local sync job -> Obsidian Daily_Intelligence
+Coze -> Obsidian Daily_Intelligence -> export_public_site.py -> public_site -> GitHub Pages
 ```
 
-## Local Target
+The local backfill workflow is allowed only when a report was already published to GitHub Pages but is missing from Obsidian.
 
-Daily reports are written to:
+## Obsidian Target
+
+Daily reports must be present at:
 
 ```text
 /Users/rachelao/Documents/Rachel Capital/31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
 ```
 
-## Sync Script
+## Repair Script
 
 The script is:
 
@@ -26,7 +30,7 @@ The script is:
 scripts/sync_github_daily_to_obsidian.py
 ```
 
-It does not depend on the current Git branch. It fetches `origin/main`, reads Markdown files from:
+It reads Markdown files from:
 
 ```text
 origin/main:public_site/daily
@@ -34,7 +38,7 @@ origin/main:public_site/daily
 
 Then writes them into the local Obsidian vault.
 
-Manual run:
+Manual repair:
 
 ```bash
 python3 scripts/sync_github_daily_to_obsidian.py
@@ -46,46 +50,39 @@ Dry run:
 python3 scripts/sync_github_daily_to_obsidian.py --dry-run
 ```
 
-## macOS Auto Sync
+## Important Constraint
 
-The launch agent template is:
+Do not use this script as the normal Coze publishing route.
 
-```text
-scripts/com.rachelcapital.daily-intelligence-sync.plist
-```
-
-Installed path:
+If this script is needed, it means the standard flow was bypassed:
 
 ```text
-~/Library/LaunchAgents/com.rachelcapital.daily-intelligence-sync.plist
+Coze -> Obsidian -> public_site -> GitHub Pages
 ```
 
-Schedule:
-
-- Runs once when loaded.
-- Runs every 30 minutes.
-
-Logs:
-
-```text
-~/Library/Logs/rachel-capital-daily-intelligence-sync.log
-~/Library/Logs/rachel-capital-daily-intelligence-sync.err.log
-```
+After repair, future daily reports should again be created in Obsidian first.
 
 ## Verification
 
-Check today's report:
+Check local Obsidian reports:
 
 ```bash
 find "/Users/rachelao/Documents/Rachel Capital/31_Inbox/Daily_Intelligence" -name "*科技动向日报.md"
 ```
 
-If Coze has published today's report to GitHub but it does not appear locally, run:
+Check required frontmatter:
 
 ```bash
-python3 scripts/sync_github_daily_to_obsidian.py
+rg -n "^public: true|^type: daily_intelligence|^date:|^source: coze" "/Users/rachelao/Documents/Rachel Capital/31_Inbox/Daily_Intelligence"
 ```
 
-## Notes
+## 2026-07-02 Backfill
 
-This local sync is separate from GitHub Pages deployment. GitHub Pages can update correctly while the local Obsidian vault remains stale unless the local machine fetches and syncs the new files.
+The following files were manually backfilled from GitHub Pages into Obsidian:
+
+```text
+2026-07-01_科技动向日报.md
+2026-07-02_科技动向日报.md
+```
+
+This correction should not be repeated as the normal publishing route.

@@ -7,8 +7,12 @@ This pipeline receives a daily technology investment report from Coze, saves it 
 Flow:
 
 ```text
-Coze -> POST /api/news -> Database -> Streamlit Platform -> Obsidian Inbox -> Git commit + push
+Coze -> POST /api/news -> Database -> Obsidian Daily_Intelligence -> export_public_site.py -> public_site -> GitHub Pages
 ```
+
+Obsidian is the source of truth. GitHub Pages is the public display layer.
+
+Coze must not publish daily source content only to `public_site`. If GitHub Pages contains a daily report that is missing from Obsidian, treat that as a sync failure and backfill Obsidian.
 
 ## 1. Coze POST Endpoint
 
@@ -101,14 +105,27 @@ Notes:
 Example macOS path:
 
 ```text
-/Users/rachelao/Documents/Rachel-Capital-OS-Vault
+/Users/rachelao/Documents/Rachel Capital
 ```
 
 The API writes Markdown files to:
 
 ```text
-{OBSIDIAN_VAULT_PATH}/31_Inbox/Daily_Intelligence/YYYY-MM-DD_科技投资日报.md
+{OBSIDIAN_VAULT_PATH}/31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
 ```
+
+Every file must include:
+
+```yaml
+public: true
+type: daily_intelligence
+title: YYYY-MM-DD 科技动向日报
+date: YYYY-MM-DD
+summary: 一句话公开摘要
+source: coze
+```
+
+Without `public: true`, the public export script will not include the report in GitHub Pages.
 
 If the vault path is not configured, the database save still succeeds and the API returns:
 
@@ -126,7 +143,7 @@ git_sync: skipped
 
 ## 5. GitHub Auto Backup
 
-If `GIT_AUTO_COMMIT=true`, the API attempts to run the following inside the Obsidian vault after the Markdown file is written:
+If `GIT_AUTO_COMMIT=true`, the API may run the following inside the Obsidian vault after the Markdown file is written:
 
 ```bash
 git add .
@@ -140,6 +157,14 @@ Safety behavior:
 - If there are no staged changes, backup is skipped with `git_sync: skipped_no_changes`.
 - `.env` and `.env.*` are explicitly unstaged before commit.
 - Git failure does not roll back the database save or Obsidian write.
+
+GitHub Pages publishing is a separate step. After the Obsidian source file exists, run:
+
+```bash
+python3 scripts/export_public_site.py --vault "/Users/rachelao/Documents/Rachel Capital"
+```
+
+Then review the generated `public_site` diff before publishing.
 
 ## 6. Local Test
 
@@ -235,4 +260,3 @@ git status
 git remote -v
 git push origin HEAD:develop
 ```
-

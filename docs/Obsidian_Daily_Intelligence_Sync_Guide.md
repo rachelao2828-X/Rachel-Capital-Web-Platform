@@ -1,117 +1,88 @@
 # Obsidian Daily Intelligence Sync Guide
 
-## Goal
+## Current Rule
 
-Daily reports are published by Coze into the public web platform repository, then copied into the private Obsidian vault repository.
+Obsidian is the source of truth for daily intelligence reports.
 
-Pipeline:
+The standard pipeline is:
 
 ```text
 Coze daily report
--> Rachel-Capital-Web-Platform
+-> Obsidian Daily_Intelligence Markdown
+-> scripts/export_public_site.py
+-> public_site
 -> GitHub Pages
--> Rachel-Capital-OS-Vault
--> Obsidian Git Pull
 ```
 
-## Public Source
-
-Coze writes public daily Markdown files to:
+The reverse path below is not the primary publishing flow:
 
 ```text
-public_site/daily/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
+GitHub Pages -> Obsidian
 ```
 
-These files are safe for GitHub Pages and must not include private holdings, decision logs, full valuation models, API keys, tokens, or secrets.
+Use it only to repair missing Obsidian source files when a daily report was already published publicly.
 
 ## Obsidian Target
 
-The sync workflow copies daily Markdown files into the private Obsidian vault repository:
+Daily reports must live under:
 
 ```text
-31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
+/Users/rachelao/Documents/Rachel Capital/31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
 ```
 
-The local Obsidian vault path is:
+## Required Frontmatter
 
-```text
-/Users/rachelao/Documents/Rachel Capital
+Each daily report must include:
+
+```yaml
+---
+public: true
+type: daily_intelligence
+title: YYYY-MM-DD 科技动向日报
+date: YYYY-MM-DD
+summary: 一句话公开摘要
+source: coze
+ecosystem:
+  - AI基础设施生态
+companies:
+  - 示例公司
+tags:
+  - 科技动向
+---
 ```
 
-## GitHub Actions Setup
+`public: true` is required for export to GitHub Pages.
 
-The workflow is:
+## Export to Public Site
 
-```text
-.github/workflows/sync-obsidian-vault.yml
-```
-
-It runs when `main` receives changes under:
-
-```text
-public_site/daily/**
-```
-
-Required repository secret on `Rachel-Capital-Web-Platform`:
-
-```text
-VAULT_SYNC_TOKEN
-```
-
-This should be a fine-grained GitHub token with contents read/write access to the private Obsidian vault repository.
-
-Optional repository variable:
-
-```text
-OBSIDIAN_VAULT_REPO
-```
-
-Default value used by the workflow:
-
-```text
-rachelao2828-X/Rachel-Capital-OS-Vault
-```
-
-Set the variable only if the private vault repository uses a different name.
-
-## Local One-Time Sync
-
-To copy existing public daily reports into the local Obsidian vault:
+After Coze writes the Obsidian file, export public content with:
 
 ```bash
-python3 scripts/sync_public_daily_to_obsidian.py
+python3 scripts/export_public_site.py --vault "/Users/rachelao/Documents/Rachel Capital"
 ```
 
-Dry run:
+Then review generated changes under `public_site` before publishing.
 
-```bash
-python3 scripts/sync_public_daily_to_obsidian.py --dry-run
-```
+GitHub Pages publishing still requires an explicit user instruction.
 
-## Obsidian Setup
+## Backfill / Repair
 
-The local Obsidian vault should be connected to the private vault repository, not to the public web platform repository.
+If a report exists on GitHub Pages but does not exist in Obsidian, treat it as a sync failure.
 
-Recommended remote:
+Repair steps:
+
+1. Download the published Markdown from GitHub Pages.
+2. Write it into the Obsidian target path.
+3. Ensure frontmatter includes `public: true`, `type: daily_intelligence`, `date`, `summary`, `source: coze`, `ecosystem`, `companies`, and `tags`.
+4. Keep Obsidian as the source of truth after repair.
+
+## Correction Record
+
+On 2026-07-02, the following reports were backfilled into Obsidian:
 
 ```text
-git@github.com:rachelao2828-X/Rachel-Capital-OS-Vault.git
+31_Inbox/Daily_Intelligence/2026/2026-07/2026-07-01_科技动向日报.md
+31_Inbox/Daily_Intelligence/2026/2026-07/2026-07-02_科技动向日报.md
 ```
 
-After the GitHub Actions workflow syncs a daily report into the private vault repo, run Git Pull in Obsidian or through the Obsidian Git plugin.
-
-## Expected Result
-
-After pull, the daily report appears in Obsidian:
-
-```text
-31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
-```
-
-## Troubleshooting
-
-- If the workflow fails with `Missing repository secret: VAULT_SYNC_TOKEN`, add the secret in GitHub repository settings.
-- If checkout of the vault repository fails, confirm the token can access the private vault repo.
-- If Obsidian does not show the report, run Git Pull in the local vault and confirm the file exists under `31_Inbox/Daily_Intelligence`.
-- If the private vault repo has a different name, set `OBSIDIAN_VAULT_REPO`.
-- Do not connect Obsidian directly to the web platform repository, because that would pull app code and GitHub Pages files into the vault.
+This was a repair action, not the preferred publishing path.

@@ -1,5 +1,52 @@
 # Coze Daily Intelligence Integration Guide
 
+## Publishing Rule
+
+Coze daily reports must be written to Obsidian first.
+
+Standard flow:
+
+```text
+Coze -> Obsidian Daily_Intelligence -> scripts/export_public_site.py -> public_site -> GitHub Pages
+```
+
+GitHub Pages is not the source of truth. It is only the public display layer.
+
+Coze must not write daily source content only to `public_site`. If `public_site` is updated without the matching Obsidian file, Obsidian will miss the report and future exports may break the public index.
+
+Required Obsidian target:
+
+```text
+/Users/rachelao/Documents/Rachel Capital/31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
+```
+
+Required filename:
+
+```text
+YYYY-MM-DD_科技动向日报.md
+```
+
+Required frontmatter:
+
+```yaml
+---
+public: true
+type: daily_intelligence
+title: YYYY-MM-DD 科技动向日报
+date: YYYY-MM-DD
+summary: 一句话公开摘要
+source: coze
+ecosystem:
+  - AI基础设施生态
+companies:
+  - 示例公司
+tags:
+  - 科技动向
+---
+```
+
+`public: true` is mandatory for GitHub Pages export.
+
 ## Target Endpoint
 
 Coze should send the Daily Technology Investment Report to:
@@ -135,4 +182,3 @@ Then visit:
 http://localhost:8501
 http://localhost:8501/News
 ```
-

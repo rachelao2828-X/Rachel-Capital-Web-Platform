@@ -91,6 +91,21 @@ GitHub Pages，但当前阶段不要发布新功能。
 - 本次仅调整 `develop` 分支的 `public_site` 源码与文档，不发布 GitHub Pages。
 - GitHub Pages 发布仍需要用户单独明确指令。
 
+## Coze 日报发布规则
+
+- Obsidian 是科技动向日报的 Source of Truth。
+- Coze 生成日报后，必须先写入 Obsidian：
+
+```text
+/Users/rachelao/Documents/Rachel Capital/31_Inbox/Daily_Intelligence/YYYY/YYYY-MM/YYYY-MM-DD_科技动向日报.md
+```
+
+- 日报 frontmatter 必须包含 `public: true`、`type: daily_intelligence`、`title`、`date`、`summary`、`source: coze`、`ecosystem`、`companies`、`tags`。
+- GitHub Pages 只能通过 `scripts/export_public_site.py --vault "/Users/rachelao/Documents/Rachel Capital"` 从 Obsidian 导出。
+- 不允许把 `public_site` 作为日报源头长期维护；`public_site -> Obsidian` 只允许作为缺失日报的回填修复。
+- 2026-07-02 已将线上 `2026-07-01` 和 `2026-07-02` 科技动向日报回填到 Obsidian 的 `2026-07` 目录；后续日报必须先进入 Obsidian 再发布。
+- 详细规则见 `docs/Coze_Daily_Intelligence_Publishing_Rules.md`。
+
 ## Foundation Files / 01_基石文件
 
 - `01_基石文件` 是 Rachel Capital OS 的世界观与方法论底座。

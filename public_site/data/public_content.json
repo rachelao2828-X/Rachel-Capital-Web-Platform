@@ -1,7 +1,24 @@
 {
-  "generated_at": "2026-07-08T05:55:13+08:00",
+  "generated_at": "2026-07-09T06:00:00+08:00",
   "source_vault": "/Users/rachelao/Documents/Rachel Capital",
   "items": [
+    {
+      "title": "2026-07-09 科技动向日报",
+      "date": "2026-07-09",
+      "path": "daily/2026/2026-07/2026-07-09_科技动向日报.md",
+      "category": "科技动向日报",
+      "excerpt": "美伊冲突急剧升级特朗普宣布谅解备忘录已终结霍尔木兹海峡油轮通行基本停止油价暴涨7%+；苹果博通300亿美元芯片协议；OpenAI GPT-5.6获监管放行；DeepSeek/智谱自研AI芯片；国务院批复千亿级智算集群方案；中科院合肥582吨超导磁体验收；固态电池赛道剧烈分歧",
+      "tags": [
+        "AI芯片",
+        "算力",
+        "核聚变",
+        "固态电池",
+        "美伊冲突",
+        "DeepSeek",
+        "GPT-5.6",
+        "博通"
+      ]
+    },
     {
       "public": true,
       "type": "daily_intelligence",

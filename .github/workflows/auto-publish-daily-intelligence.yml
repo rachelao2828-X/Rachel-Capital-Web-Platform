@@ -6,11 +6,13 @@ on:
       - coze_daily_intelligence
       - coze_market_radar_report
   schedule:
+    # Beijing time 08:20, 09:20, 10:20, and 11:20 on weekdays.
+    # Repeated attempts handle delayed Coze output without publishing incomplete data.
     - cron: "20 0,1,2,3 * * 1-5"
   workflow_dispatch:
     inputs:
       report_date:
-        description: "Daily report date to publish, YYYY-MM-DD"
+        description: "Daily report date to publish, YYYY-MM-DD. Defaults to today's date in Asia/Shanghai."
         required: false
         type: string
 
@@ -43,17 +45,32 @@ jobs:
           echo "MONTH_START=${MONTH_START}" >> "$GITHUB_ENV"
           echo "Publishing public content for ${REPORT_DATE}"
 
+      - name: Check vault sync token
+        run: |
+          if [ -z "${{ secrets.VAULT_SYNC_TOKEN }}" ]; then
+            echo "Missing repository secret: VAULT_SYNC_TOKEN"
+            echo "Create a fine-grained GitHub token with Contents read/write access to the private Obsidian vault repo."
+            exit 1
+          fi
+
       - name: Checkout web platform
         uses: actions/checkout@v4
         with:
           path: web-platform
           ref: main
 
+      - name: Checkout Obsidian vault repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.OBSIDIAN_VAULT_REPO || env.DEFAULT_VAULT_REPO }}
+          token: ${{ secrets.VAULT_SYNC_TOKEN }}
+          path: obsidian-vault
+          ref: main
+
       - name: Write Coze dispatch payload to Obsidian
         if: github.event_name == 'repository_dispatch'
         working-directory: web-platform
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/obsidian-vault"
           if [ "${{ github.event.action }}" = "coze_market_radar_report" ]; then
             python3 scripts/write_coze_market_radar_payload_to_obsidian.py \
               --vault "$GITHUB_WORKSPACE/obsidian-vault"
@@ -70,6 +87,28 @@ jobs:
             --vault "$GITHUB_WORKSPACE/obsidian-vault" \
             --start-date "$MONTH_START" \
             --end-date "$REPORT_DATE"
+
+      - name: Save normalized Obsidian metadata
+        working-directory: obsidian-vault
+        run: |
+          if [ "${{ github.event.action }}" = "coze_market_radar_report" ]; then
+            TARGET_PATH="$MARKET_RADAR_TARGET_DIR"
+            COMMIT_MESSAGE="Add market radar report ${REPORT_DATE}"
+          else
+            TARGET_PATH="$TARGET_DIR"
+            COMMIT_MESSAGE="Normalize daily intelligence metadata ${REPORT_DATE}"
+          fi
+
+          if [ -z "$(git status --porcelain -- "$TARGET_PATH")" ]; then
+            echo "No Obsidian changes under ${TARGET_PATH}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$TARGET_PATH"
+          git commit -m "$COMMIT_MESSAGE"
+          git push
 
       - name: Export public site
         working-directory: web-platform

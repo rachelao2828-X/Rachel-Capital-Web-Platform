@@ -18,6 +18,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: daily-intelligence-autopublish
@@ -113,7 +115,12 @@ jobs:
       - name: Export public site
         working-directory: web-platform
         run: |
-          python3 scripts/export_public_site.py --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          if [ "${{ github.event.action }}" = "coze_market_radar_report" ]; then
+            python3 scripts/export_market_radar_incremental.py \
+              --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          else
+            python3 scripts/export_public_site.py --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          fi
 
       - name: Check Daily Intelligence completeness
         if: github.event_name != 'repository_dispatch' || github.event.action == 'coze_daily_intelligence'
@@ -125,10 +132,12 @@ jobs:
             --end-date "$REPORT_DATE"
 
       - name: Commit public site changes
+        id: commit-public-site
         working-directory: web-platform
         run: |
           if [ -z "$(git status --porcelain -- public_site)" ]; then
             echo "No public_site changes to publish."
+            echo "published=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -141,3 +150,18 @@ jobs:
             git commit -m "Auto publish daily intelligence ${REPORT_DATE}"
           fi
           git push origin main
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+      - name: Configure Pages
+        if: steps.commit-public-site.outputs.published == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload public site artifact
+        if: steps.commit-public-site.outputs.published == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web-platform/public_site
+
+      - name: Deploy GitHub Pages
+        if: steps.commit-public-site.outputs.published == 'true'
+        uses: actions/deploy-pages@v4

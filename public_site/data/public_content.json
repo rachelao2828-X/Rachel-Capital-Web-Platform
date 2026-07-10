@@ -1,7 +1,30 @@
 {
-  "generated_at": "2026-07-10T15:53:40.746057+00:00",
+  "generated_at": "2026-07-10T15:53:52.896561+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-10 市场复盘",
+      "date": "2026-07-10",
+      "slug": "2026-07-10_2026-07-10-市场复盘",
+      "summary": "极致割裂：3770股上涨vs指数全线暴跌，半导体/科技权重遭天量抛售，资金从高位硬件切换至商业航天/医药/低位补涨，半导体设备链逆势获44.6亿净流入",
+      "source": "coze",
+      "review_type": "每日复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "复盘报告"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-10_2026-07-10-市场复盘.md",
+      "excerpt": "极致割裂：3770股上涨vs指数全线暴跌，半导体/科技权重遭天量抛售，资金从高位硬件切换至商业航天/医药/低位补涨，半导体设备链逆势获44.6亿净流入"
+    },
     {
       "public": true,
       "type": "market_radar",

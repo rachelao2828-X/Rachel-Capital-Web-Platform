@@ -35,13 +35,18 @@ const state = {
   ecosystems: [],
   themes: [],
   cooperation: [],
+  marketRadarUnlocked: false,
   grouped: {
     daily: [],
+    marketRadar: [],
     companies: [],
     ecosystems: [],
     reports: [],
   },
 };
+
+const MARKET_RADAR_PASSWORD = "128128";
+const MARKET_RADAR_TYPES = new Set(["market_radar", "market_review", "review_report"]);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -70,6 +75,9 @@ function displaySource(value) {
 function displayType(value) {
   const labels = {
     daily_intelligence: "科技动向日报",
+    market_radar: "市场雷达",
+    market_review: "市场复盘",
+    review_report: "复盘报告",
     company: "合作机会",
     cooperation_opportunity: "合作机会",
     ecosystem: "战略生态",
@@ -81,6 +89,15 @@ function displayType(value) {
 
 function dailyUrl(item) {
   return item?.date ? `#/daily-intelligence/${encodeURIComponent(item.date)}` : "#daily-intelligence";
+}
+
+function marketRadarSlug(item) {
+  return item?.slug || item?.date || item?.title || "";
+}
+
+function marketRadarUrl(item) {
+  const slug = marketRadarSlug(item);
+  return slug ? `#/market-radar/${encodeURIComponent(slug)}` : "#market-radar";
 }
 
 function ecosystemUrl(item) {
@@ -106,6 +123,9 @@ function updateDocumentMeta(route, item) {
   const titles = {
     home: "Rachel Capital | 科技动向与产业研究",
     daily: "科技动向日报 | Rachel Capital",
+    "market-radar": item?.title
+      ? `${item.title} | 市场雷达 | Rachel Capital`
+      : "市场雷达 | Rachel Capital",
     ecosystems: "战略生态 | Rachel Capital",
     "cooperation-opportunities": item?.title
       ? `${item.title} | 合作机会 | Rachel Capital`
@@ -114,8 +134,9 @@ function updateDocumentMeta(route, item) {
     about: "关于平台 | Rachel Capital",
   };
   const descriptions = {
-    home: "Rachel Capital 公开展示科技动向日报、战略生态、合作机会与研究报告。",
+    home: "Rachel Capital 公开展示科技动向日报、市场雷达、战略生态、合作机会与研究报告。",
     daily: "Rachel Capital 公开展示经过筛选后的科技动向日报内容。",
+    "market-radar": "Rachel Capital 市场雷达用于展示 Coze 自动发布的市场复盘报告，需输入访问密码后阅读。",
     ecosystems: "Rachel Capital 公开展示七大战略生态的产业研究摘要与长期观察。",
     "cooperation-opportunities": "Rachel 基于长期产业研究展示可公开的产业合作方向，包括一级市场项目方向、上市公司产业需求、算力与AI基础设施合作、政府园区产业机会和技术供应链协同。",
     reports: "Rachel Capital 公开展示经过筛选的研究报告、长期专题与知识图谱。",
@@ -182,6 +203,32 @@ function dailyCard(item) {
   `;
 }
 
+function marketRadarCard(item) {
+  const title = escapeHtml(item.title || "未命名复盘报告");
+  const date = escapeHtml(item.date || "");
+  const summary = escapeHtml(item.summary || item.excerpt || "");
+  const tags = formatTags(item.tags);
+  const url = marketRadarUrl(item);
+  const markets = escapeHtml(formatMetaValue(item.market || item.markets));
+  const reportKind = escapeHtml(item.review_type || item.report_kind || "市场复盘");
+
+  return `
+    <article class="card">
+      <h3><a href="${url}">${title}</a></h3>
+      <div class="meta">
+        ${date ? `<span>${date}</span>` : ""}
+        ${markets ? `<span>${markets}</span>` : ""}
+        ${reportKind ? `<span>${reportKind}</span>` : ""}
+      </div>
+      ${summary ? `<p><a href="${url}">${summary}</a></p>` : ""}
+      ${tags}
+      <a class="text-button" href="${url}">
+        阅读复盘
+      </a>
+    </article>
+  `;
+}
+
 function homeDailyCard(item) {
   const title = escapeHtml(item.title || "未命名日报");
   const date = escapeHtml(item.date || "");
@@ -232,16 +279,17 @@ function themeCard(item) {
   const summary = escapeHtml(item?.summary || item?.excerpt || "待发布公开专题摘要。");
   const tags = formatTags(item?.tags || ["关键核心技术", "自主可控", "国产替代", "十五五"]);
   const ecosystemCount = asArray(item?.linked_ecosystems).length;
+  const url = themeUrl(item);
 
   return `
     <article class="card theme-card">
-      <h3>${title}</h3>
-      <p>${summary}</p>
+      <h3><a href="${url}">${title}</a></h3>
+      <p><a href="${url}">${summary}</a></p>
       ${tags}
       <div class="meta">
         ${ecosystemCount ? `<span>关联生态数量：${ecosystemCount}</span>` : ""}
       </div>
-      <a class="text-button" href="${themeUrl(item)}">查看专题</a>
+      <a class="text-button" href="${url}">阅读报告</a>
     </article>
   `;
 }
@@ -326,6 +374,7 @@ function cooperationTable(items) {
 
 function groupContent(items) {
   state.grouped.daily = items.filter((item) => item.type === "daily_intelligence");
+  state.grouped.marketRadar = items.filter((item) => MARKET_RADAR_TYPES.has(item.type));
   state.grouped.companies = items.filter((item) => item.type === "company");
   state.grouped.ecosystems = items.filter((item) => item.type === "ecosystem");
   state.grouped.reports = items.filter((item) => item.type === "report" || item.type === "knowledge_graph");
@@ -360,6 +409,40 @@ function renderDaily() {
     ? state.grouped.daily.map((item) => dailyCard(item)).join("")
     : emptyState("暂无公开科技动向日报。");
   document.querySelector("#daily-detail").innerHTML = "";
+}
+
+function isMarketRadarUnlocked() {
+  return state.marketRadarUnlocked || sessionStorage.getItem("marketRadarUnlocked") === "true";
+}
+
+function setMarketRadarUnlocked(value) {
+  state.marketRadarUnlocked = Boolean(value);
+  if (value) {
+    sessionStorage.setItem("marketRadarUnlocked", "true");
+  } else {
+    sessionStorage.removeItem("marketRadarUnlocked");
+  }
+}
+
+function renderMarketRadarLock() {
+  const lockView = document.querySelector("#market-radar-lock-view");
+  const listView = document.querySelector("#market-radar-list-view");
+  const detail = document.querySelector("#market-radar-detail");
+  const unlocked = isMarketRadarUnlocked();
+  lockView.hidden = unlocked;
+  listView.hidden = !unlocked;
+  if (!unlocked) {
+    detail.innerHTML = "";
+  }
+  return unlocked;
+}
+
+function renderMarketRadar() {
+  if (!renderMarketRadarLock()) return;
+  document.querySelector("#market-radar-list").innerHTML = state.grouped.marketRadar.length
+    ? state.grouped.marketRadar.map((item) => marketRadarCard(item)).join("")
+    : emptyState("暂无市场雷达复盘报告。Coze 发布后会自动出现在这里。");
+  document.querySelector("#market-radar-detail").innerHTML = "";
 }
 
 function stripFrontmatter(markdown) {
@@ -526,6 +609,10 @@ function findDailyByDate(date) {
   return state.grouped.daily.find((item) => item.date === date);
 }
 
+function findMarketRadarBySlug(slug) {
+  return state.grouped.marketRadar.find((item) => marketRadarSlug(item) === slug);
+}
+
 function findEcosystemByTitle(title) {
   return state.ecosystems.find((item) => item.title === title);
 }
@@ -591,6 +678,63 @@ async function openDailyDetail(item) {
       <section class="panel">
         <a class="text-button secondary" href="#daily-intelligence">返回科技动向日报列表</a>
         <p>无法加载 Markdown 全文：${escapeHtml(error.message)}</p>
+      </section>
+    `;
+  }
+}
+
+async function openMarketRadarDetail(item) {
+  if (!renderMarketRadarLock()) return;
+  const detail = document.querySelector("#market-radar-detail");
+  const listView = document.querySelector("#market-radar-list-view");
+  listView.hidden = true;
+
+  if (!item) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#market-radar">返回市场雷达列表</a>
+        <p>未找到对应市场雷达复盘报告。</p>
+      </section>
+    `;
+    return;
+  }
+
+  if (!item.path) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#market-radar">返回市场雷达列表</a>
+        <p>该复盘报告缺少 Markdown 路径。</p>
+      </section>
+    `;
+    return;
+  }
+
+  detail.innerHTML = `<section class="panel"><p>正在加载复盘报告...</p></section>`;
+  try {
+    const response = await fetch(item.path, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const markdown = await response.text();
+    detail.innerHTML = `
+      <section class="panel markdown-body">
+        <div class="daily-detail-header">
+          <a class="text-button secondary" href="#market-radar">返回市场雷达列表</a>
+          <h2>${escapeHtml(item.title || "市场雷达复盘报告")}</h2>
+          <div class="meta">
+            ${item.date ? `<span>日期：${escapeHtml(item.date)}</span>` : ""}
+            ${item.market || item.markets ? `<span>市场：${escapeHtml(formatMetaValue(item.market || item.markets))}</span>` : ""}
+            <span>来源：${escapeHtml(displaySource(item.source))}</span>
+          </div>
+          ${formatTags(item.tags)}
+        </div>
+        ${renderMarkdown(markdown)}
+      </section>
+    `;
+    detail.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    detail.innerHTML = `
+      <section class="panel">
+        <a class="text-button secondary" href="#market-radar">返回市场雷达列表</a>
+        <p>无法加载复盘报告：${escapeHtml(error.message)}</p>
       </section>
     `;
   }
@@ -819,6 +963,7 @@ function navigate() {
   const rawHash = decodeURIComponent(location.hash || "#home");
   const dailyDetailMatch = rawHash.match(/^#\/daily-intelligence\/([^/]+)$/)
     || rawHash.match(/^#\/daily\/([^/]+)$/);
+  const marketRadarDetailMatch = rawHash.match(/^#\/market-radar\/([^/]+)$/);
   const ecosystemDetailMatch = rawHash.match(/^#\/strategic-ecosystems\/([^/]+)$/)
     || rawHash.match(/^#\/ecosystems\/([^/]+)$/);
   const themeDetailMatch = rawHash.match(/^#\/research-reports\/([^/]+)$/)
@@ -832,6 +977,8 @@ function navigate() {
     "daily-intelligence": "daily",
     "/daily": "daily",
     "/daily-intelligence": "daily",
+    "market-radar": "market-radar",
+    "/market-radar": "market-radar",
     ecosystems: "ecosystems",
     "strategic-ecosystems": "ecosystems",
     "/ecosystems": "ecosystems",
@@ -852,15 +999,17 @@ function navigate() {
   const normalizedHashRoute = routeAliases[hashRoute] || hashRoute;
   const route = dailyDetailMatch
     ? "daily"
-    : ecosystemDetailMatch
-      ? "ecosystems"
-      : themeDetailMatch
-        ? "reports"
-        : cooperationDetailMatch
-          ? "cooperation-opportunities"
-          : normalizedHashRoute === "disclaimer"
-          ? "about"
-          : normalizedHashRoute;
+    : marketRadarDetailMatch
+      ? "market-radar"
+      : ecosystemDetailMatch
+        ? "ecosystems"
+        : themeDetailMatch
+          ? "reports"
+          : cooperationDetailMatch
+            ? "cooperation-opportunities"
+            : normalizedHashRoute === "disclaimer"
+            ? "about"
+            : normalizedHashRoute;
 
   document.querySelectorAll(".view").forEach((view) => {
     view.classList.toggle("is-active", view.dataset.route === route);
@@ -868,18 +1017,22 @@ function navigate() {
   document.querySelectorAll("nav a").forEach((link) => {
     const navRoute = route === "daily"
       ? "#daily-intelligence"
-      : route === "ecosystems"
-        ? "#strategic-ecosystems"
-        : route === "cooperation-opportunities"
-          ? "#cooperation-opportunities"
-          : route === "reports"
-            ? "#research-reports"
-          : `#${route}`;
+      : route === "market-radar"
+        ? "#market-radar"
+        : route === "ecosystems"
+          ? "#strategic-ecosystems"
+          : route === "cooperation-opportunities"
+            ? "#cooperation-opportunities"
+            : route === "reports"
+              ? "#research-reports"
+            : `#${route}`;
     link.classList.toggle("is-active", link.getAttribute("href") === navRoute);
   });
 
   const dailyListView = document.querySelector("#daily-list-view");
   const dailyDetail = document.querySelector("#daily-detail");
+  const marketRadarListView = document.querySelector("#market-radar-list-view");
+  const marketRadarDetail = document.querySelector("#market-radar-detail");
   const ecosystemListView = document.querySelector("#ecosystem-list-view");
   const ecosystemDetail = document.querySelector("#ecosystem-detail");
   const reportListView = document.querySelector("#report-list-view");
@@ -889,6 +1042,11 @@ function navigate() {
   if (route !== "daily") {
     dailyListView.hidden = false;
     dailyDetail.innerHTML = "";
+  }
+
+  if (route !== "market-radar") {
+    marketRadarListView.hidden = !isMarketRadarUnlocked();
+    marketRadarDetail.innerHTML = "";
   }
 
   if (route !== "ecosystems") {
@@ -915,6 +1073,17 @@ function navigate() {
       updateDocumentMeta(route);
       dailyListView.hidden = false;
       dailyDetail.innerHTML = "";
+    }
+  }
+
+  if (route === "market-radar") {
+    if (marketRadarDetailMatch) {
+      const marketRadarItem = findMarketRadarBySlug(marketRadarDetailMatch[1]);
+      updateDocumentMeta(route, marketRadarItem);
+      openMarketRadarDetail(marketRadarItem);
+    } else {
+      updateDocumentMeta(route);
+      renderMarketRadar();
     }
   }
 
@@ -959,7 +1128,7 @@ function navigate() {
     }
   }
 
-  if (!["daily", "ecosystems", "reports", "cooperation-opportunities"].includes(route)) {
+  if (!["daily", "market-radar", "ecosystems", "reports", "cooperation-opportunities"].includes(route)) {
     updateDocumentMeta(route);
   }
 }
@@ -1005,11 +1174,28 @@ async function loadContent() {
   }
   renderHome();
   renderDaily();
+  renderMarketRadar();
   renderEcosystems();
   renderCooperation();
   renderReports();
   navigate();
 }
+
+document.querySelector("#market-radar-password-form")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = document.querySelector("#market-radar-password");
+  const error = document.querySelector("#market-radar-password-error");
+  const value = String(input?.value || "");
+  if (value === MARKET_RADAR_PASSWORD) {
+    setMarketRadarUnlocked(true);
+    if (error) error.hidden = true;
+    if (input) input.value = "";
+    renderMarketRadar();
+    navigate();
+    return;
+  }
+  if (error) error.hidden = false;
+});
 
 window.addEventListener("hashchange", navigate);
 loadContent();

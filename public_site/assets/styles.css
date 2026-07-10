@@ -151,6 +151,35 @@ main {
   line-height: 1.65;
 }
 
+.password-panel {
+  max-width: 560px;
+}
+
+.password-form {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.password-form input {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  flex: 1 1 220px;
+  font: inherit;
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
+.password-error {
+  color: #a43f3f;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
 h2,
 h3,
 h4 {
@@ -473,6 +502,12 @@ button {
 
 .markdown-body p {
   color: var(--text);
+}
+
+.markdown-body .lead {
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.7;
 }
 
 .markdown-body ul {

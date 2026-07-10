@@ -6,9 +6,9 @@
     <title>Rachel Capital | 科技动向与产业研究</title>
     <meta
       name="description"
-      content="Rachel Capital 公开展示科技动向日报、战略生态、合作机会与研究报告。"
+      content="Rachel Capital 公开展示科技动向日报、市场雷达、战略生态、合作机会与研究报告。"
     />
-    <link rel="stylesheet" href="assets/styles.css?v=20260629-cooperation-1" />
+    <link rel="stylesheet" href="assets/styles.css?v=20260710-market-radar-1" />
   </head>
   <body>
     <header class="site-header">
@@ -19,6 +19,7 @@
       <nav aria-label="主导航">
         <a href="#home">首页</a>
         <a href="#daily-intelligence">科技动向日报</a>
+        <a href="#market-radar">市场雷达</a>
         <a href="#strategic-ecosystems">战略生态</a>
         <a href="#research-reports">研究报告</a>
         <a href="#cooperation-opportunities">合作机会</a>
@@ -88,6 +89,39 @@
           <div id="daily-list" class="stack"></div>
         </div>
         <div id="daily-detail" class="daily-detail"></div>
+      </section>
+
+      <section id="market-radar" class="view" data-route="market-radar">
+        <div id="market-radar-lock-view">
+          <div class="section-heading">
+            <h2>市场雷达</h2>
+            <p>Coze 自动发布的市场复盘报告。进入栏目需要输入访问密码。</p>
+          </div>
+          <section class="panel password-panel">
+            <h3>请输入访问密码</h3>
+            <p>验证通过后，可在本次浏览会话中阅读全部市场雷达复盘报告。</p>
+            <form id="market-radar-password-form" class="password-form">
+              <input
+                id="market-radar-password"
+                type="password"
+                inputmode="numeric"
+                autocomplete="current-password"
+                placeholder="输入密码"
+                aria-label="市场雷达访问密码"
+              />
+              <button class="text-button" type="submit">进入市场雷达</button>
+            </form>
+            <p id="market-radar-password-error" class="password-error" hidden>密码不正确，请重新输入。</p>
+          </section>
+        </div>
+        <div id="market-radar-list-view" hidden>
+          <div class="section-heading">
+            <h2>市场雷达</h2>
+            <p>Coze 复盘报告归档。</p>
+          </div>
+          <div id="market-radar-list" class="stack"></div>
+        </div>
+        <div id="market-radar-detail" class="daily-detail"></div>
       </section>
 
       <section id="ecosystems" class="view" data-route="ecosystems">
@@ -162,7 +196,7 @@
             Rachel Capital 是一个针对科技与产业的个人研究平台，长期关注 AI、半导体、机器人、高端制造、新材料、医疗科技、船舶与国防等方向。
           </p>
           <p>
-            本网站主要展示经过筛选、适合公开发布的研究内容，包括科技动向日报、战略生态观察、研究报告及合作机会。
+            本网站主要展示经过筛选、适合公开发布的研究内容，包括科技动向日报、市场雷达复盘、战略生态观察、研究报告及合作机会。
           </p>
           <p>
             内部持仓、私人决策日志、完整估值模型、一级项目敏感资料不会在此公开展示。
@@ -224,6 +258,6 @@
       <span id="last-updated">正在加载公开数据...</span>
     </footer>
 
-    <script src="assets/site.js?v=20260629-cooperation-1"></script>
+    <script src="assets/site.js?v=20260710-market-radar-1"></script>
   </body>
 </html>

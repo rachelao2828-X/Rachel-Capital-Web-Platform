@@ -4,6 +4,7 @@ on:
   repository_dispatch:
     types:
       - coze_daily_intelligence
+      - coze_market_radar_report
   schedule:
     # Beijing time 08:20, 09:20, 10:20, and 11:20 on weekdays.
     # Repeated attempts handle delayed Coze output without publishing incomplete data.
@@ -28,6 +29,7 @@ jobs:
     env:
       DEFAULT_VAULT_REPO: rachelao2828-X/Rachel-Capital-OS-Vault
       TARGET_DIR: 31_Inbox/Daily_Intelligence
+      MARKET_RADAR_TARGET_DIR: 31_Inbox/Market_Radar
     steps:
       - name: Resolve report date
         run: |
@@ -41,7 +43,7 @@ jobs:
           MONTH_START="${REPORT_DATE%-??}-01"
           echo "REPORT_DATE=${REPORT_DATE}" >> "$GITHUB_ENV"
           echo "MONTH_START=${MONTH_START}" >> "$GITHUB_ENV"
-          echo "Publishing Daily Intelligence for ${REPORT_DATE}"
+          echo "Publishing public content for ${REPORT_DATE}"
 
       - name: Check vault sync token
         run: |
@@ -69,10 +71,16 @@ jobs:
         if: github.event_name == 'repository_dispatch'
         working-directory: web-platform
         run: |
-          python3 scripts/write_coze_daily_payload_to_obsidian.py \
-            --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          if [ "${{ github.event.action }}" = "coze_market_radar_report" ]; then
+            python3 scripts/write_coze_market_radar_payload_to_obsidian.py \
+              --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          else
+            python3 scripts/write_coze_daily_payload_to_obsidian.py \
+              --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          fi
 
       - name: Normalize Daily Intelligence frontmatter
+        if: github.event_name != 'repository_dispatch' || github.event.action == 'coze_daily_intelligence'
         working-directory: web-platform
         run: |
           python3 scripts/normalize_daily_intelligence_frontmatter.py \
@@ -83,15 +91,23 @@ jobs:
       - name: Save normalized Obsidian metadata
         working-directory: obsidian-vault
         run: |
-          if [ -z "$(git status --porcelain -- "$TARGET_DIR")" ]; then
-            echo "No Obsidian Daily Intelligence metadata changes."
+          if [ "${{ github.event.action }}" = "coze_market_radar_report" ]; then
+            TARGET_PATH="$MARKET_RADAR_TARGET_DIR"
+            COMMIT_MESSAGE="Add market radar report ${REPORT_DATE}"
+          else
+            TARGET_PATH="$TARGET_DIR"
+            COMMIT_MESSAGE="Normalize daily intelligence metadata ${REPORT_DATE}"
+          fi
+
+          if [ -z "$(git status --porcelain -- "$TARGET_PATH")" ]; then
+            echo "No Obsidian changes under ${TARGET_PATH}."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$TARGET_DIR"
-          git commit -m "Normalize daily intelligence metadata ${REPORT_DATE}"
+          git add "$TARGET_PATH"
+          git commit -m "$COMMIT_MESSAGE"
           git push
 
       - name: Export public site
@@ -100,6 +116,7 @@ jobs:
           python3 scripts/export_public_site.py --vault "$GITHUB_WORKSPACE/obsidian-vault"
 
       - name: Check Daily Intelligence completeness
+        if: github.event_name != 'repository_dispatch' || github.event.action == 'coze_daily_intelligence'
         working-directory: web-platform
         run: |
           python3 scripts/check_daily_intelligence_completeness.py \
@@ -118,5 +135,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public_site
-          git commit -m "Auto publish daily intelligence ${REPORT_DATE}"
+          if [ "${{ github.event.action }}" = "coze_market_radar_report" ]; then
+            git commit -m "Auto publish market radar ${REPORT_DATE}"
+          else
+            git commit -m "Auto publish daily intelligence ${REPORT_DATE}"
+          fi
           git push origin main

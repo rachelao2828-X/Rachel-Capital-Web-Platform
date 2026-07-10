@@ -108,6 +108,25 @@ Then review the generated `public_site` diff before publishing GitHub Pages.
 
 GitHub Pages publishing still requires an explicit user instruction.
 
+## Automatic Daily Publishing
+
+Rachel has approved automatic daily publishing for Daily Intelligence reports.
+
+The GitHub Actions workflow `.github/workflows/auto-publish-daily-intelligence.yml` runs on weekday mornings in Beijing time and can also be triggered manually.
+
+The automatic workflow:
+
+1. Reads the report date in Asia/Shanghai time.
+2. Checks out the Web Platform repository and the private Obsidian vault repository.
+3. Normalizes Daily Intelligence frontmatter in the vault checkout.
+4. Commits normalized vault metadata back to the vault if needed.
+5. Exports `public_site` from the Obsidian vault.
+6. Runs the completeness check.
+7. Commits and pushes `public_site` to `main` only if the check passes.
+8. Lets the existing GitHub Pages workflow deploy the updated public site.
+
+If the source report for the date is missing, the workflow fails before publishing. This is intentional: missing source content should alert the operator rather than silently producing an incomplete public site.
+
 ## Backfill Rule
 
 If GitHub Pages contains a daily report but Obsidian does not, treat it as a sync failure.

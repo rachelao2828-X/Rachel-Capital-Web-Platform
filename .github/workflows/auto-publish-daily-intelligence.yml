@@ -1,0 +1,110 @@
+name: Auto Publish Daily Intelligence
+
+on:
+  schedule:
+    # Beijing time 08:20, 09:20, 10:20, and 11:20 on weekdays.
+    # Repeated attempts handle delayed Coze output without publishing incomplete data.
+    - cron: "20 0,1,2,3 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      report_date:
+        description: "Daily report date to publish, YYYY-MM-DD. Defaults to today's date in Asia/Shanghai."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-intelligence-autopublish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DEFAULT_VAULT_REPO: rachelao2828-X/Rachel-Capital-OS-Vault
+      TARGET_DIR: 31_Inbox/Daily_Intelligence
+    steps:
+      - name: Resolve report date
+        run: |
+          if [ -n "${{ inputs.report_date }}" ]; then
+            REPORT_DATE="${{ inputs.report_date }}"
+          else
+            REPORT_DATE="$(TZ=Asia/Shanghai date +%F)"
+          fi
+          MONTH_START="${REPORT_DATE%-??}-01"
+          echo "REPORT_DATE=${REPORT_DATE}" >> "$GITHUB_ENV"
+          echo "MONTH_START=${MONTH_START}" >> "$GITHUB_ENV"
+          echo "Publishing Daily Intelligence for ${REPORT_DATE}"
+
+      - name: Check vault sync token
+        run: |
+          if [ -z "${{ secrets.VAULT_SYNC_TOKEN }}" ]; then
+            echo "Missing repository secret: VAULT_SYNC_TOKEN"
+            echo "Create a fine-grained GitHub token with Contents read/write access to the private Obsidian vault repo."
+            exit 1
+          fi
+
+      - name: Checkout web platform
+        uses: actions/checkout@v4
+        with:
+          path: web-platform
+          ref: main
+
+      - name: Checkout Obsidian vault repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.OBSIDIAN_VAULT_REPO || env.DEFAULT_VAULT_REPO }}
+          token: ${{ secrets.VAULT_SYNC_TOKEN }}
+          path: obsidian-vault
+          ref: main
+
+      - name: Normalize Daily Intelligence frontmatter
+        working-directory: web-platform
+        run: |
+          python3 scripts/normalize_daily_intelligence_frontmatter.py \
+            --vault "$GITHUB_WORKSPACE/obsidian-vault" \
+            --start-date "$MONTH_START" \
+            --end-date "$REPORT_DATE"
+
+      - name: Save normalized Obsidian metadata
+        working-directory: obsidian-vault
+        run: |
+          if [ -z "$(git status --porcelain -- "$TARGET_DIR")" ]; then
+            echo "No Obsidian Daily Intelligence metadata changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$TARGET_DIR"
+          git commit -m "Normalize daily intelligence metadata ${REPORT_DATE}"
+          git push
+
+      - name: Export public site
+        working-directory: web-platform
+        run: |
+          python3 scripts/export_public_site.py --vault "$GITHUB_WORKSPACE/obsidian-vault"
+
+      - name: Check Daily Intelligence completeness
+        working-directory: web-platform
+        run: |
+          python3 scripts/check_daily_intelligence_completeness.py \
+            --vault "$GITHUB_WORKSPACE/obsidian-vault" \
+            --start-date "$MONTH_START" \
+            --end-date "$REPORT_DATE"
+
+      - name: Commit public site changes
+        working-directory: web-platform
+        run: |
+          if [ -z "$(git status --porcelain -- public_site)" ]; then
+            echo "No public_site changes to publish."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public_site
+          git commit -m "Auto publish daily intelligence ${REPORT_DATE}"
+          git push origin main

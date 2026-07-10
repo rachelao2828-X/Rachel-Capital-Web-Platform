@@ -92,8 +92,17 @@ Daily reports must not include:
 After Coze writes the Obsidian file:
 
 ```bash
+python3 scripts/normalize_daily_intelligence_frontmatter.py --start-date YYYY-MM-01 --end-date YYYY-MM-DD
 python3 scripts/export_public_site.py --vault "/Users/rachelao/Documents/Rachel Capital"
+python3 scripts/check_daily_intelligence_completeness.py --start-date YYYY-MM-01 --end-date YYYY-MM-DD
 ```
+
+The completeness check must pass before publishing. It checks:
+
+- whether each weekday report source exists in Obsidian;
+- whether each existing source file has `public: true` and `type: daily_intelligence`;
+- whether each publishable source file appears in `public_site/data/public_content.json`;
+- whether each indexed daily Markdown file exists under `public_site/daily/`.
 
 Then review the generated `public_site` diff before publishing GitHub Pages.
 

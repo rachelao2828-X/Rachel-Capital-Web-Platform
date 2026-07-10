@@ -102,6 +102,7 @@ GitHub Pages，但当前阶段不要发布新功能。
 
 - 日报 frontmatter 必须包含 `public: true`、`type: daily_intelligence`、`title`、`date`、`summary`、`source: coze`、`ecosystem`、`companies`、`tags`。
 - GitHub Pages 只能通过 `scripts/export_public_site.py --vault "/Users/rachelao/Documents/Rachel Capital"` 从 Obsidian 导出。
+- 发布前必须先运行 `scripts/normalize_daily_intelligence_frontmatter.py` 补齐日报公开元数据，再运行 `scripts/check_daily_intelligence_completeness.py` 检查源文件、frontmatter、公开索引和 Markdown 文件是否完整。
 - 不允许把 `public_site` 作为日报源头长期维护；`public_site -> Obsidian` 只允许作为缺失日报的回填修复。
 - 2026-07-02 已将线上 `2026-07-01` 和 `2026-07-02` 科技动向日报回填到 Obsidian 的 `2026-07` 目录；后续日报必须先进入 Obsidian 再发布。
 - 详细规则见 `docs/Coze_Daily_Intelligence_Publishing_Rules.md`。

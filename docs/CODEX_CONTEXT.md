@@ -103,7 +103,7 @@ GitHub Pages，但当前阶段不要发布新功能。
 - 日报 frontmatter 必须包含 `public: true`、`type: daily_intelligence`、`title`、`date`、`summary`、`source: coze`、`ecosystem`、`companies`、`tags`。
 - GitHub Pages 只能通过 `scripts/export_public_site.py --vault "/Users/rachelao/Documents/Rachel Capital"` 从 Obsidian 导出。
 - 发布前必须先运行 `scripts/normalize_daily_intelligence_frontmatter.py` 补齐日报公开元数据，再运行 `scripts/check_daily_intelligence_completeness.py` 检查源文件、frontmatter、公开索引和 Markdown 文件是否完整。
-- 用户已明确希望科技动向日报每天自动上线；允许 `.github/workflows/auto-publish-daily-intelligence.yml` 在完整性检查通过后自动更新 `public_site` 并触发 GitHub Pages。若当日 Obsidian 源文件缺失，必须失败并报警，不得发布不完整日报。
+- 用户已明确希望科技动向日报每天自动上线；Coze 是云端服务，必须通过 GitHub `repository_dispatch` 触发 `.github/workflows/auto-publish-daily-intelligence.yml`，不得使用 `localhost` 作为 Coze webhook。允许该 workflow 在完整性检查通过后自动更新 `public_site` 并触发 GitHub Pages。若当日 Obsidian 源文件缺失或 Coze payload 缺失，必须失败并报警，不得发布不完整日报。
 - 不允许把 `public_site` 作为日报源头长期维护；`public_site -> Obsidian` 只允许作为缺失日报的回填修复。
 - 2026-07-02 已将线上 `2026-07-01` 和 `2026-07-02` 科技动向日报回填到 Obsidian 的 `2026-07` 目录；后续日报必须先进入 Obsidian 再发布。
 - 详细规则见 `docs/Coze_Daily_Intelligence_Publishing_Rules.md`。

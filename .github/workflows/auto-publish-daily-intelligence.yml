@@ -1,6 +1,9 @@
 name: Auto Publish Daily Intelligence
 
 on:
+  repository_dispatch:
+    types:
+      - coze_daily_intelligence
   schedule:
     # Beijing time 08:20, 09:20, 10:20, and 11:20 on weekdays.
     # Repeated attempts handle delayed Coze output without publishing incomplete data.
@@ -28,7 +31,9 @@ jobs:
     steps:
       - name: Resolve report date
         run: |
-          if [ -n "${{ inputs.report_date }}" ]; then
+          if [ "${{ github.event_name }}" = "repository_dispatch" ] && [ -n "${{ github.event.client_payload.date }}" ]; then
+            REPORT_DATE="${{ github.event.client_payload.date }}"
+          elif [ -n "${{ inputs.report_date }}" ]; then
             REPORT_DATE="${{ inputs.report_date }}"
           else
             REPORT_DATE="$(TZ=Asia/Shanghai date +%F)"
@@ -59,6 +64,13 @@ jobs:
           token: ${{ secrets.VAULT_SYNC_TOKEN }}
           path: obsidian-vault
           ref: main
+
+      - name: Write Coze dispatch payload to Obsidian
+        if: github.event_name == 'repository_dispatch'
+        working-directory: web-platform
+        run: |
+          python3 scripts/write_coze_daily_payload_to_obsidian.py \
+            --vault "$GITHUB_WORKSPACE/obsidian-vault"
 
       - name: Normalize Daily Intelligence frontmatter
         working-directory: web-platform

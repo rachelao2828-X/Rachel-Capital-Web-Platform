@@ -114,18 +114,23 @@ Rachel has approved automatic daily publishing for Daily Intelligence reports.
 
 The GitHub Actions workflow `.github/workflows/auto-publish-daily-intelligence.yml` runs on weekday mornings in Beijing time and can also be triggered manually.
 
+Because Coze is cloud-hosted, Coze must trigger GitHub Actions through the GitHub `repository_dispatch` API rather than posting to `localhost`.
+
 The automatic workflow:
 
-1. Reads the report date in Asia/Shanghai time.
+1. Reads the report date from the Coze payload, manual input, or Asia/Shanghai time.
 2. Checks out the Web Platform repository and the private Obsidian vault repository.
-3. Normalizes Daily Intelligence frontmatter in the vault checkout.
-4. Commits normalized vault metadata back to the vault if needed.
-5. Exports `public_site` from the Obsidian vault.
-6. Runs the completeness check.
-7. Commits and pushes `public_site` to `main` only if the check passes.
-8. Lets the existing GitHub Pages workflow deploy the updated public site.
+3. If triggered by Coze, writes the Coze Markdown payload into the Obsidian vault as `YYYY-MM-DD_科技动向日报.md`.
+4. Normalizes Daily Intelligence frontmatter in the vault checkout.
+5. Commits normalized vault metadata back to the vault if needed.
+6. Exports `public_site` from the Obsidian vault.
+7. Runs the completeness check.
+8. Commits and pushes `public_site` to `main` only if the check passes.
+9. Lets the existing GitHub Pages workflow deploy the updated public site.
 
 If the source report for the date is missing, the workflow fails before publishing. This is intentional: missing source content should alert the operator rather than silently producing an incomplete public site.
+
+Coze webhook setup details are documented in `docs/Coze_GitHub_Actions_Webhook_Guide.md`.
 
 ## Backfill Rule
 

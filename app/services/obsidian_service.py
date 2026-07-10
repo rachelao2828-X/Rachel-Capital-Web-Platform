@@ -103,38 +103,40 @@ def _event_markdown(news_item: NewsItem) -> str:
 def render_daily_report_markdown(news_item: NewsItem) -> str:
     report_date = news_item.date.isoformat()
     companies = _collect_companies(news_item)
-    tags = _collect_tags(news_item)
+    tags = _collect_tags(news_item) or ["科技动向"]
     ecosystem = news_item.ecosystem or "综合"
 
-    return f"""⸻
-
+    return f"""---
+public: true
 type: daily_intelligence
+title: {report_date} 科技动向日报
+date: {report_date}
+summary: {news_item.summary}
 source: coze
 status: inbox
-date: {report_date}
-ecosystem: {ecosystem}
+ecosystem:
+  - {ecosystem}
 companies:
 {_format_frontmatter_list(companies)}
 tags:
-{_format_frontmatter_list(tags or ["科技投资", "AI"])}
+{_format_frontmatter_list(tags)}
+---
 
-⸻
+# {report_date} 科技动向日报
 
-{report_date} 科技投资日报
-
-摘要
+## 摘要
 
 {news_item.summary}
 
-重点事件
+## 重点事件
 
 {_event_markdown(news_item)}
 
-关联公司
+## 关联公司
 
 {_format_list(companies)}
 
-标签
+## 标签
 
 {_format_markdown_list(tags)}
 """
@@ -157,7 +159,7 @@ def write_daily_report_to_obsidian(
     report_date = news_item.date.isoformat()
     report_year = f"{news_item.date.year:04d}"
     report_month = f"{news_item.date.year:04d}-{news_item.date.month:02d}"
-    filename = f"{report_date}_科技投资日报.md"
+    filename = f"{report_date}_科技动向日报.md"
     relative_path = Path(daily_report_dir or settings.daily_report_obsidian_dir) / report_year / report_month / filename
     target_dir = vault / relative_path.parent
     target_dir.mkdir(parents=True, exist_ok=True)

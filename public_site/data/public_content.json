@@ -1,27 +1,29 @@
 {
-  "generated_at": "2026-07-10T15:21:01.672596+00:00",
+  "generated_at": "2026-07-10T15:23:27.102917+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
       "public": true,
       "type": "market_radar",
-      "title": "2026-07-10 午间复盘",
+      "title": "2026-07-10 市场复盘",
       "date": "2026-07-10",
-      "slug": "2026-07-10_2026-07-10-午间复盘",
-      "summary": "上午市场速览+异动标记+下午盯什么",
+      "slug": "2026-07-10_2026-07-10-市场复盘",
+      "summary": "今日A股港股美股收盘复盘+资金共识+异动分析+组合视角",
       "source": "coze",
-      "review_type": "午间复盘",
+      "review_type": "每日复盘",
       "markets": [
-        "A股"
+        "A股",
+        "港股",
+        "美股"
       ],
       "ecosystem": [],
       "companies": [],
       "tags": [
         "市场雷达",
-        "午间复盘"
+        "每日复盘"
       ],
-      "path": "market-radar/2026/2026-07/2026-07-10_2026-07-10-午间复盘.md",
-      "excerpt": "上午市场速览+异动标记+下午盯什么"
+      "path": "market-radar/2026/2026-07/2026-07-10_2026-07-10-市场复盘.md",
+      "excerpt": "今日A股港股美股收盘复盘+资金共识+异动分析+组合视角"
     }
   ]
 }

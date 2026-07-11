@@ -99,7 +99,7 @@ def main() -> int:
         {
             **payload,
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "source_vault": str(vault),
+            "source_vault": payload.get("source_vault") or "private-obsidian-vault",
             "items": sorted(
                 [*existing_items, daily_item],
                 key=lambda item: (str(item.get("date") or ""), str(item.get("title") or "")),

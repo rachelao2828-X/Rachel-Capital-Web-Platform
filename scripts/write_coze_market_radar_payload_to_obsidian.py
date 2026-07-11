@@ -15,6 +15,19 @@ from typing import Any
 
 DEFAULT_VAULT_PATH = "/Users/rachelao/Documents/Rachel Capital"
 DEFAULT_TARGET_DIR = "31_Inbox/Market_Radar"
+MIN_BODY_CHARACTERS = 800
+MARKDOWN_FIELDS = (
+    "markdown",
+    "content",
+    "body",
+    "report_markdown",
+    "report_content",
+    "full_content",
+    "full_report",
+    "report",
+    "text",
+    "output",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -76,7 +89,7 @@ def payload_markdown(payload: dict[str, Any], report_date: str) -> str:
     if payload.get("markdown_base64"):
         raw = base64.b64decode(str(payload["markdown_base64"])).decode("utf-8", errors="replace")
     else:
-        raw = str(payload.get("markdown") or payload.get("content") or payload.get("body") or "")
+        raw = str(next((payload.get(field) for field in MARKDOWN_FIELDS if payload.get(field)), ""))
 
     body = strip_frontmatter(raw)
     title = str(payload.get("title") or f"{report_date} 市场雷达复盘报告")
@@ -91,6 +104,14 @@ def payload_markdown(payload: dict[str, Any], report_date: str) -> str:
         )
     elif not body.lstrip().startswith("#"):
         body = f"# {title}\n\n{body.strip()}"
+    compact_body = re.sub(r"\s+", "", body)
+    if len(compact_body) < MIN_BODY_CHARACTERS:
+        raise SystemExit(
+            "Coze payload does not contain a complete Market Radar report body "
+            f"({len(compact_body)} characters; minimum {MIN_BODY_CHARACTERS}). "
+            "Send the full report in markdown, markdown_base64, content, body, "
+            "report_markdown, report_content, or full_report."
+        )
     return body.strip() + "\n"
 
 

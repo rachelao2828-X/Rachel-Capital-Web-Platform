@@ -152,3 +152,92 @@ date: {report_date}
 
     assert result.returncode == 1
     assert "body is incomplete" in result.stdout
+
+
+def test_market_radar_export_skips_incomplete_report(tmp_path: Path) -> None:
+    vault = tmp_path / "vault"
+    site = tmp_path / "public_site"
+    market_dir = vault / "31_Inbox" / "Market_Radar" / "2026" / "2026-07"
+    market_dir.mkdir(parents=True)
+    valid = market_dir / "2026-07-10_市场复盘.md"
+    valid.write_text(
+        """---
+public: true
+type: market_radar
+title: 2026-07-10 市场复盘
+date: 2026-07-10
+slug: 2026-07-10-market-review
+---
+
+# 2026-07-10 市场复盘
+
+## 市场结构
+
+""" + "有效复盘正文" * 180,
+        encoding="utf-8",
+    )
+    incomplete = market_dir / "2026-07-11_周度复盘.md"
+    incomplete.write_text(
+        """---
+public: true
+type: market_radar
+title: 2026-07-11 周度复盘
+date: 2026-07-11
+slug: 2026-07-11-weekly-review
+---
+
+# 2026-07-11 周度复盘
+
+## 复盘摘要
+
+暂无
+""",
+        encoding="utf-8",
+    )
+
+    data_dir = site / "data"
+    data_dir.mkdir(parents=True)
+    stale_path = site / "market-radar/2026/2026-07/2026-07-11-weekly-review.md"
+    stale_path.parent.mkdir(parents=True)
+    stale_path.write_text("stale", encoding="utf-8")
+    (data_dir / "public_content.json").write_text(
+        json.dumps(
+            {
+                "items": [
+                    {"type": "report", "title": "保留的研究报告", "path": "reports/keep.md"},
+                    {
+                        "type": "market_radar",
+                        "title": "2026-07-11 周度复盘",
+                        "date": "2026-07-11",
+                        "slug": "2026-07-11-weekly-review",
+                        "path": "market-radar/2026/2026-07/2026-07-11-weekly-review.md",
+                    },
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(REPO_ROOT / "scripts/export_market_radar_incremental.py"),
+            "--vault",
+            str(vault),
+            "--site-root",
+            str(site),
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads((data_dir / "public_content.json").read_text(encoding="utf-8"))
+    titles = {item["title"] for item in payload["items"]}
+    assert "保留的研究报告" in titles
+    assert "2026-07-10 市场复盘" in titles
+    assert "2026-07-11 周度复盘" not in titles
+    assert not stale_path.exists()

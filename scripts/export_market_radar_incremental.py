@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 from typing import Any
 
 from export_public_site import (
@@ -26,6 +27,7 @@ DEFAULT_VAULT_PATH = "/Users/rachelao/Documents/Rachel Capital"
 DEFAULT_SITE_ROOT = "public_site"
 MARKET_RADAR_SOURCE_DIR = Path("31_Inbox/Market_Radar")
 MARKET_RADAR_TYPES = {"market_radar", "market_review", "review_report"}
+MIN_BODY_CHARACTERS = 800
 
 
 def parse_args() -> argparse.Namespace:
@@ -50,6 +52,11 @@ def load_public_payload(site_root: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def body_is_complete(body: str) -> bool:
+    compact_body = re.sub(r"\s+", "", body)
+    return len(compact_body) >= MIN_BODY_CHARACTERS
+
+
 def export_market_radar(vault: Path, site_root: Path) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
     for path in iter_market_radar_files(vault) or []:
@@ -68,6 +75,11 @@ def export_market_radar(vault: Path, site_root: Path) -> list[dict[str, Any]]:
         title = metadata.get("title") or path.stem
         relative_path = public_markdown_path(item_type, metadata, path)
         target_path = site_root / relative_path
+        if not body_is_complete(body):
+            if target_path.exists():
+                target_path.unlink()
+            print(f"Skipped incomplete market radar report: {path}")
+            continue
         target_path.parent.mkdir(parents=True, exist_ok=True)
         target_path.write_text(sanitize_public_text(text), encoding="utf-8")
         items.append(
@@ -96,7 +108,7 @@ def main() -> int:
         {
             **payload,
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "source_vault": str(vault),
+            "source_vault": payload.get("source_vault") or "private-obsidian-vault",
             "items": sorted(
                 [*existing_items, *market_radar_items],
                 key=lambda item: (str(item.get("date") or ""), str(item.get("title") or "")),

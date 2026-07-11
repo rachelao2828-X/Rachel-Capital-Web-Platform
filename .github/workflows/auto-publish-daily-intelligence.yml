@@ -90,6 +90,14 @@ jobs:
             --start-date "$MONTH_START" \
             --end-date "$REPORT_DATE"
 
+      - name: Check Daily Intelligence source quality
+        if: github.event_name != 'repository_dispatch' || github.event.action == 'coze_daily_intelligence'
+        working-directory: web-platform
+        run: |
+          python3 scripts/check_daily_source_quality.py \
+            --vault "$GITHUB_WORKSPACE/obsidian-vault" \
+            --report-date "$REPORT_DATE"
+
       - name: Save normalized Obsidian metadata
         working-directory: obsidian-vault
         run: |
@@ -119,7 +127,9 @@ jobs:
             python3 scripts/export_market_radar_incremental.py \
               --vault "$GITHUB_WORKSPACE/obsidian-vault"
           else
-            python3 scripts/export_public_site.py --vault "$GITHUB_WORKSPACE/obsidian-vault"
+            python3 scripts/export_daily_intelligence_incremental.py \
+              --vault "$GITHUB_WORKSPACE/obsidian-vault" \
+              --report-date "$REPORT_DATE"
           fi
 
       - name: Check Daily Intelligence completeness

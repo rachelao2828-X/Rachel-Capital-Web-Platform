@@ -15,6 +15,7 @@ from typing import Any
 
 DEFAULT_VAULT_PATH = "/Users/rachelao/Documents/Rachel Capital"
 DEFAULT_TARGET_DIR = "31_Inbox/Daily_Intelligence"
+MIN_BODY_CHARACTERS = 1000
 
 
 def parse_args() -> argparse.Namespace:
@@ -110,6 +111,13 @@ def payload_markdown(payload: dict[str, Any], report_date: str) -> str:
         )
     elif not body.lstrip().startswith("#"):
         body = f"# {report_date} 科技动向日报\n\n{body.strip()}"
+    compact_body = re.sub(r"\s+", "", body)
+    if len(compact_body) < MIN_BODY_CHARACTERS:
+        raise SystemExit(
+            "Coze payload does not contain a complete Daily Intelligence report body "
+            f"({len(compact_body)} characters; minimum {MIN_BODY_CHARACTERS}). "
+            "Send the full report in markdown, markdown_base64, content, or body."
+        )
     return body.strip() + "\n"
 
 

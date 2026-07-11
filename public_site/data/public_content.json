@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-11T01:45:19.995505+00:00",
-  "source_vault": "/tmp/rc-repair-vault",
+  "generated_at": "2026-07-11T02:24:12.137865+00:00",
+  "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
       "title": "2026-07-11 科技动向日报",
@@ -62,6 +62,27 @@
       "public": true,
       "path": "daily/2026/2026-07/2026-07-11_科技动向日报.md",
       "excerpt": "美股反弹纳指+1.30%费半+3.06%，NVDA夜盘涨3.15%；A股7月10日冲高回落沪指失守4000(-1.00%)科创50(-5.53%)；SK海力士ADR纳斯达克上市融资265亿美元超阿里；长征十号乙首飞成功+全球首创网系回收，港A商业航天全线暴涨；中国对氦气实施临时出口禁令；DeepSeek秘密自研AI推理芯片曝光；特斯拉Optimus Gen3量产定型。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-11 周度复盘",
+      "date": "2026-07-11",
+      "slug": "2026-07-11_2026-07-11-周度复盘",
+      "summary": "# 2026-07-11 周度复盘 ## 复盘摘要 暂无 ## 市场观察 暂无",
+      "source": "coze",
+      "review_type": "复盘报告",
+      "markets": [
+        "综合"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "复盘报告"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-11_2026-07-11-周度复盘.md",
+      "excerpt": "# 2026-07-11 周度复盘 ## 复盘摘要 暂无 ## 市场观察 暂无"
     },
     {
       "public": true,

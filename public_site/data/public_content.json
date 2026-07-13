@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-13T12:49:01.177627+00:00",
+  "generated_at": "2026-07-13T22:30:51.805722+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-14 科技动向日报",
+      "date": "2026-07-14",
+      "summary": "美放宽中东AI芯片管制倒逼中国加速国产替代，中国限制氦气出口扰动全球半导体供应链，科技产业在地缘博弈与宏观承压中加速重构",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-14_科技动向日报.md",
+      "excerpt": "美放宽中东AI芯片管制倒逼中国加速国产替代，中国限制氦气出口扰动全球半导体供应链，科技产业在地缘博弈与宏观承压中加速重构"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

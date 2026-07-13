@@ -6,11 +6,11 @@ on:
       - coze_daily_intelligence
       - coze_market_radar_report
   schedule:
-    # Beijing time 07:45 every day (previous UTC calendar day).
-    - cron: "45 23 * * *"
-    # Beijing time 08:05, 08:15, and 08:25 every day. Target: published before 08:30.
+    # Beijing time 07:45 Monday-Saturday (previous UTC calendar day).
+    - cron: "45 23 * * 0-5"
+    # Beijing time 08:05, 08:15, and 08:25 Monday-Saturday. Target: published before 08:30.
     # Repository dispatch from Coze at about 07:30 remains the primary trigger.
-    - cron: "5,15,25 0 * * *"
+    - cron: "5,15,25 0 * * 1-6"
   workflow_dispatch:
     inputs:
       report_date:

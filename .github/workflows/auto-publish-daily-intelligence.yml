@@ -6,9 +6,9 @@ on:
       - coze_daily_intelligence
       - coze_market_radar_report
   schedule:
-    # Beijing time 08:20, 09:20, 10:20, and 11:20 on weekdays.
-    # Repeated attempts handle delayed Coze output without publishing incomplete data.
-    - cron: "20 0,1,2,3 * * 1-5"
+    # Beijing time 08:10/08:40 through 11:10/11:40 on weekdays.
+    # Repository dispatch from Coze remains the primary trigger; these runs are watchdog retries.
+    - cron: "10,40 0-3 * * 1-5"
   workflow_dispatch:
     inputs:
       report_date:
@@ -20,6 +20,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: daily-intelligence-autopublish
@@ -79,6 +80,34 @@ jobs:
           else
             python3 scripts/write_coze_daily_payload_to_obsidian.py \
               --vault "$GITHUB_WORKSPACE/obsidian-vault"
+          fi
+
+      - name: Check today's Daily Intelligence source
+        if: github.event_name != 'repository_dispatch' || github.event.action == 'coze_daily_intelligence'
+        working-directory: web-platform
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SOURCE_PATH="$GITHUB_WORKSPACE/obsidian-vault/$TARGET_DIR/${REPORT_DATE:0:4}/${REPORT_DATE:0:7}/${REPORT_DATE}_科技动向日报.md"
+          ISSUE_TITLE="日报源文件缺失：${REPORT_DATE}"
+          ISSUE_NUMBER="$(gh issue list --state open --limit 100 --json number,title --jq ".[] | select(.title == \"$ISSUE_TITLE\") | .number" | head -n 1)"
+
+          if [ ! -s "$SOURCE_PATH" ]; then
+            MESSAGE="Coze 尚未将 ${REPORT_DATE} 科技动向日报发送到 GitHub。缺失路径：$TARGET_DIR/${REPORT_DATE:0:4}/${REPORT_DATE:0:7}/${REPORT_DATE}_科技动向日报.md。请检查 Coze 的 repository_dispatch 请求及其 HTTP 返回值。"
+            echo "::error::$MESSAGE"
+            echo "### Daily Intelligence source missing" >> "$GITHUB_STEP_SUMMARY"
+            echo "$MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+            if [ -z "$ISSUE_NUMBER" ]; then
+              gh issue create --title "$ISSUE_TITLE" --body "$MESSAGE"
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "定时检查仍未发现源文件。运行：${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            fi
+            exit 1
+          fi
+
+          echo "Found Daily Intelligence source: $SOURCE_PATH"
+          if [ -n "$ISSUE_NUMBER" ]; then
+            gh issue close "$ISSUE_NUMBER" --comment "已收到 ${REPORT_DATE} 日报源文件，自动发布流程继续执行。"
           fi
 
       - name: Normalize Daily Intelligence frontmatter

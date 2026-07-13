@@ -563,6 +563,12 @@ function renderMarkdown(markdown) {
       continue;
     }
 
+    if (trimmed.startsWith("#### ")) {
+      closeList();
+      html.push(`<h4>${renderInlineMarkdown(trimmed.slice(5))}</h4>`);
+      continue;
+    }
+
     if (trimmed.startsWith("### ")) {
       closeList();
       html.push(`<h3>${renderInlineMarkdown(trimmed.slice(4))}</h3>`);

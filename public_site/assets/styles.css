@@ -500,6 +500,13 @@ button {
   margin: 20px 0 10px;
 }
 
+.markdown-body h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 16px 0 6px;
+  color: var(--text);
+}
+
 .markdown-body p {
   color: var(--text);
 }

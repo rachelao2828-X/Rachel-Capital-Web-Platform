@@ -81,7 +81,7 @@ In Coze:
 Use the following instruction as the final mandatory step of the Daily Intelligence workflow:
 
 ```text
-每个工作日北京时间 07:30 启动科技动向日报生成任务，目标是在 08:30 前完成 Web Platform 发布。
+每天北京时间 07:30 启动科技动向日报生成任务，目标是在 08:30 前完成 Web Platform 发布。
 
 科技动向日报正文生成完成后，必须立即调用 GitHub repository_dispatch 发布，不得只在 Coze 中返回正文。
 
@@ -113,7 +113,7 @@ Body:
 
 `COZE_GITHUB_DISPATCH_TOKEN` must be stored in Coze's secret configuration. Never paste the token into the prompt, workflow output, Markdown report, or logs.
 
-The GitHub watchdog checks at 07:45, 08:05, 08:15, and 08:25 Beijing time on weekdays. These scheduled checks detect a missing source and retry publication when the source already exists, but they cannot generate the report. Coze must therefore start the report at 07:30 and dispatch it immediately after generation.
+The GitHub watchdog checks at 07:45, 08:05, 08:15, and 08:25 Beijing time every day. These scheduled checks detect a missing source and retry publication when the source already exists, but they cannot generate the report. Coze must therefore start the report at 07:30 and dispatch it immediately after generation.
 
 ## No-Omission Rules
 

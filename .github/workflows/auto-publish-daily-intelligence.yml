@@ -6,9 +6,11 @@ on:
       - coze_daily_intelligence
       - coze_market_radar_report
   schedule:
-    # Beijing time 08:10/08:40 through 11:10/11:40 on weekdays.
-    # Repository dispatch from Coze remains the primary trigger; these runs are watchdog retries.
-    - cron: "10,40 0-3 * * 1-5"
+    # Beijing time 07:45 on weekdays (previous UTC calendar day).
+    - cron: "45 23 * * 0-4"
+    # Beijing time 08:05, 08:15, and 08:25 on weekdays. Target: published before 08:30.
+    # Repository dispatch from Coze at about 07:30 remains the primary trigger.
+    - cron: "5,15,25 0 * * 1-5"
   workflow_dispatch:
     inputs:
       report_date:

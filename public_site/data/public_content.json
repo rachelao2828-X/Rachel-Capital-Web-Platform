@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T02:42:33.580863+00:00",
+  "generated_at": "2026-07-13T04:20:58.142336+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-13_科技动向日报.md",
       "excerpt": "中美关系确立战略稳定期，AI算力需求强劲驱动国产芯片IPO与一级市场融资加速"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-13 午间复盘",
+      "date": "2026-07-13",
+      "slug": "2026-07-13_2026-07-13-午间复盘",
+      "summary": "美伊冲突升级+费城半导体暴跌4.4%→科技股恐慌出逃，沪指跌破3938关键支撑，半导体净流出超206亿，中药/银行/石油逆势",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-13_2026-07-13-午间复盘.md",
+      "excerpt": "美伊冲突升级+费城半导体暴跌4.4%→科技股恐慌出逃，沪指跌破3938关键支撑，半导体净流出超206亿，中药/银行/石油逆势"
     },
     {
       "title": "2026-07-11 科技动向日报",

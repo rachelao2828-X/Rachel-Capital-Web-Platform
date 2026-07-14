@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-14T13:38:13.758146+00:00",
+  "generated_at": "2026-07-14T22:30:49.902011+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-15 科技动向日报",
+      "date": "2026-07-15",
+      "summary": "AI算力需求驱动半导体反弹，中美关键矿产与AI芯片供应链博弈全面升级",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-15_科技动向日报.md",
+      "excerpt": "AI算力需求驱动半导体反弹，中美关键矿产与AI芯片供应链博弈全面升级"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

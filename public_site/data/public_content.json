@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T03:23:01.159513+00:00",
+  "generated_at": "2026-07-14T04:18:20.717634+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-14_科技动向日报.md",
       "excerpt": "美放宽中东AI芯片管制倒逼中国加速国产替代，中国限制氦气出口扰动全球半导体供应链，科技产业在地缘博弈与宏观承压中加速重构"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-14 午间复盘",
+      "date": "2026-07-14",
+      "slug": "2026-07-14_2026-07-14-午间复盘",
+      "summary": "科创50暴跌3.45%至1925远偏离2000，但CPO/光模块/PCB遭主力资金逆势大幅抢筹（新易盛17.3亿+中际旭创13.8亿+东山精密14.4亿），聪明钱在恐慌中逆向布局",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-14_2026-07-14-午间复盘.md",
+      "excerpt": "科创50暴跌3.45%至1925远偏离2000，但CPO/光模块/PCB遭主力资金逆势大幅抢筹（新易盛17.3亿+中际旭创13.8亿+东山精密14.4亿），聪明钱在恐慌中逆向布局"
     },
     {
       "public": true,

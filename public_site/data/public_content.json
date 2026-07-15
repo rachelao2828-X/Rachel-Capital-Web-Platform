@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-15T12:48:17.944043+00:00",
+  "generated_at": "2026-07-15T22:26:54.616371+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-16 科技动向日报",
+      "date": "2026-07-16",
+      "summary": "中美贸易达成初步协议且美联储降息预期升温，全球资本加速向国防AI、主权AI及底层算力等国家安全维度集中",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-16_科技动向日报.md",
+      "excerpt": "中美贸易达成初步协议且美联储降息预期升温，全球资本加速向国防AI、主权AI及底层算力等国家安全维度集中"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T03:23:13.259303+00:00",
+  "generated_at": "2026-07-15T04:19:01.190990+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-15_科技动向日报.md",
       "excerpt": "AI算力需求驱动半导体反弹，中美关键矿产与AI芯片供应链博弈全面升级"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-15 午间复盘",
+      "date": "2026-07-15",
+      "slug": "2026-07-15_2026-07-15-午间复盘",
+      "summary": "Q2 GDP 4.3%低于预期+长鑫申购冲击，硬科技确认下跌中继，资金加速涌入创新药/消费，高低切换烈度超预期",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-15_2026-07-15-午间复盘.md",
+      "excerpt": "Q2 GDP 4.3%低于预期+长鑫申购冲击，硬科技确认下跌中继，资金加速涌入创新药/消费，高低切换烈度超预期"
     },
     {
       "public": true,

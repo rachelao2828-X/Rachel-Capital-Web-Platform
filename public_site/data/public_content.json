@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T03:29:41.889509+00:00",
+  "generated_at": "2026-07-16T04:19:01.979393+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-16_科技动向日报.md",
       "excerpt": "中美贸易达成初步协议且美联储降息预期升温，全球资本加速向国防AI、主权AI及底层算力等国家安全维度集中"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-16 午间复盘",
+      "date": "2026-07-16",
+      "slug": "2026-07-16_2026-07-16-午间复盘",
+      "summary": "长鑫申购日靴子落地但半导体继续杀跌，港股科网暴涨与A股科技暴跌形成极端AH背离，资金加速从半导体/光模块撤出涌入互联网/消费/医药",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-16_2026-07-16-午间复盘.md",
+      "excerpt": "长鑫申购日靴子落地但半导体继续杀跌，港股科网暴涨与A股科技暴跌形成极端AH背离，资金加速从半导体/光模块撤出涌入互联网/消费/医药"
     },
     {
       "public": true,

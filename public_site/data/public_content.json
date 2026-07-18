@@ -1,7 +1,30 @@
 {
-  "generated_at": "2026-07-17T03:31:05.810873+00:00",
+  "generated_at": "2026-07-18T01:21:36.508066+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-18 周度复盘",
+      "date": "2026-07-18",
+      "slug": "2026-07-18_2026-07-18-周度复盘",
+      "summary": "全球科技股共振崩盘+杠杆出清，A股科创50暴跌16.93%创年内最惨一周，但宽基ETF逆势吸金超1340亿——外部冲击+内部拥挤+杠杆踩踏三重共振的交易性出清，7/20流动性拐点后超跌反弹概率增大",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-18_2026-07-18-周度复盘.md",
+      "excerpt": "全球科技股共振崩盘+杠杆出清，A股科创50暴跌16.93%创年内最惨一周，但宽基ETF逆势吸金超1340亿——外部冲击+内部拥挤+杠杆踩踏三重共振的交易性出清，7/20流动性拐点后超跌反弹概率增大"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

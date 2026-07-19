@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-18T01:21:36.508066+00:00",
+  "generated_at": "2026-07-19T13:42:44.941070+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-18 科技动向日报",
+      "date": "2026-07-18",
+      "summary": "全球科技股遭遇重挫与避险情绪升温，AI硬件产业链估值承压，但大模型融资与软件应用端产业化加速",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-18_科技动向日报.md",
+      "excerpt": "全球科技股遭遇重挫与避险情绪升温，AI硬件产业链估值承压，但大模型融资与软件应用端产业化加速"
+    },
     {
       "public": true,
       "type": "market_radar",

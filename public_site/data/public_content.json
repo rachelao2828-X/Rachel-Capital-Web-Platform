@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-19T13:42:44.941070+00:00",
+  "generated_at": "2026-07-19T22:28:00.177831+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-20 科技动向日报",
+      "date": "2026-07-20",
+      "summary": "全球AI产业落地与一级市场融资持续火热，但中美二级市场科技股遭遇深度回调与估值重估。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-20_科技动向日报.md",
+      "excerpt": "全球AI产业落地与一级市场融资持续火热，但中美二级市场科技股遭遇深度回调与估值重估。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

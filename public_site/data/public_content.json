@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-20T12:42:36.005571+00:00",
+  "generated_at": "2026-07-20T22:29:24.757183+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-21 科技动向日报",
+      "date": "2026-07-21",
+      "summary": "AI算力基建扩张与国产芯片加速替代，但受地缘冲突及避险情绪影响科技板块短期承压",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-21_科技动向日报.md",
+      "excerpt": "AI算力基建扩张与国产芯片加速替代，但受地缘冲突及避险情绪影响科技板块短期承压"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

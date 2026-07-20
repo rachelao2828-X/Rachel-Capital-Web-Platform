@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T03:55:28.685273+00:00",
+  "generated_at": "2026-07-20T04:19:34.351340+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-20_科技动向日报.md",
       "excerpt": "全球AI产业落地与一级市场融资持续火热，但中美二级市场科技股遭遇深度回调与估值重估。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-20 午间复盘",
+      "date": "2026-07-20",
+      "slug": "2026-07-20_2026-07-20-午间复盘",
+      "summary": "政策组合拳托住指数上3800，但科技板块严重分化——AI服务器走强vs半导体/存储/PCB/CPO继续杀跌，光模块三剑客业绩超预期却冲高回落",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-20_2026-07-20-午间复盘.md",
+      "excerpt": "政策组合拳托住指数上3800，但科技板块严重分化——AI服务器走强vs半导体/存储/PCB/CPO继续杀跌，光模块三剑客业绩超预期却冲高回落"
     },
     {
       "public": true,

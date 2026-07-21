@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-21T03:35:21.503215+00:00",
+  "generated_at": "2026-07-21T04:21:32.115873+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-21_科技动向日报.md",
       "excerpt": "AI算力基建扩张与国产芯片加速替代，但受地缘冲突及避险情绪影响科技板块短期承压"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-21 午间复盘",
+      "date": "2026-07-21",
+      "slug": "2026-07-21_2026-07-21-午间复盘",
+      "summary": "科技赛道深V反转——科创50从早盘-3.6%→午盘+6.94%，半导体设备掀涨停潮，1.7万亿解冻资金借道ETF疯狂抄底科创50，风格从防御独强切回科技反攻",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-21_2026-07-21-午间复盘.md",
+      "excerpt": "科技赛道深V反转——科创50从早盘-3.6%→午盘+6.94%，半导体设备掀涨停潮，1.7万亿解冻资金借道ETF疯狂抄底科创50，风格从防御独强切回科技反攻"
     },
     {
       "public": true,

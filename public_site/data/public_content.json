@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T03:35:21.876216+00:00",
+  "generated_at": "2026-07-22T04:19:43.730491+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-22_科技动向日报.md",
       "excerpt": "全球AI与半导体资本市场强势反弹，中美科技博弈深化，一级市场AI融资创历史新高"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-22 午间复盘",
+      "date": "2026-07-22",
+      "slug": "2026-07-22_2026-07-22-午间复盘",
+      "summary": "科创50站稳1900+兑现预判，但缩量+超3400股下跌，赚钱效应集中在贵金属与硬核科技；半导体设备龙头分化（北方华创强/中微公司平盘），CPO龙头获利了结，港股科技暴跌-2.11%拖累风险",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-22_2026-07-22-午间复盘.md",
+      "excerpt": "科创50站稳1900+兑现预判，但缩量+超3400股下跌，赚钱效应集中在贵金属与硬核科技；半导体设备龙头分化（北方华创强/中微公司平盘），CPO龙头获利了结，港股科技暴跌-2.11%拖累风险"
     },
     {
       "public": true,

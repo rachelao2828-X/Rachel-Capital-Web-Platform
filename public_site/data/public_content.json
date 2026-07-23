@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-23T12:42:21.776834+00:00",
+  "generated_at": "2026-07-23T22:28:34.596244+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-24 科技动向日报",
+      "date": "2026-07-24",
+      "summary": "美股科技巨头遭抛售与地缘冲突推高油价，国内AI创投市场火热且A股科技板块在政策维稳下震荡分化",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-24_科技动向日报.md",
+      "excerpt": "美股科技巨头遭抛售与地缘冲突推高油价，国内AI创投市场火热且A股科技板块在政策维稳下震荡分化"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T03:37:29.009651+00:00",
+  "generated_at": "2026-07-23T04:20:44.686615+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-23_科技动向日报.md",
       "excerpt": "全球AI算力基建与先进封装迎密集催化，中美外长会晤释放稳定信号，科技主线在资本市场分化中确立"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-23 午间复盘",
+      "date": "2026-07-23",
+      "slug": "2026-07-23_2026-07-23-午间复盘",
+      "summary": "科创50暴跌4%，半导体+CPO早盘高开1-2%后急速杀跌，资金大规模从科技→资源/基建/新能源高低切换，谷歌资本开支上修→A股科技反杀构成今日最大预期差",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-23_2026-07-23-午间复盘.md",
+      "excerpt": "科创50暴跌4%，半导体+CPO早盘高开1-2%后急速杀跌，资金大规模从科技→资源/基建/新能源高低切换，谷歌资本开支上修→A股科技反杀构成今日最大预期差"
     },
     {
       "public": true,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T03:35:19.574911+00:00",
+  "generated_at": "2026-07-24T04:20:31.859980+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-24_科技动向日报.md",
       "excerpt": "美股科技巨头遭抛售与地缘冲突推高油价，国内AI创投市场火热且A股科技板块在政策维稳下震荡分化"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-24 午间复盘",
+      "date": "2026-07-24",
+      "slug": "2026-07-24_2026-07-24-午间复盘",
+      "summary": "科创50从昨日-3.78%→今日+0.27%翻红，半导体获17.38亿净流入完成180度逆转，但4900+股下跌分化极端；AMD MI400发布+江波龙8亿回购是科技止跌产业锚点",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-24_2026-07-24-午间复盘.md",
+      "excerpt": "科创50从昨日-3.78%→今日+0.27%翻红，半导体获17.38亿净流入完成180度逆转，但4900+股下跌分化极端；AMD MI400发布+江波龙8亿回购是科技止跌产业锚点"
     },
     {
       "public": true,

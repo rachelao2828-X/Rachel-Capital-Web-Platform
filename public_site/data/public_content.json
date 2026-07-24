@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-24T12:41:30.924267+00:00",
+  "generated_at": "2026-07-24T22:27:50.933814+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-25 科技动向日报",
+      "date": "2026-07-25",
+      "summary": "美股科技与半导体板块因AI资本开支担忧及贸易摩擦重挫，中国AI产业资本密集入场加速国产算力与具身智能落地。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-25_科技动向日报.md",
+      "excerpt": "美股科技与半导体板块因AI资本开支担忧及贸易摩擦重挫，中国AI产业资本密集入场加速国产算力与具身智能落地。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

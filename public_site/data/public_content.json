@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-25T03:32:02.214374+00:00",
+  "generated_at": "2026-07-26T22:25:57.615108+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-27 科技动向日报",
+      "date": "2026-07-27",
+      "summary": "AI算力基建需求驱动半导体产业链加速，长鑫科技即将登陆科创板助推AI芯片国产替代",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-27_科技动向日报.md",
+      "excerpt": "AI算力基建需求驱动半导体产业链加速，长鑫科技即将登陆科创板助推AI芯片国产替代"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

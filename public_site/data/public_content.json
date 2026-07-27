@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-27T03:56:10.875839+00:00",
+  "generated_at": "2026-07-27T04:21:49.205654+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-27_科技动向日报.md",
       "excerpt": "AI算力基建需求驱动半导体产业链加速，长鑫科技即将登陆科创板助推AI芯片国产替代"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-27 午间复盘",
+      "date": "2026-07-27",
+      "slug": "2026-07-27_2026-07-27-午间复盘",
+      "summary": "长鑫科技上市首日暴涨531%登顶A股市值一哥，科创50逆势跌-0.30%虹吸效应超预期；宁德时代200-400亿回购+5%",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-27_2026-07-27-午间复盘.md",
+      "excerpt": "长鑫科技上市首日暴涨531%登顶A股市值一哥，科创50逆势跌-0.30%虹吸效应超预期；宁德时代200-400亿回购+5%"
     },
     {
       "public": true,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-28T03:27:44.966962+00:00",
+  "generated_at": "2026-07-28T04:19:58.398479+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-28_科技动向日报.md",
       "excerpt": "中美AI博弈加剧助推国产算力替代，全球AI硬件估值承压而苹果市值登顶凸显AI终端价值"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-28 午间复盘",
+      "date": "2026-07-28",
+      "slug": "2026-07-28_2026-07-28-午间复盘",
+      "summary": "隔夜美股芯片血洗+韩国KOSPI暴跌8%熔断→A股科技全线踩踏，创业板半日暴跌5.37%，CPO止跌信号被推翻，兆易创新二度跌停，外部情绪传导压过内部产业逻辑",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-28_2026-07-28-午间复盘.md",
+      "excerpt": "隔夜美股芯片血洗+韩国KOSPI暴跌8%熔断→A股科技全线踩踏，创业板半日暴跌5.37%，CPO止跌信号被推翻，兆易创新二度跌停，外部情绪传导压过内部产业逻辑"
     },
     {
       "public": true,

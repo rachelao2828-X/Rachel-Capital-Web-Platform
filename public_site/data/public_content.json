@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-28T12:44:07.136771+00:00",
+  "generated_at": "2026-07-28T22:34:04.382972+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-29 科技动向日报",
+      "date": "2026-07-29",
+      "summary": "美国全面升级对华科技封锁与贸易关税，倒逼中国加速AI芯片国产替代与全球治理布局，叠加美股半导体重挫引发产业链震荡",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-29_科技动向日报.md",
+      "excerpt": "美国全面升级对华科技封锁与贸易关税，倒逼中国加速AI芯片国产替代与全球治理布局，叠加美股半导体重挫引发产业链震荡"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

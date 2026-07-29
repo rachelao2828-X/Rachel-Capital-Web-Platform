@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-29T12:47:12.158485+00:00",
+  "generated_at": "2026-07-29T22:25:46.881265+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-07-30 科技动向日报",
+      "date": "2026-07-30",
+      "summary": "全球宏观风险加剧致美股科技股重挫，中国硬科技与AI基础设施赛道逆势获资本重金加码。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-07/2026-07-30_科技动向日报.md",
+      "excerpt": "全球宏观风险加剧致美股科技股重挫，中国硬科技与AI基础设施赛道逆势获资本重金加码。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

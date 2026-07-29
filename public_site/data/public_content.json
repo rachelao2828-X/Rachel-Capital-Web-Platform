@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T03:30:06.560250+00:00",
+  "generated_at": "2026-07-29T04:20:17.129409+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-29_科技动向日报.md",
       "excerpt": "美国全面升级对华科技封锁与贸易关税，倒逼中国加速AI芯片国产替代与全球治理布局，叠加美股半导体重挫引发产业链震荡"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-29 午间复盘",
+      "date": "2026-07-29",
+      "slug": "2026-07-29_2026-07-29-午间复盘",
+      "summary": "创业板从昨日-7.35%骤降至-0.47%恐慌消退但未企稳，沪指跌破3800，科创50继续深跌-4.22%，半导体设备补跌是今日新变量，港股与A股走出极致分化",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-29_2026-07-29-午间复盘.md",
+      "excerpt": "创业板从昨日-7.35%骤降至-0.47%恐慌消退但未企稳，沪指跌破3800，科创50继续深跌-4.22%，半导体设备补跌是今日新变量，港股与A股走出极致分化"
     },
     {
       "public": true,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-30T03:17:42.519925+00:00",
+  "generated_at": "2026-07-30T04:19:14.735281+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-30_科技动向日报.md",
       "excerpt": "全球宏观风险加剧致美股科技股重挫，中国硬科技与AI基础设施赛道逆势获资本重金加码。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-30 午间复盘",
+      "date": "2026-07-30",
+      "slug": "2026-07-30_2026-07-30-午间复盘",
+      "summary": "美联储3票反对鹰派冲击+中际旭创H股破发，AI硬件利好不涨反跌、恐慌性出清加速，科创50/创业板均创阶段新低，资金从科技硬件向消费/新能源/超导方向极致搬家",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-30_2026-07-30-午间复盘.md",
+      "excerpt": "美联储3票反对鹰派冲击+中际旭创H股破发，AI硬件利好不涨反跌、恐慌性出清加速，科创50/创业板均创阶段新低，资金从科技硬件向消费/新能源/超导方向极致搬家"
     },
     {
       "public": true,

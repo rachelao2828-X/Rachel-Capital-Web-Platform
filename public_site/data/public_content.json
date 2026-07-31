@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-07-31T12:46:00.616674+00:00",
+  "generated_at": "2026-07-31T22:23:20.026572+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-01 科技动向日报",
+      "date": "2026-08-01",
+      "summary": "中美达成贸易协议提振市场信心，AI算力产业链与一级市场投融资全面爆发，科技板块迎来强劲修复与并购热潮",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-01_科技动向日报.md",
+      "excerpt": "中美达成贸易协议提振市场信心，AI算力产业链与一级市场投融资全面爆发，科技板块迎来强劲修复与并购热潮"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

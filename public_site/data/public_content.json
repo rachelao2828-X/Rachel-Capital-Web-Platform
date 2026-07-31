@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T03:44:21.254481+00:00",
+  "generated_at": "2026-07-31T04:20:17.238064+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-07/2026-07-31_科技动向日报.md",
       "excerpt": "科技巨头财报强劲与AI算力需求爆发驱动全球科技股大涨，国内AI产业获资本与政策双重加持，但地缘与贸易博弈加剧"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-07-31 午间复盘",
+      "date": "2026-07-31",
+      "slug": "2026-07-31_2026-07-31-午间复盘",
+      "summary": "隔夜全球科技股暴涨+三星业绩暴增+亚马逊Capex上调→A股科技全线暴力反弹，科创50+5.91%/创业板+5.04%，风格180度逆转：7/30防御搬家→7/31反攻回流",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-07/2026-07-31_2026-07-31-午间复盘.md",
+      "excerpt": "隔夜全球科技股暴涨+三星业绩暴增+亚马逊Capex上调→A股科技全线暴力反弹，科创50+5.91%/创业板+5.04%，风格180度逆转：7/30防御搬家→7/31反攻回流"
     },
     {
       "public": true,

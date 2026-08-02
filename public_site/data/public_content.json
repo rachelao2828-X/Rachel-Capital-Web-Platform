@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-01T03:43:34.650918+00:00",
+  "generated_at": "2026-08-02T22:26:57.447232+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-03 科技动向日报",
+      "date": "2026-08-03",
+      "summary": "A股科技板块迎超跌反弹领涨，全球资本与政策共振加速AI算力及具身智能产业落地",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-03_科技动向日报.md",
+      "excerpt": "A股科技板块迎超跌反弹领涨，全球资本与政策共振加速AI算力及具身智能产业落地"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

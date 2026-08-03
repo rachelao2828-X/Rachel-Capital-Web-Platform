@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-03T12:45:27.546163+00:00",
+  "generated_at": "2026-08-03T22:29:38.407436+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-04 科技动向日报",
+      "date": "2026-08-04",
+      "summary": "AI巨头领涨美股且算力需求强劲，中美加速推进AI治理与全球布局，全球贸易保护与地缘冲突显著升温",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-04_科技动向日报.md",
+      "excerpt": "AI巨头领涨美股且算力需求强劲，中美加速推进AI治理与全球布局，全球贸易保护与地缘冲突显著升温"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-04T12:41:05.120801+00:00",
+  "generated_at": "2026-08-04T22:30:24.441343+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-05 科技动向日报",
+      "date": "2026-08-05",
+      "summary": "全球科技与AI算力赛道资本加速涌入，但地缘冲突加剧与贸易保护主义泛化正严重冲击全球供应链安全。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-05_科技动向日报.md",
+      "excerpt": "全球科技与AI算力赛道资本加速涌入，但地缘冲突加剧与贸易保护主义泛化正严重冲击全球供应链安全。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-04T03:29:53.104212+00:00",
+  "generated_at": "2026-08-04T04:18:18.924738+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-04_科技动向日报.md",
       "excerpt": "AI巨头领涨美股且算力需求强劲，中美加速推进AI治理与全球布局，全球贸易保护与地缘冲突显著升温"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-04 午间复盘",
+      "date": "2026-08-04",
+      "slug": "2026-08-04_2026-08-04-午间复盘",
+      "summary": "A股指数极端分化——创业板+4.83% vs 沪指+0.16%，资金从银行暴力撤出涌入CPO/CRO/新能源，隔夜美股AI硬件暴涨映射下易中天集体涨停级别暴涨",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-04_2026-08-04-午间复盘.md",
+      "excerpt": "A股指数极端分化——创业板+4.83% vs 沪指+0.16%，资金从银行暴力撤出涌入CPO/CRO/新能源，隔夜美股AI硬件暴涨映射下易中天集体涨停级别暴涨"
     },
     {
       "public": true,

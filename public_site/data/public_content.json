@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-05T03:25:11.593694+00:00",
+  "generated_at": "2026-08-05T04:19:19.055839+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-05_科技动向日报.md",
       "excerpt": "全球科技与AI算力赛道资本加速涌入，但地缘冲突加剧与贸易保护主义泛化正严重冲击全球供应链安全。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-05 午间复盘",
+      "date": "2026-08-05",
+      "slug": "2026-08-05_2026-08-05-午间复盘",
+      "summary": "FCC光模块禁令传闻砸出深坑，但A股低开高走暴力修复——科创50半日+5.18%领涨，半导体设备/存储全面爆发替代CPO成为新主线",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-05_2026-08-05-午间复盘.md",
+      "excerpt": "FCC光模块禁令传闻砸出深坑，但A股低开高走暴力修复——科创50半日+5.18%领涨，半导体设备/存储全面爆发替代CPO成为新主线"
     },
     {
       "public": true,

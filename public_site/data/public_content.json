@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-05T12:45:13.909599+00:00",
+  "generated_at": "2026-08-05T22:23:14.500031+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-06 科技动向日报",
+      "date": "2026-08-06",
+      "summary": "全球AI资本持续狂热且国产算力生态全面爆发，但美股科技巨头面临业绩验证压力呈现剧烈分化",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-06_科技动向日报.md",
+      "excerpt": "全球AI资本持续狂热且国产算力生态全面爆发，但美股科技巨头面临业绩验证压力呈现剧烈分化"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

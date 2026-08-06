@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T03:28:28.999903+00:00",
+  "generated_at": "2026-08-06T04:19:48.978387+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-06_科技动向日报.md",
       "excerpt": "全球AI资本持续狂热且国产算力生态全面爆发，但美股科技巨头面临业绩验证压力呈现剧烈分化"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-06 午间复盘",
+      "date": "2026-08-06",
+      "slug": "2026-08-06_2026-08-06-午间复盘",
+      "summary": "科技内部剧烈高低切换——先进封装/PCB接棒半导体设备领涨，光模块FCC恐慌第二日深V修复超预期，但大盘冲高回落+3700股下跌，做多动能不足",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-06_2026-08-06-午间复盘.md",
+      "excerpt": "科技内部剧烈高低切换——先进封装/PCB接棒半导体设备领涨，光模块FCC恐慌第二日深V修复超预期，但大盘冲高回落+3700股下跌，做多动能不足"
     },
     {
       "public": true,

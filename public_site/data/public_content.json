@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-06T12:49:01.115255+00:00",
+  "generated_at": "2026-08-06T23:00:13.431689+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-07 科技动向日报",
+      "date": "2026-08-07",
+      "summary": "AI算力基础设施迎液冷技术爆发与千亿级资本涌入，地缘风险推升油价加剧全球市场波动",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-07_科技动向日报.md",
+      "excerpt": "AI算力基础设施迎液冷技术爆发与千亿级资本涌入，地缘风险推升油价加剧全球市场波动"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

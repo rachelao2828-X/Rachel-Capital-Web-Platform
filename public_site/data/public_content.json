@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-07T12:49:09.761245+00:00",
+  "generated_at": "2026-08-07T22:28:56.957368+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-08 科技动向日报",
+      "date": "2026-08-08",
+      "summary": "全球AI应用层迎密集融资且中国大模型产业规模破万亿，叠加美股科技股领涨与宏观加息预期降温，科技板块成全球资本核心共识。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-08_科技动向日报.md",
+      "excerpt": "全球AI应用层迎密集融资且中国大模型产业规模破万亿，叠加美股科技股领涨与宏观加息预期降温，科技板块成全球资本核心共识。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T03:12:02.209823+00:00",
+  "generated_at": "2026-08-07T04:19:19.551530+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-07_科技动向日报.md",
       "excerpt": "AI算力基础设施迎液冷技术爆发与千亿级资本涌入，地缘风险推升油价加剧全球市场波动"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-07 午间复盘",
+      "date": "2026-08-07",
+      "slug": "2026-08-07_2026-08-07-午间复盘",
+      "summary": "科技板块全线反弹但ETF连续3日净流出774亿，机构边拉边撤；通信6G+PCB+存储三线爆发，今晚非农是最大变量",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-07_2026-08-07-午间复盘.md",
+      "excerpt": "科技板块全线反弹但ETF连续3日净流出774亿，机构边拉边撤；通信6G+PCB+存储三线爆发，今晚非农是最大变量"
     },
     {
       "public": true,

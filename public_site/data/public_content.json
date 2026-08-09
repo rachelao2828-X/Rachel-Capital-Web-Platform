@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-08T02:10:37.359553+00:00",
+  "generated_at": "2026-08-09T22:17:16.532822+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-10 科技动向日报",
+      "date": "2026-08-10",
+      "summary": "全国产10万卡超集群投用与DeepSeek巨额融资共振，一二级市场资本全面加速涌入AI与硬科技赛道",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-10_科技动向日报.md",
+      "excerpt": "全国产10万卡超集群投用与DeepSeek巨额融资共振，一二级市场资本全面加速涌入AI与硬科技赛道"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

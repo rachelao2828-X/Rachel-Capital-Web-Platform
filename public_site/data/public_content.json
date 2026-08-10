@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-10T12:46:02.870704+00:00",
+  "generated_at": "2026-08-10T22:28:23.854338+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-11 科技动向日报",
+      "date": "2026-08-11",
+      "summary": "中美科技与供应链博弈加剧，AI算力基建、商业航天与可控核聚变等前沿赛道获资本重注",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-11_科技动向日报.md",
+      "excerpt": "中美科技与供应链博弈加剧，AI算力基建、商业航天与可控核聚变等前沿赛道获资本重注"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

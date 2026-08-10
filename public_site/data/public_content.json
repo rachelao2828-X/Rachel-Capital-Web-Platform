@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T02:27:28.156714+00:00",
+  "generated_at": "2026-08-10T04:21:02.049375+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-10_科技动向日报.md",
       "excerpt": "全国产10万卡超集群投用与DeepSeek巨额融资共振，一二级市场资本全面加速涌入AI与硬科技赛道"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-10 午间复盘",
+      "date": "2026-08-10",
+      "slug": "2026-08-10_2026-08-10-午间复盘",
+      "summary": "科技集体踩踏+防御暴力切换——通信设备暴跌5.44%、CPO/PCB龙头跌7%+，资金涌入医药白酒养殖，创业板-2.18%创近期最大半日跌幅",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-10_2026-08-10-午间复盘.md",
+      "excerpt": "科技集体踩踏+防御暴力切换——通信设备暴跌5.44%、CPO/PCB龙头跌7%+，资金涌入医药白酒养殖，创业板-2.18%创近期最大半日跌幅"
     },
     {
       "public": true,

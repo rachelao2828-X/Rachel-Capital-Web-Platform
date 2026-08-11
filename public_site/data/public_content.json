@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T02:20:55.498586+00:00",
+  "generated_at": "2026-08-11T04:21:09.649485+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-11_科技动向日报.md",
       "excerpt": "中美科技与供应链博弈加剧，AI算力基建、商业航天与可控核聚变等前沿赛道获资本重注"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-11 午间复盘",
+      "date": "2026-08-11",
+      "slug": "2026-08-11_2026-08-11-午间复盘",
+      "summary": "昨日暴跌的光模块龙头获巨额资金回流（新易盛+21亿/中际旭创+18亿），超跌反弹与医药CRO主线形成双轮驱动，但港股科网股走弱+军工/有色杀跌提示风格切换未完成",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-11_2026-08-11-午间复盘.md",
+      "excerpt": "昨日暴跌的光模块龙头获巨额资金回流（新易盛+21亿/中际旭创+18亿），超跌反弹与医药CRO主线形成双轮驱动，但港股科网股走弱+军工/有色杀跌提示风格切换未完成"
     },
     {
       "public": true,

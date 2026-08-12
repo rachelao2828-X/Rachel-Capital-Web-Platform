@@ -1,7 +1,25 @@
 {
-  "generated_at": "2026-08-11T04:21:09.649485+00:00",
+  "generated_at": "2026-08-12T04:09:47.120033+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-12 科技动向日报",
+      "date": "2026-08-12",
+      "summary": "中美科技与供应链博弈全面升级，中国AI融资超3000亿且国资加速主导产业落地",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "日报"
+      ],
+      "path": "daily/2026/2026-08/2026-08-12_科技动向日报.md",
+      "excerpt": "中美科技与供应链博弈全面升级，中国AI融资超3000亿且国资加速主导产业落地"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

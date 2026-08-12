@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T04:09:47.120033+00:00",
+  "generated_at": "2026-08-12T04:19:59.263943+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -19,6 +19,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-12_科技动向日报.md",
       "excerpt": "中美科技与供应链博弈全面升级，中国AI融资超3000亿且国资加速主导产业落地"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-12 午间复盘",
+      "date": "2026-08-12",
+      "slug": "2026-08-12_2026-08-12-午间复盘",
+      "summary": "上海十五五规划把CPO写进核心攻关环节+英伟达开源Nemotron4模型，光模块/CPO板块强势反攻，天孚通信+11%领涨，资金从周期品加速流入AI算力链",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-12_2026-08-12-午间复盘.md",
+      "excerpt": "上海十五五规划把CPO写进核心攻关环节+英伟达开源Nemotron4模型，光模块/CPO板块强势反攻，天孚通信+11%领涨，资金从周期品加速流入AI算力链"
     },
     {
       "public": true,

@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-08-12T04:19:59.263943+00:00",
+  "generated_at": "2026-08-13T04:19:22.042480+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-13 午间复盘",
+      "date": "2026-08-13",
+      "slug": "2026-08-13_2026-08-13-午间复盘",
+      "summary": "美国7月CPI符合预期消解加息担忧+CPO/光通信延续强势+医药接力成为新非科技主线+量能显著回补打破连续缩量格局",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-13_2026-08-13-午间复盘.md",
+      "excerpt": "美国7月CPI符合预期消解加息担忧+CPO/光通信延续强势+医药接力成为新非科技主线+量能显著回补打破连续缩量格局"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

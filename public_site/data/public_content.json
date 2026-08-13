@@ -1,7 +1,27 @@
 {
-  "generated_at": "2026-08-13T04:19:22.042480+00:00",
+  "generated_at": "2026-08-13T04:20:00.171280+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-13 科技动向日报",
+      "date": "2026-08-13",
+      "summary": "AI算力产业链持续高景气，AI技术加速向无人机、创新药等垂直领域深度渗透与商业化落地",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技日报",
+        "AI",
+        "算力",
+        "半导体"
+      ],
+      "path": "daily/2026/2026-08/2026-08-13_科技动向日报.md",
+      "excerpt": "AI算力产业链持续高景气，AI技术加速向无人机、创新药等垂直领域深度渗透与商业化落地"
+    },
     {
       "public": true,
       "type": "market_radar",

@@ -1,7 +1,27 @@
 {
-  "generated_at": "2026-08-14T04:19:16.873820+00:00",
+  "generated_at": "2026-08-14T04:19:40.421374+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-14 科技动向日报",
+      "date": "2026-08-14",
+      "summary": "全球AI投资创纪录并高度集中于基础设施与开发者工具，A股算力与半导体板块受资金追捧，美股科技股反弹提振市场信心",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技日报",
+        "AI",
+        "算力",
+        "半导体"
+      ],
+      "path": "daily/2026/2026-08/2026-08-14_科技动向日报.md",
+      "excerpt": "全球AI投资创纪录并高度集中于基础设施与开发者工具，A股算力与半导体板块受资金追捧，美股科技股反弹提振市场信心"
+    },
     {
       "public": true,
       "type": "market_radar",

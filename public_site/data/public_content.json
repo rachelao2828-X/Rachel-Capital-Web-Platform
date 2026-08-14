@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-08-13T04:20:00.171280+00:00",
+  "generated_at": "2026-08-14T04:19:16.873820+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-14 午间复盘",
+      "date": "2026-08-14",
+      "slug": "2026-08-14_2026-08-14-午间复盘",
+      "summary": "A股内部严重分化——创业板被半导体+光通信拉起但超3400股下跌；港股被京东Q2史上首次营收下滑拖累恒生科技跌近2%，中芯国际Q2超预期逆势走强",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-14_2026-08-14-午间复盘.md",
+      "excerpt": "A股内部严重分化——创业板被半导体+光通信拉起但超3400股下跌；港股被京东Q2史上首次营收下滑拖累恒生科技跌近2%，中芯国际Q2超预期逆势走强"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

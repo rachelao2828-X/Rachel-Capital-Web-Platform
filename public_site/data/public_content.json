@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T00:45:34.029122+00:00",
+  "generated_at": "2026-08-15T01:15:00.308653+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -41,6 +41,29 @@
       ],
       "path": "daily/2026/2026-08/2026-08-14_科技动向日报.md",
       "excerpt": "全球AI投资创纪录并高度集中于基础设施与开发者工具，A股算力与半导体板块受资金追捧，美股科技股反弹提振市场信心"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-14 周度复盘",
+      "date": "2026-08-14",
+      "slug": "2026-08-14_2026-08-14-周度复盘",
+      "summary": "市场从'单主线AI硬件'切换至'CPO产业质变+医药趋势确认'双轮驱动，但缩量4日至2.14万亿+沪指4000点连续两周未能收复，资金在确认方向而非全面进攻，结构性行情而非趋势行情",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-14_2026-08-14-周度复盘.md",
+      "excerpt": "市场从'单主线AI硬件'切换至'CPO产业质变+医药趋势确认'双轮驱动，但缩量4日至2.14万亿+沪指4000点连续两周未能收复，资金在确认方向而非全面进攻，结构性行情而非趋势行情"
     },
     {
       "public": true,

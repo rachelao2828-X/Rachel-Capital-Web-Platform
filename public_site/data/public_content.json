@@ -1,7 +1,27 @@
 {
-  "generated_at": "2026-08-14T04:19:40.421374+00:00",
+  "generated_at": "2026-08-15T00:45:34.029122+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-15 科技动向日报",
+      "date": "2026-08-15",
+      "summary": "全球AI算力基础设施迎液冷国标与英伟达新平台共振，中美AI治理企稳及硬科技融资热潮共筑产业利好",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技日报",
+        "AI",
+        "算力",
+        "半导体"
+      ],
+      "path": "daily/2026/2026-08/2026-08-15_科技动向日报.md",
+      "excerpt": "全球AI算力基础设施迎液冷国标与英伟达新平台共振，中美AI治理企稳及硬科技融资热潮共筑产业利好"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

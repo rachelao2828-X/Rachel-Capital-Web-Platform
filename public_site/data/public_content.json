@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-15T01:44:27.338107+00:00",
+  "generated_at": "2026-08-16T22:35:00.253640+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-17 科技动向日报",
+      "date": "2026-08-17",
+      "summary": "AI算力需求爆发驱动半导体存储与液冷产业链景气度攀升，硬件基础设施成为市场核心主线",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-17_科技动向日报.md",
+      "excerpt": "AI算力需求爆发驱动半导体存储与液冷产业链景气度攀升，硬件基础设施成为市场核心主线"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

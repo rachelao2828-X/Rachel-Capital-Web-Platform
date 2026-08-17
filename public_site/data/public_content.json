@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T01:50:13.608626+00:00",
+  "generated_at": "2026-08-17T04:22:11.299342+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-17_科技动向日报.md",
       "excerpt": "AI算力需求爆发驱动半导体存储与液冷产业链景气度攀升，硬件基础设施成为市场核心主线"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-17 午间复盘",
+      "date": "2026-08-17",
+      "slug": "2026-08-17_2026-08-17-午间复盘",
+      "summary": "科创50暴涨3%+引领半导体/存储全面爆发，CPO龙头深V反转确认资金承接力，白酒受茅台利空重挫——科技与消费冰火两重天",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-17_2026-08-17-午间复盘.md",
+      "excerpt": "科创50暴涨3%+引领半导体/存储全面爆发，CPO龙头深V反转确认资金承接力，白酒受茅台利空重挫——科技与消费冰火两重天"
     },
     {
       "public": true,

@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-17T12:51:00.921034+00:00",
+  "generated_at": "2026-08-17T22:38:51.607758+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-18 科技动向日报",
+      "date": "2026-08-18",
+      "summary": "美国持续收紧半导体与无人机等高科技领域出口管制及关税，英伟达构建超5000亿美元AI算力融资平台，A股半导体及算力板块在国产替代逻辑下强势领涨。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-18_科技动向日报.md",
+      "excerpt": "美国持续收紧半导体与无人机等高科技领域出口管制及关税，英伟达构建超5000亿美元AI算力融资平台，A股半导体及算力板块在国产替代逻辑下强势领涨。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

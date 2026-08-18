@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-18T12:40:25.072502+00:00",
+  "generated_at": "2026-08-18T22:29:01.104922+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-19 科技动向日报",
+      "date": "2026-08-19",
+      "summary": "中东局势恶化推升全球通胀与长端利率致美股科技板块重挫，国内AI算力、液冷及具身智能赛道获资本密集布局且A股展现韧性。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-19_科技动向日报.md",
+      "excerpt": "中东局势恶化推升全球通胀与长端利率致美股科技板块重挫，国内AI算力、液冷及具身智能赛道获资本密集布局且A股展现韧性。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

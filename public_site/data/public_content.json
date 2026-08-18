@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T01:45:11.249407+00:00",
+  "generated_at": "2026-08-18T04:19:39.744416+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-18_科技动向日报.md",
       "excerpt": "美国持续收紧半导体与无人机等高科技领域出口管制及关税，英伟达构建超5000亿美元AI算力融资平台，A股半导体及算力板块在国产替代逻辑下强势领涨。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-18 午间复盘",
+      "date": "2026-08-18",
+      "slug": "2026-08-18_2026-08-18-午间复盘",
+      "summary": "昨日科技狂欢后今日冲高回落，沪指盘中摸3992距4000仅8点即回落，电子板块净流出117亿，资金从高位科技获利出逃→农业/油气防御",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-18_2026-08-18-午间复盘.md",
+      "excerpt": "昨日科技狂欢后今日冲高回落，沪指盘中摸3992距4000仅8点即回落，电子板块净流出117亿，资金从高位科技获利出逃→农业/油气防御"
     },
     {
       "public": true,

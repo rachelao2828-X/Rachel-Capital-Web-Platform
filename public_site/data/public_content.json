@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T01:47:03.460258+00:00",
+  "generated_at": "2026-08-19T04:19:00.854639+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-19_科技动向日报.md",
       "excerpt": "中东局势恶化推升全球通胀与长端利率致美股科技板块重挫，国内AI算力、液冷及具身智能赛道获资本密集布局且A股展现韧性。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-19 午间复盘",
+      "date": "2026-08-19",
+      "slug": "2026-08-19_2026-08-19-午间复盘",
+      "summary": "科技股遭遇全面杀跌——创业板-5%+科创50-6%，4900+股下跌，资金从科技方向溃败式流出，昨日轮动演变为恐慌出逃",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-19_2026-08-19-午间复盘.md",
+      "excerpt": "科技股遭遇全面杀跌——创业板-5%+科创50-6%，4900+股下跌，资金从科技方向溃败式流出，昨日轮动演变为恐慌出逃"
     },
     {
       "public": true,

@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-19T12:50:00.917725+00:00",
+  "generated_at": "2026-08-19T22:28:28.026996+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-20 科技动向日报",
+      "date": "2026-08-20",
+      "summary": "英伟达H20获准对华出口释放科技博弈缓和信号，中美AI产业资本投入双双创下历史新高",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-20_科技动向日报.md",
+      "excerpt": "英伟达H20获准对华出口释放科技博弈缓和信号，中美AI产业资本投入双双创下历史新高"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

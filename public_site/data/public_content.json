@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-21T12:46:50.963056+00:00",
+  "generated_at": "2026-08-21T22:35:08.661396+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-22 科技动向日报",
+      "date": "2026-08-22",
+      "summary": "全球AI算力资本开支狂飙且中美AI治理阵营化加速，宏观市场面临美债收益率高企与股市中期调整的双重博弈",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-22_科技动向日报.md",
+      "excerpt": "全球AI算力资本开支狂飙且中美AI治理阵营化加速，宏观市场面临美债收益率高企与股市中期调整的双重博弈"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

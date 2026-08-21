@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T01:50:56.066467+00:00",
+  "generated_at": "2026-08-21T04:20:48.040766+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-21_科技动向日报.md",
       "excerpt": "全球科技资本加速涌入AI与具身智能产业链，中美科技博弈及地缘政治风险持续升温"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-21 午间复盘",
+      "date": "2026-08-21",
+      "slug": "2026-08-21_2026-08-21-午间复盘",
+      "summary": "沪指靠权重撑平盘但3557股下跌，创新药昨涨停今跌停确认一日游，资金转向黄金+锂矿+算力硬件，AI芯片（寒武纪/海光/澜起/曙光）继续被集体抛售跌4-8%",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-21_2026-08-21-午间复盘.md",
+      "excerpt": "沪指靠权重撑平盘但3557股下跌，创新药昨涨停今跌停确认一日游，资金转向黄金+锂矿+算力硬件，AI芯片（寒武纪/海光/澜起/曙光）继续被集体抛售跌4-8%"
     },
     {
       "public": true,

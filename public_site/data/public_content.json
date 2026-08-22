@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T23:58:58.965214+00:00",
+  "generated_at": "2026-08-22T01:14:05.709225+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,29 @@
       ],
       "path": "daily/2026/2026-08/2026-08-22_科技动向日报.md",
       "excerpt": "全球AI算力资本开支狂飙且中美AI治理阵营化加速，宏观市场面临美债收益率高企与股市中期调整的双重博弈"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-22 周度复盘",
+      "date": "2026-08-22",
+      "slug": "2026-08-22_2026-08-22-周度复盘",
+      "summary": "全球资产定价逻辑从AI+高利率向避险+弱美元切换——美债30Y破5.3%触发财政部回购，黄金/有色暴涨，科技成长高位踩踏，A股冲高→放量杀跌→缩量弱修复三段式",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-22_2026-08-22-周度复盘.md",
+      "excerpt": "全球资产定价逻辑从AI+高利率向避险+弱美元切换——美债30Y破5.3%触发财政部回购，黄金/有色暴涨，科技成长高位踩踏，A股冲高→放量杀跌→缩量弱修复三段式"
     },
     {
       "public": true,

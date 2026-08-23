@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-22T01:44:34.805374+00:00",
+  "generated_at": "2026-08-23T22:34:26.393185+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-24 科技动向日报",
+      "date": "2026-08-24",
+      "summary": "美国全面升级对华AI芯片及半导体出口管制，全球AI产业进入超级资本博弈期，中国加速硬科技国产替代与多边合作对冲风险。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-24_科技动向日报.md",
+      "excerpt": "美国全面升级对华AI芯片及半导体出口管制，全球AI产业进入超级资本博弈期，中国加速硬科技国产替代与多边合作对冲风险。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

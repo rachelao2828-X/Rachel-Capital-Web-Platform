@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-24T12:48:50.153713+00:00",
+  "generated_at": "2026-08-24T22:33:26.783022+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-25 科技动向日报",
+      "date": "2026-08-25",
+      "summary": "全球AI算力扩张遭遇能源瓶颈与贸易壁垒双重考验，具身智能与物理AI赛道资本热度空前",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-25_科技动向日报.md",
+      "excerpt": "全球AI算力扩张遭遇能源瓶颈与贸易壁垒双重考验，具身智能与物理AI赛道资本热度空前"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

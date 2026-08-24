@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T01:52:17.690397+00:00",
+  "generated_at": "2026-08-24T04:20:11.624767+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-24_科技动向日报.md",
       "excerpt": "美国全面升级对华AI芯片及半导体出口管制，全球AI产业进入超级资本博弈期，中国加速硬科技国产替代与多边合作对冲风险。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-24 午间复盘",
+      "date": "2026-08-24",
+      "slug": "2026-08-24_2026-08-24-午间复盘",
+      "summary": "阿里800亿港元配售引爆港股科技暴跌，传导A股CPO易中天集体跳水-7~8%，创业板半日-3.5%创月内最大跌幅；但半导体设备逆势走强+固态电池涨停潮",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-24_2026-08-24-午间复盘.md",
+      "excerpt": "阿里800亿港元配售引爆港股科技暴跌，传导A股CPO易中天集体跳水-7~8%，创业板半日-3.5%创月内最大跌幅；但半导体设备逆势走强+固态电池涨停潮"
     },
     {
       "public": true,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T01:46:05.592737+00:00",
+  "generated_at": "2026-08-25T04:20:22.132056+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-25_科技动向日报.md",
       "excerpt": "全球AI算力扩张遭遇能源瓶颈与贸易壁垒双重考验，具身智能与物理AI赛道资本热度空前"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-25 午间复盘",
+      "date": "2026-08-25",
+      "slug": "2026-08-25_2026-08-25-午间复盘",
+      "summary": "科技/成长股与防御板块跷跷板加剧——CPO光模块延续恐慌出清、碳酸锂暴跌拖累锂电，但液冷逆势涨停、寒武纪强势破千",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-25_2026-08-25-午间复盘.md",
+      "excerpt": "科技/成长股与防御板块跷跷板加剧——CPO光模块延续恐慌出清、碳酸锂暴跌拖累锂电，但液冷逆势涨停、寒武纪强势破千"
     },
     {
       "public": true,

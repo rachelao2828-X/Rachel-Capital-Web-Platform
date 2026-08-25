@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-25T12:46:26.219648+00:00",
+  "generated_at": "2026-08-25T22:35:39.333544+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-26 科技动向日报",
+      "date": "2026-08-26",
+      "summary": "AI算力基建与国产芯片生态加速成型，全球资本密集押注前沿硬科技与AI应用",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-26_科技动向日报.md",
+      "excerpt": "AI算力基建与国产芯片生态加速成型，全球资本密集押注前沿硬科技与AI应用"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

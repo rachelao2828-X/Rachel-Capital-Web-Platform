@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-26T12:52:47.851442+00:00",
+  "generated_at": "2026-08-26T22:38:14.694895+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-27 科技动向日报",
+      "date": "2026-08-27",
+      "summary": "全球AI算力需求爆发验证英伟达强劲业绩，国内国家队与产业基金密集加码AI芯片国产替代及硬科技布局",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-27_科技动向日报.md",
+      "excerpt": "全球AI算力需求爆发验证英伟达强劲业绩，国内国家队与产业基金密集加码AI芯片国产替代及硬科技布局"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

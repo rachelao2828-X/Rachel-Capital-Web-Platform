@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T01:52:00.240219+00:00",
+  "generated_at": "2026-08-26T04:20:58.808866+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-26_科技动向日报.md",
       "excerpt": "AI算力基建与国产芯片生态加速成型，全球资本密集押注前沿硬科技与AI应用"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-26 午间复盘",
+      "date": "2026-08-26",
+      "slug": "2026-08-26_2026-08-26-午间复盘",
+      "summary": "英伟达止步七连跌催化A股算力链V型反弹，大金融爆发沪指收复3900，全市场超3500股飘红放量837亿",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-26_2026-08-26-午间复盘.md",
+      "excerpt": "英伟达止步七连跌催化A股算力链V型反弹，大金融爆发沪指收复3900，全市场超3500股飘红放量837亿"
     },
     {
       "public": true,

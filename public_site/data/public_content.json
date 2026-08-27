@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-27T12:44:28.965431+00:00",
+  "generated_at": "2026-08-27T22:35:05.600809+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-28 科技动向日报",
+      "date": "2026-08-28",
+      "summary": "英伟达财报超预期引爆全球AI产业链，中美科技博弈加剧叠加国内政策共振推升科技板块",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-28_科技动向日报.md",
+      "excerpt": "英伟达财报超预期引爆全球AI产业链，中美科技博弈加剧叠加国内政策共振推升科技板块"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

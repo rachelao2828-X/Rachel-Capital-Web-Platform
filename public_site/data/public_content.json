@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T22:38:14.694895+00:00",
+  "generated_at": "2026-08-27T04:20:14.648431+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-27_科技动向日报.md",
       "excerpt": "全球AI算力需求爆发验证英伟达强劲业绩，国内国家队与产业基金密集加码AI芯片国产替代及硬科技布局"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-27 午间复盘",
+      "date": "2026-08-27",
+      "slug": "2026-08-27_2026-08-27-午间复盘",
+      "summary": "英伟达Q2财报全面超预期催化科技线爆发，科创50+3.45%领涨，半导体主力净流入131.5亿，大金融与科技完成24小时极速切换",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-27_2026-08-27-午间复盘.md",
+      "excerpt": "英伟达Q2财报全面超预期催化科技线爆发，科创50+3.45%领涨，半导体主力净流入131.5亿，大金融与科技完成24小时极速切换"
     },
     {
       "public": true,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T22:35:05.600809+00:00",
+  "generated_at": "2026-08-28T04:21:17.128360+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-08/2026-08-28_科技动向日报.md",
       "excerpt": "英伟达财报超预期引爆全球AI产业链，中美科技博弈加剧叠加国内政策共振推升科技板块"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-28 午间复盘",
+      "date": "2026-08-28",
+      "slug": "2026-08-28_2026-08-28-午间复盘",
+      "summary": "英伟达隔夜暴涨8.74%但A股科技链冲高回落兑现获利盘，科创50从1711跳水至1681，资金从高位算力向PTFE/OCS/液冷/网络安全等新方向扩散",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-28_2026-08-28-午间复盘.md",
+      "excerpt": "英伟达隔夜暴涨8.74%但A股科技链冲高回落兑现获利盘，科创50从1711跳水至1681，资金从高位算力向PTFE/OCS/液冷/网络安全等新方向扩散"
     },
     {
       "public": true,

@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-28T13:11:23.657165+00:00",
+  "generated_at": "2026-08-28T22:43:46.712603+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-08-29 科技动向日报",
+      "date": "2026-08-29",
+      "summary": "美联储鹰派推升加息预期压制市场情绪，AI算力与半导体底层创新获国内外资本密集加注",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-08/2026-08-29_科技动向日报.md",
+      "excerpt": "美联储鹰派推升加息预期压制市场情绪，AI算力与半导体底层创新获国内外资本密集加注"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

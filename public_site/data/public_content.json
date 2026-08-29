@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T22:43:46.712603+00:00",
+  "generated_at": "2026-08-29T01:12:56.314330+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,29 @@
       ],
       "path": "daily/2026/2026-08/2026-08-29_科技动向日报.md",
       "excerpt": "美联储鹰派推升加息预期压制市场情绪，AI算力与半导体底层创新获国内外资本密集加注"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-29 周度复盘",
+      "date": "2026-08-29",
+      "slug": "2026-08-29_2026-08-29-周度复盘",
+      "summary": "英伟达财报再证AI算力景气无顶，但沃什杰克逊霍尔放鹰重燃加息预期，本周本质是盈利验证vs流动性预期恶化的撕扯",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-29_2026-08-29-周度复盘.md",
+      "excerpt": "英伟达财报再证AI算力景气无顶，但沃什杰克逊霍尔放鹰重燃加息预期，本周本质是盈利验证vs流动性预期恶化的撕扯"
     },
     {
       "public": true,

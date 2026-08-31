@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-08-29T06:57:39.772044+00:00",
+  "generated_at": "2026-08-31T04:18:49.021553+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-08-31 午间复盘",
+      "date": "2026-08-31",
+      "slug": "2026-08-31_2026-08-31-午间复盘",
+      "summary": "沃什Jackson Hole鹰派讲话引爆加息预期（9月概率35%→60%），黄金暴跌+美元走强，A股科技股低开分化，沪指靠银行权重抗住，双创继续杀估值",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-08/2026-08-31_2026-08-31-午间复盘.md",
+      "excerpt": "沃什Jackson Hole鹰派讲话引爆加息预期（9月概率35%→60%），黄金暴跌+美元走强，A股科技股低开分化，沪指靠银行权重抗住，双创继续杀估值"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

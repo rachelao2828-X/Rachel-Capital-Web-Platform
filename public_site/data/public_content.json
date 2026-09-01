@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-08-31T12:54:49.703324+00:00",
+  "generated_at": "2026-09-01T03:00:46.434731+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-09-01 科技动向日报",
+      "date": "2026-09-01",
+      "summary": "AI算力与硬件基础设施获全球资本密集加注，但宏观层面面临地缘冲突与全球央行加息的双重压力。国家队释放增持信号。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-09/2026-09-01_科技动向日报.md",
+      "excerpt": "AI算力与硬件基础设施获全球资本密集加注，但宏观层面面临地缘冲突与全球央行加息的双重压力。国家队释放增持信号。"
+    },
     {
       "public": true,
       "type": "market_radar",

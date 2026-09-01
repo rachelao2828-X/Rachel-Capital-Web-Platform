@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-09-01T12:52:40.303539+00:00",
+  "generated_at": "2026-09-01T22:35:52.975637+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-09-02 科技动向日报",
+      "date": "2026-09-02",
+      "summary": "全球AI基础设施投资持续加码与国产算力加速替代，叠加宏观地缘风险交织及A股市场风格向防御性板块切换",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-09/2026-09-02_科技动向日报.md",
+      "excerpt": "全球AI基础设施投资持续加码与国产算力加速替代，叠加宏观地缘风险交织及A股市场风格向防御性板块切换"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

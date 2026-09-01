@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T03:00:46.434731+00:00",
+  "generated_at": "2026-09-01T04:21:04.920567+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-09/2026-09-01_科技动向日报.md",
       "excerpt": "AI算力与硬件基础设施获全球资本密集加注，但宏观层面面临地缘冲突与全球央行加息的双重压力。国家队释放增持信号。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-01 午间复盘",
+      "date": "2026-09-01",
+      "slug": "2026-09-01_2026-09-01-午间复盘",
+      "summary": "科技硬件集体杀跌vs消费农业券商逆势走强，9月首个交易日确认风格切换，中际旭创回购40-80亿午前直线拉升",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-01_2026-09-01-午间复盘.md",
+      "excerpt": "科技硬件集体杀跌vs消费农业券商逆势走强，9月首个交易日确认风格切换，中际旭创回购40-80亿午前直线拉升"
     },
     {
       "public": true,

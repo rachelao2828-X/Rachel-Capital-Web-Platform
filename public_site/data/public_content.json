@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-09-02T12:44:46.608191+00:00",
+  "generated_at": "2026-09-02T22:31:48.039183+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-09-03 科技动向日报",
+      "date": "2026-09-03",
+      "summary": "全球AI投资重心向硬件底层转移，国家基金重金入股可灵AI，A股AI算力概念逆势领涨",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-09/2026-09-03_科技动向日报.md",
+      "excerpt": "全球AI投资重心向硬件底层转移，国家基金重金入股可灵AI，A股AI算力概念逆势领涨"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

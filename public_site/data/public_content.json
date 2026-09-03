@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T04:12:51.024406+00:00",
+  "generated_at": "2026-09-03T04:21:19.442106+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-09/2026-09-03_科技动向日报.md",
       "excerpt": "全球AI投资重心向硬件底层转移，国家基金重金入股可灵AI，A股AI算力概念逆势领涨"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-03 午间复盘",
+      "date": "2026-09-03",
+      "slug": "2026-09-03_2026-09-03-午间复盘",
+      "summary": "指数翻红但超3100股下跌，半导体ETF由净流入53.57亿转为净流出15.83亿，科技方向资金回吐信号明确",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-03_2026-09-03-午间复盘.md",
+      "excerpt": "指数翻红但超3100股下跌，半导体ETF由净流入53.57亿转为净流出15.83亿，科技方向资金回吐信号明确"
     },
     {
       "public": true,

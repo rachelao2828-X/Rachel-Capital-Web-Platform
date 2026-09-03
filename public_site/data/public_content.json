@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-09-03T12:54:31.662710+00:00",
+  "generated_at": "2026-09-03T22:36:58.215260+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-09-04 科技动向日报",
+      "date": "2026-09-04",
+      "summary": "数据不足",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-09/2026-09-04_科技动向日报.md",
+      "excerpt": "数据不足"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

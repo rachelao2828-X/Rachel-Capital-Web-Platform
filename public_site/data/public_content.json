@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T01:21:56.692205+00:00",
+  "generated_at": "2026-09-04T02:18:34.538817+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -7,24 +7,17 @@
       "type": "daily_intelligence",
       "title": "2026-09-04 科技动向日报",
       "date": "2026-09-04",
-      "summary": "数据不足",
+      "summary": "英伟达129亿美元收购Hugging Face重塑AI开源生态，博通Q3 AI半导体收入同比+221%，a16z成立11亿美元硬件基金标志AI投资重心转向物理层",
       "source": "coze",
       "ecosystem": [
         "综合"
       ],
       "companies": [],
       "tags": [
-        "科技动向",
-        "投研日报",
-        "AI芯片",
-        "液冷",
-        "先进封装",
-        "核聚变",
-        "固态电池",
-        "商业航天"
+        "科技动向"
       ],
       "path": "daily/2026/2026-09/2026-09-04_科技动向日报.md",
-      "excerpt": "数据不足"
+      "excerpt": "英伟达129亿美元收购Hugging Face重塑AI开源生态，博通Q3 AI半导体收入同比+221%，a16z成立11亿美元硬件基金标志AI投资重心转向物理层"
     },
     {
       "public": true,

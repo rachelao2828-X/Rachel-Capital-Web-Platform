@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T04:19:50.363511+00:00",
+  "generated_at": "2026-09-04T04:21:06.173776+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -18,6 +18,28 @@
       ],
       "path": "daily/2026/2026-09/2026-09-04_科技动向日报.md",
       "excerpt": "英伟达129亿美元收购Hugging Face重塑AI开源生态，博通Q3 AI半导体收入同比+221%，a16z成立11亿美元硬件基金标志AI投资重心转向物理层"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-04 午间复盘",
+      "date": "2026-09-04",
+      "slug": "2026-09-04_2026-09-04-午间复盘",
+      "summary": "沃勒放鸽+GPT-6催化AI应用→4100股普涨但科创50独跌-0.70%，科技硬件高位兑现vs应用端崛起，浪潮信息-9.36%巨量跳水，英维克-4.28%破位，农业猪肉+5.69%超预期走强",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-04_2026-09-04-午间复盘.md",
+      "excerpt": "沃勒放鸽+GPT-6催化AI应用→4100股普涨但科创50独跌-0.70%，科技硬件高位兑现vs应用端崛起，浪潮信息-9.36%巨量跳水，英维克-4.28%破位，农业猪肉+5.69%超预期走强"
     },
     {
       "public": true,

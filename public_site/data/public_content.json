@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-09-04T12:55:24.595172+00:00",
+  "generated_at": "2026-09-04T22:39:57.876740+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-09-05 科技动向日报",
+      "date": "2026-09-05",
+      "summary": "工信部出台AI创投支持计划探索算力入股，叠加液冷产业迎放量元年与国产替代加速，国内AI算力与具身智能赛道迎政策产业共振",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-09/2026-09-05_科技动向日报.md",
+      "excerpt": "工信部出台AI创投支持计划探索算力入股，叠加液冷产业迎放量元年与国产替代加速，国内AI算力与具身智能赛道迎政策产业共振"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

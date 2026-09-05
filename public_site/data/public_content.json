@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T22:39:57.876740+00:00",
+  "generated_at": "2026-09-05T01:08:53.066553+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,29 @@
       ],
       "path": "daily/2026/2026-09/2026-09-05_科技动向日报.md",
       "excerpt": "工信部出台AI创投支持计划探索算力入股，叠加液冷产业迎放量元年与国产替代加速，国内AI算力与具身智能赛道迎政策产业共振"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-05 周度复盘",
+      "date": "2026-09-05",
+      "slug": "2026-09-05_2026-09-05-周度复盘",
+      "summary": "A股科技硬件主线退潮+存量博弈极致化，资金从进攻转向防御；美股非农爆表重燃加息预期，但存储/光通信逆势爆发，AI基建逻辑未死只是换了主角",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-05_2026-09-05-周度复盘.md",
+      "excerpt": "A股科技硬件主线退潮+存量博弈极致化，资金从进攻转向防御；美股非农爆表重燃加息预期，但存储/光通信逆势爆发，AI基建逻辑未死只是换了主角"
     },
     {
       "public": true,

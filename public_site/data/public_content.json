@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-07T12:52:20.488607+00:00",
+  "generated_at": "2026-09-08T04:22:07.537126+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-08 午间复盘",
+      "date": "2026-09-08",
+      "slug": "2026-09-08_2026-09-08-午间复盘",
+      "summary": "昨日科技全线暴涨后今日分化——CPO/光模块连涨但涨幅收窄，半导体冲高回落，液冷一日切换由强转弱；宁德时代因'去宁德化'暴跌超3%拖累创业板，资金从科技硬件分流至农业/传媒/AIGC新方向",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-08_2026-09-08-午间复盘.md",
+      "excerpt": "昨日科技全线暴涨后今日分化——CPO/光模块连涨但涨幅收窄，半导体冲高回落，液冷一日切换由强转弱；宁德时代因'去宁德化'暴跌超3%拖累创业板，资金从科技硬件分流至农业/传媒/AIGC新方向"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

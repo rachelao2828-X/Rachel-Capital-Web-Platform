@@ -1,7 +1,30 @@
 {
-  "generated_at": "2026-09-11T12:55:12.020618+00:00",
+  "generated_at": "2026-09-12T01:12:05.079011+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-12 周度复盘",
+      "date": "2026-09-12",
+      "slug": "2026-09-12_2026-09-12-周度复盘",
+      "summary": "A股成长内部分裂（创业板涨vs科创50跌差2.6pct），资金转向有订单+涨价的硬件链；美国CPI超预期，美联储下周加息概率86%；南向资金逆势买201亿港元",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-12_2026-09-12-周度复盘.md",
+      "excerpt": "A股成长内部分裂（创业板涨vs科创50跌差2.6pct），资金转向有订单+涨价的硬件链；美国CPI超预期，美联储下周加息概率86%；南向资金逆势买201亿港元"
+    },
     {
       "public": true,
       "type": "market_radar",

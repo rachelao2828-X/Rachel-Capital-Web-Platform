@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-12T01:12:05.079011+00:00",
+  "generated_at": "2026-09-14T04:21:35.367139+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-14 午间复盘",
+      "date": "2026-09-14",
+      "slug": "2026-09-14_2026-09-14-午间复盘",
+      "summary": "FCC利好一日兑现光模块集体大跌超4%，MLCC涨价周期延续强势风华高科+7.5%，宁德时代+3.2%逆转去宁德化叙事",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-14_2026-09-14-午间复盘.md",
+      "excerpt": "FCC利好一日兑现光模块集体大跌超4%，MLCC涨价周期延续强势风华高科+7.5%，宁德时代+3.2%逆转去宁德化叙事"
+    },
     {
       "public": true,
       "type": "market_radar",

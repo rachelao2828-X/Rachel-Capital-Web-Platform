@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-14T12:44:03.384244+00:00",
+  "generated_at": "2026-09-15T04:21:46.994807+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-15 午间复盘",
+      "date": "2026-09-15",
+      "slug": "2026-09-15_2026-09-15-午间复盘",
+      "summary": "苹果接受三星存储涨价30-40%+工信部十五五规划双催化，半导体芯片强劲反弹与光模块继续调整形成罕见背离，FOMC今明两日议息10年期美债破5%压制高估值",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-15_2026-09-15-午间复盘.md",
+      "excerpt": "苹果接受三星存储涨价30-40%+工信部十五五规划双催化，半导体芯片强劲反弹与光模块继续调整形成罕见背离，FOMC今明两日议息10年期美债破5%压制高估值"
+    },
     {
       "public": true,
       "type": "market_radar",

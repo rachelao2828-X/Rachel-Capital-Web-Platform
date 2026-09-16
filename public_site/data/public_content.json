@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-15T12:49:45.473884+00:00",
+  "generated_at": "2026-09-16T04:19:55.083147+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-16 午间复盘",
+      "date": "2026-09-16",
+      "slug": "2026-09-16_2026-09-16-午间复盘",
+      "summary": "光模块V型反弹终结三连调+科创50涨超4%硬科技全面反攻，FOMC今晚决议",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-16_2026-09-16-午间复盘.md",
+      "excerpt": "光模块V型反弹终结三连调+科创50涨超4%硬科技全面反攻，FOMC今晚决议"
+    },
     {
       "public": true,
       "type": "market_radar",

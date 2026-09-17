@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-16T12:42:10.832798+00:00",
+  "generated_at": "2026-09-17T04:20:21.958803+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-17 午间复盘",
+      "date": "2026-09-17",
+      "slug": "2026-09-17_2026-09-17-午间复盘",
+      "summary": "FOMC鹰派加息落地（25bp+点阵图年内再加1次），A股低开冲高回落3100股下跌；华为昇腾960超预期+NPO量产是产业最强催化但被加息压制",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-17_2026-09-17-午间复盘.md",
+      "excerpt": "FOMC鹰派加息落地（25bp+点阵图年内再加1次），A股低开冲高回落3100股下跌；华为昇腾960超预期+NPO量产是产业最强催化但被加息压制"
+    },
     {
       "public": true,
       "type": "market_radar",

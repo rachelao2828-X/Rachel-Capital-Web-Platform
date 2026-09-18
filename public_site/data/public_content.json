@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-17T12:56:10.958570+00:00",
+  "generated_at": "2026-09-18T04:19:47.578135+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-18 午间复盘",
+      "date": "2026-09-18",
+      "slug": "2026-09-18_2026-09-18-午间复盘",
+      "summary": "加息落地次日科技全面反攻——科创50暴涨近4%领跑，半导体/GPU/存储/先进封装全线爆发，4551股上涨，共识重建速度超预期",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-18_2026-09-18-午间复盘.md",
+      "excerpt": "加息落地次日科技全面反攻——科创50暴涨近4%领跑，半导体/GPU/存储/先进封装全线爆发，4551股上涨，共识重建速度超预期"
+    },
     {
       "public": true,
       "type": "market_radar",

@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-19T01:15:52.412479+00:00",
+  "generated_at": "2026-09-21T04:20:23.721379+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-21 午间复盘",
+      "date": "2026-09-21",
+      "slug": "2026-09-21_2026-09-21-午间复盘",
+      "summary": "创新药接力半导体成为上午最强主线——十五五规划催化创新药/CRO掀涨停潮，半导体涨幅收窄但存储/PCB/光模块仍强，市场从科技单极进攻切换为科技+医药双主线",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-21_2026-09-21-午间复盘.md",
+      "excerpt": "创新药接力半导体成为上午最强主线——十五五规划催化创新药/CRO掀涨停潮，半导体涨幅收窄但存储/PCB/光模块仍强，市场从科技单极进攻切换为科技+医药双主线"
+    },
     {
       "public": true,
       "type": "market_radar",

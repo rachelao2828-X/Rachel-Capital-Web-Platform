@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-22T12:51:38.049080+00:00",
+  "generated_at": "2026-09-23T04:18:59.890541+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-23 午间复盘",
+      "date": "2026-09-23",
+      "slug": "2026-09-23_2026-09-23-午间复盘",
+      "summary": "隔夜美股半导体暴涨但A股半导体设备龙头逆势大跌，资金从高估值半导体设备撤向低位的玻璃基板/地产/CRO，节前防守切换加速",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-23_2026-09-23-午间复盘.md",
+      "excerpt": "隔夜美股半导体暴涨但A股半导体设备龙头逆势大跌，资金从高估值半导体设备撤向低位的玻璃基板/地产/CRO，节前防守切换加速"
+    },
     {
       "public": true,
       "type": "market_radar",

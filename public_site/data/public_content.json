@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-09-23T12:51:48.554987+00:00",
+  "generated_at": "2026-09-24T04:21:28.932183+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-24 午间复盘",
+      "date": "2026-09-24",
+      "slug": "2026-09-24_2026-09-24-午间复盘",
+      "summary": "沪指跌破3900整数关口，全市场超4300股下跌；昨日最强玻璃基板/PCB今日领跌，资金从科技撤向风电/机器人/传媒低位防守方向，节前缩量杀跌加速",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-24_2026-09-24-午间复盘.md",
+      "excerpt": "沪指跌破3900整数关口，全市场超4300股下跌；昨日最强玻璃基板/PCB今日领跌，资金从科技撤向风电/机器人/传媒低位防守方向，节前缩量杀跌加速"
+    },
     {
       "public": true,
       "type": "market_radar",

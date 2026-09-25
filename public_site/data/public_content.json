@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T04:20:00.855883+00:00",
+  "generated_at": "2026-09-25T04:45:27.526358+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -7,33 +7,9 @@
       "type": "daily_intelligence",
       "title": "2026-09-25 科技动向日报",
       "date": "2026-09-25",
-      "summary": "> **全局摘要**：全球AI巨头资本化进程加速（Anthropic、DeepSeek等冲刺IPO或巨额融资），且中美首次AI对话释放产业积极信号",
       "source": "coze",
-      "ecosystem": [
-        "AI基础设施生态",
-        "半导体生态",
-        "机器人生态",
-        "高端材料生态"
-      ],
-      "companies": [
-        "英伟达",
-        "华为",
-        "英特尔",
-        "OpenAI",
-        "谷歌",
-        "苹果",
-        "高通",
-        "寒武纪",
-        "DeepSeek",
-        "软银"
-      ],
-      "tags": [
-        "科技动向",
-        "AI",
-        "半导体"
-      ],
       "path": "daily/2026/2026-09/2026-09-25_科技动向日报.md",
-      "excerpt": "> **全局摘要**：全球AI巨头资本化进程加速（Anthropic、DeepSeek等冲刺IPO或巨额融资），且中美首次AI对话释放产业积极信号"
+      "excerpt": "# 2026-09-25 科技动向日报 > **全局摘要**：全球AI巨头资本化进程加速（Anthropic、DeepSeek等冲刺IPO或巨额融资），且中美首次AI对话释放产业积极信号 > > **整体判断**：偏正面 > > **重点变化**：中美首次举行AI对话，明确先进AI芯片和半导体制造设备出口管制不在议程内，为产业提供短期政策确定性。；全球AI大模型资本化提速：Anthropic冲刺2万亿美元估值IPO，DeepSeek推..."
     },
     {
       "public": true,

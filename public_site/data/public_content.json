@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T01:59:32.511950+00:00",
+  "generated_at": "2026-09-28T04:21:26.182668+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-09/2026-09-28_科技动向日报.md",
       "excerpt": "中美建立AI对话机制与华为昇腾950智算集群商用共振，叠加中央最高层级定调释放政策底信号，科技产业链迎重大利好"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-28 午间复盘",
+      "date": "2026-09-28",
+      "slug": "2026-09-28_2026-09-28-午间复盘",
+      "summary": "节后首日科技成长恐慌踩踏，创业板-4.32%，CPO/通信/半导体全线重挫，4800+股下跌，但港股恒指反涨——A股独立暴跌属节中压力集中释放+情绪过度反应",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-28_2026-09-28-午间复盘.md",
+      "excerpt": "节后首日科技成长恐慌踩踏，创业板-4.32%，CPO/通信/半导体全线重挫，4800+股下跌，但港股恒指反涨——A股独立暴跌属节中压力集中释放+情绪过度反应"
     },
     {
       "public": true,

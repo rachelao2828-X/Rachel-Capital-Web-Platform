@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-09-29T12:51:47.662327+00:00",
+  "generated_at": "2026-09-29T22:40:10.288164+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-09-30 科技动向日报",
+      "date": "2026-09-30",
+      "summary": "中美首次举行AI对话并达成降税共识，国内发布固态电池规划叠加最高层定调释放强政策底信号",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-09/2026-09-30_科技动向日报.md",
+      "excerpt": "中美首次举行AI对话并达成降税共识，国内发布固态电池规划叠加最高层定调释放强政策底信号"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

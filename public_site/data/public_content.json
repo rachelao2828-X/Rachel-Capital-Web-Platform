@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T02:44:21.774339+00:00",
+  "generated_at": "2026-09-29T04:20:40.992634+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-09/2026-09-29_科技动向日报.md",
       "excerpt": "国产AI算力生态加速成型与中美经贸实质性缓和共振，商业航天及具身智能迎产业化突破"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-29 午间复盘",
+      "date": "2026-09-29",
+      "slug": "2026-09-29_2026-09-29-午间复盘",
+      "summary": "昨日恐慌踩踏大幅修复，超4000股上涨，三重政策催化(国常会增量政策+新型电池十五五规划+PCB涨价传导)扭转节前悲观情绪，CPO/光模块龙头止跌企稳",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-29_2026-09-29-午间复盘.md",
+      "excerpt": "昨日恐慌踩踏大幅修复，超4000股上涨，三重政策催化(国常会增量政策+新型电池十五五规划+PCB涨价传导)扭转节前悲观情绪，CPO/光模块龙头止跌企稳"
     },
     {
       "public": true,

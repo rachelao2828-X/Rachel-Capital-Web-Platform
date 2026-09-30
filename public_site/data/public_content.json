@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-09-30T12:54:25.465103+00:00",
+  "generated_at": "2026-09-30T22:40:52.291681+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-01 科技动向日报",
+      "date": "2026-10-01",
+      "summary": "中美建立AI对话机制释放科技破冰信号，长鑫科技登顶A股市值榜首，AI算力与先进封装产业链持续高景气",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-01_科技动向日报.md",
+      "excerpt": "中美建立AI对话机制释放科技破冰信号，长鑫科技登顶A股市值榜首，AI算力与先进封装产业链持续高景气"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

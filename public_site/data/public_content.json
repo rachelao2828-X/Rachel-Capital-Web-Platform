@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T02:24:00.927360+00:00",
+  "generated_at": "2026-09-30T04:20:46.926242+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-09/2026-09-30_科技动向日报.md",
       "excerpt": "中美首次举行AI对话并达成降税共识，国内发布固态电池规划叠加最高层定调释放强政策底信号"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-09-30 午间复盘",
+      "date": "2026-09-30",
+      "slug": "2026-09-30_2026-09-30-午间复盘",
+      "summary": "节前最后交易日科技股遭集中抛售——科创50跌超2%、电子板块主力净流出超72亿、海光/中科曙光/澜起集体跌超7%，资金从科技切向医药+地产防御",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-09/2026-09-30_2026-09-30-午间复盘.md",
+      "excerpt": "节前最后交易日科技股遭集中抛售——科创50跌超2%、电子板块主力净流出超72亿、海光/中科曙光/澜起集体跌超7%，资金从科技切向医药+地产防御"
     },
     {
       "public": true,

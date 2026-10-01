@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-01T05:39:05.608545+00:00",
+  "generated_at": "2026-10-01T22:37:38.910796+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-02 科技动向日报",
+      "date": "2026-10-02",
+      "summary": "中美达成多项共识与AI资本密集运作共振，A股科技主线迎季末切换与高层政策底信号",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-02_科技动向日报.md",
+      "excerpt": "中美达成多项共识与AI资本密集运作共振，A股科技主线迎季末切换与高层政策底信号"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-02T05:24:54.457586+00:00",
+  "generated_at": "2026-10-02T22:37:42.785928+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-03 科技动向日报",
+      "date": "2026-10-03",
+      "summary": "中美元首互访稳定宏观预期，A股科技制造市值登顶，AI算力与集成电路获全球资本及政策双重加码",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-03_科技动向日报.md",
+      "excerpt": "中美元首互访稳定宏观预期，A股科技制造市值登顶，AI算力与集成电路获全球资本及政策双重加码"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

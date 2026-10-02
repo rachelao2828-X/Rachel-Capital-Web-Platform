@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T02:34:52.294417+00:00",
+  "generated_at": "2026-10-02T04:20:42.209092+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,29 @@
       ],
       "path": "daily/2026/2026-10/2026-10-02_科技动向日报.md",
       "excerpt": "中美达成多项共识与AI资本密集运作共振，A股科技主线迎季末切换与高层政策底信号"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-02 午间复盘",
+      "date": "2026-10-02",
+      "slug": "2026-10-02_2026-10-02-午间复盘",
+      "summary": "港股流动性双重收缩——南向关闭+跨境券商收紧，外资主导定价下放量杀跌，但光通信精准跟随美股逆势走强，CPO/AI算力节后映射逻辑未破",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股(休市)",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘",
+        "国庆假期"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-02_2026-10-02-午间复盘.md",
+      "excerpt": "港股流动性双重收缩——南向关闭+跨境券商收紧，外资主导定价下放量杀跌，但光通信精准跟随美股逆势走强，CPO/AI算力节后映射逻辑未破"
     },
     {
       "public": true,

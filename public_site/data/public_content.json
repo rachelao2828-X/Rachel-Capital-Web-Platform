@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-05T05:24:44.843201+00:00",
+  "generated_at": "2026-10-05T22:41:47.733962+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-06 科技动向日报",
+      "date": "2026-10-06",
+      "summary": "全球AI资本狂飙与算力基建加速扩张，叠加中美AI合作共识确立及芯片国产替代深化，科技产业迈入高景气与强治理并行新阶段",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-06_科技动向日报.md",
+      "excerpt": "全球AI资本狂飙与算力基建加速扩张，叠加中美AI合作共识确立及芯片国产替代深化，科技产业迈入高景气与强治理并行新阶段"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

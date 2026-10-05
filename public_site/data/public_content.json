@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T02:24:23.945251+00:00",
+  "generated_at": "2026-10-05T04:19:49.923460+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-05_科技动向日报.md",
       "excerpt": "中美关系实质性缓和叠加全球流动性改善，AI算力、商业航天与具身智能引领全球科技产业与A股投资双主线"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-05 午间复盘",
+      "date": "2026-10-05",
+      "slug": "2026-10-05_2026-10-05-午间复盘",
+      "summary": "恒指早盘探本轮新低23836后收回23950，半导体/AI/PCB逆势走强是唯一主线，美股AI映射精准定价港股硬科技",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘",
+        "国庆假期"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-05_2026-10-05-午间复盘.md",
+      "excerpt": "恒指早盘探本轮新低23836后收回23950，半导体/AI/PCB逆势走强是唯一主线，美股AI映射精准定价港股硬科技"
     },
     {
       "public": true,

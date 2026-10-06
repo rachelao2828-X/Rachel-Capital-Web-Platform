@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T03:20:11.630558+00:00",
+  "generated_at": "2026-10-06T04:19:16.392895+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-06_科技动向日报.md",
       "excerpt": "全球AI资本狂飙与算力基建加速扩张，叠加中美AI合作共识确立及芯片国产替代深化，科技产业迈入高景气与强治理并行新阶段"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-06 午间复盘",
+      "date": "2026-10-06",
+      "slug": "2026-10-06_2026-10-06-午间复盘",
+      "summary": "中国资产集体爆发——港股从半导体/PCB单线突破升级为科网+创新药+AI应用+半导体四线共振，智谱+8%领涨(GLM-5.3上架AWS)，节后A股科技+医药双主线开盘溢价格局正在定价",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-06_2026-10-06-午间复盘.md",
+      "excerpt": "中国资产集体爆发——港股从半导体/PCB单线突破升级为科网+创新药+AI应用+半导体四线共振，智谱+8%领涨(GLM-5.3上架AWS)，节后A股科技+医药双主线开盘溢价格局正在定价"
     },
     {
       "public": true,

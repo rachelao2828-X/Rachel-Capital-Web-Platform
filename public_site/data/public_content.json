@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T03:04:30.360599+00:00",
+  "generated_at": "2026-10-09T04:19:10.860869+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-09_科技动向日报.md",
       "excerpt": "AI大模型与Agent赛道一级市场融资火热但二级市场估值承压，宏观油价跳涨与加息预期促使全球资金向防御资产与前沿硬科技切换"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-09 午间复盘",
+      "date": "2026-10-09",
+      "slug": "2026-10-09_2026-10-09-午间复盘",
+      "summary": "A股港股严重背离：科技连续第二日杀跌（科创50-3.78%/寒武纪破千元/中际旭创失守年线），港股科网股普涨；OpenAI营收预期差为新增杀跌催化；固态电池方向第二日确认",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-09_2026-10-09-午间复盘.md",
+      "excerpt": "A股港股严重背离：科技连续第二日杀跌（科创50-3.78%/寒武纪破千元/中际旭创失守年线），港股科网股普涨；OpenAI营收预期差为新增杀跌催化；固态电池方向第二日确认"
     },
     {
       "public": true,

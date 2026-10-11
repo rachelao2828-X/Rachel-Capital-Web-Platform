@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-10T05:39:33.960626+00:00",
+  "generated_at": "2026-10-11T22:19:59.834313+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-12 科技动向日报",
+      "date": "2026-10-12",
+      "summary": "OpenAI营收预期达700亿美元提振AI产业链，SpaceX收购频谱重塑卫星通信格局",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-12_科技动向日报.md",
+      "excerpt": "OpenAI营收预期达700亿美元提振AI产业链，SpaceX收购频谱重塑卫星通信格局"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

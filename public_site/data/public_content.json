@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T02:39:06.482863+00:00",
+  "generated_at": "2026-10-12T04:19:53.071152+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-12_科技动向日报.md",
       "excerpt": "OpenAI营收预期达700亿美元提振AI产业链，SpaceX收购频谱重塑卫星通信格局"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-12 午间复盘",
+      "date": "2026-10-12",
+      "slug": "2026-10-12_2026-10-12-午间复盘",
+      "summary": "科创50早盘翻红后被砸回-1.23%，AI硬件全线杀跌vs银行股续创历史新高，风格极端割裂",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-12_2026-10-12-午间复盘.md",
+      "excerpt": "科创50早盘翻红后被砸回-1.23%，AI硬件全线杀跌vs银行股续创历史新高，风格极端割裂"
     },
     {
       "public": true,

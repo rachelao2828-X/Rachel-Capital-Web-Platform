@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-12T12:48:24.745889+00:00",
+  "generated_at": "2026-10-12T22:25:25.768408+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-13 科技动向日报",
+      "date": "2026-10-13",
+      "summary": "AI算力基础设施标准重塑加速产业链洗牌，半导体设备出口限制倒逼国产替代，中美经贸关系迈入务实管控新阶段。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-13_科技动向日报.md",
+      "excerpt": "AI算力基础设施标准重塑加速产业链洗牌，半导体设备出口限制倒逼国产替代，中美经贸关系迈入务实管控新阶段。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

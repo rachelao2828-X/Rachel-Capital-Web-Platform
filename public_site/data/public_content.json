@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T03:53:07.201163+00:00",
+  "generated_at": "2026-10-13T04:20:10.636400+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-13_科技动向日报.md",
       "excerpt": "AI算力基础设施标准重塑加速产业链洗牌，半导体设备出口限制倒逼国产替代，中美经贸关系迈入务实管控新阶段。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-13 午间复盘",
+      "date": "2026-10-13",
+      "slug": "2026-10-13_2026-10-13-午间复盘",
+      "summary": "FCC26-50新规生效但光模块整机未列入受控清单，核心利空落地，早盘恐慌杀跌后AI硬件展开抵抗，中际旭创/新易盛/天孚通信主力合计净流入超27亿，利空出尽信号初现",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-13_2026-10-13-午间复盘.md",
+      "excerpt": "FCC26-50新规生效但光模块整机未列入受控清单，核心利空落地，早盘恐慌杀跌后AI硬件展开抵抗，中际旭创/新易盛/天孚通信主力合计净流入超27亿，利空出尽信号初现"
     },
     {
       "public": true,

@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-13T12:46:12.729502+00:00",
+  "generated_at": "2026-10-13T22:20:54.688432+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-14 科技动向日报",
+      "date": "2026-10-14",
+      "summary": "中美达成八点共识并建立AI对话机制，国内AI大模型、具身智能及可控核聚变等前沿科技获资本密集加注，中央最高层级定调释放强烈政策底信号",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-14_科技动向日报.md",
+      "excerpt": "中美达成八点共识并建立AI对话机制，国内AI大模型、具身智能及可控核聚变等前沿科技获资本密集加注，中央最高层级定调释放强烈政策底信号"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

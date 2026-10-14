@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-14T12:46:25.777769+00:00",
+  "generated_at": "2026-10-14T22:24:25.334114+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-15 科技动向日报",
+      "date": "2026-10-15",
+      "summary": "算力半导体业绩爆发与商业航天新突破，叠加中美欧经贸企稳及宏观流动性呵护，共筑科技资产信心",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-15_科技动向日报.md",
+      "excerpt": "算力半导体业绩爆发与商业航天新突破，叠加中美欧经贸企稳及宏观流动性呵护，共筑科技资产信心"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

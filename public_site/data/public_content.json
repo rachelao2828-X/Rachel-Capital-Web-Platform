@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T01:51:03.907009+00:00",
+  "generated_at": "2026-10-15T04:19:39.412081+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-15_科技动向日报.md",
       "excerpt": "算力半导体业绩爆发与商业航天新突破，叠加中美欧经贸企稳及宏观流动性呵护，共筑科技资产信心"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-15 午间复盘",
+      "date": "2026-10-15",
+      "slug": "2026-10-15_2026-10-15-午间复盘",
+      "summary": "全球risk-off共振——韩国KOSPI暴跌8%触发熔断、日经跌5%，美国CPI超预期推升加息概率至43.7%，费城半导体六连跌入技术熊市，A股超5000股下跌，科技硬件遭集中抛售",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-15_2026-10-15-午间复盘.md",
+      "excerpt": "全球risk-off共振——韩国KOSPI暴跌8%触发熔断、日经跌5%，美国CPI超预期推升加息概率至43.7%，费城半导体六连跌入技术熊市，A股超5000股下跌，科技硬件遭集中抛售"
     },
     {
       "public": true,

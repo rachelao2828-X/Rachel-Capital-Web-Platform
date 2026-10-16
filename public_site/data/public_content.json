@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T01:39:39.421292+00:00",
+  "generated_at": "2026-10-16T04:19:51.288856+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-16_科技动向日报.md",
       "excerpt": "中美欧经贸关系释放确定性利好，国内AI算力基建与液冷技术加速爆发，科技巨头并购整合AI生态提速。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-16 午间复盘",
+      "date": "2026-10-16",
+      "slug": "2026-10-16_2026-10-16-午间复盘",
+      "summary": "昨日risk-off恐慌后今日risk-on反弹修复，台积电Q3超预期+三季报密集兑现双催化，存储芯片强势领涨军工地产接力，但缩量反弹PCB一日反转",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-16_2026-10-16-午间复盘.md",
+      "excerpt": "昨日risk-off恐慌后今日risk-on反弹修复，台积电Q3超预期+三季报密集兑现双催化，存储芯片强势领涨军工地产接力，但缩量反弹PCB一日反转"
     },
     {
       "public": true,

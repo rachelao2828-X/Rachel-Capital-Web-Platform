@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T01:42:59.474652+00:00",
+  "generated_at": "2026-10-19T04:19:41.618211+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-19_科技动向日报.md",
       "excerpt": "工信部设立600亿AI产业基金叠加国资密集重仓算力与具身智能，海外AI审查致半导体重挫"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-19 午间复盘",
+      "date": "2026-10-19",
+      "slug": "2026-10-19_2026-10-19-午间复盘",
+      "summary": "长鑫科技Q3环比增速放缓引爆存储链分歧(-7%+市值退居A股第三)，CPO/GPU超跌反弹(亨通光电涨停/沐曦+7%)，金融街论坛开幕+国常会AI+政策托底，科技龙头密集回购潮对冲做空力量",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-19_2026-10-19-午间复盘.md",
+      "excerpt": "长鑫科技Q3环比增速放缓引爆存储链分歧(-7%+市值退居A股第三)，CPO/GPU超跌反弹(亨通光电涨停/沐曦+7%)，金融街论坛开幕+国常会AI+政策托底，科技龙头密集回购潮对冲做空力量"
     },
     {
       "public": true,

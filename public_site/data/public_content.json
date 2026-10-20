@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-20T12:48:07.933606+00:00",
+  "generated_at": "2026-10-20T22:23:54.149925+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-21 科技动向日报",
+      "date": "2026-10-21",
+      "summary": "AI资产定价从\\\"叙事驱动\\\"转向\\\"盈利验证\\\"：韩国Elice上市首日暴跌逾30%、亚太科技股集体重挫，同时中美AI摩擦由芯片算力向应用与服务层延伸，美股指数分化、资金转向医疗与工业等非AI板块。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-21_科技动向日报.md",
+      "excerpt": "AI资产定价从\\\"叙事驱动\\\"转向\\\"盈利验证\\\"：韩国Elice上市首日暴跌逾30%、亚太科技股集体重挫，同时中美AI摩擦由芯片算力向应用与服务层延伸，美股指数分化、资金转向医疗与工业等非AI板块。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

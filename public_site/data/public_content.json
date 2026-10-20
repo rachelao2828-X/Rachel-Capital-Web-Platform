@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T02:05:49.273571+00:00",
+  "generated_at": "2026-10-20T04:20:17.710394+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-20_科技动向日报.md",
       "excerpt": "工信部设立600亿AI产业基金叠加Anthropic营收爆发，AI产业链迎政策与商业化双重共振"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-20 午间复盘",
+      "date": "2026-10-20",
+      "slug": "2026-10-20_2026-10-20-午间复盘",
+      "summary": "人形机器人30+涨停成最强主线，亨通光电涨停后再冲+5%确认CPO右侧，长鑫科技续跌逼近40元整数关口，港股复牌后科技股明显走弱与A股分化",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-20_2026-10-20-午间复盘.md",
+      "excerpt": "人形机器人30+涨停成最强主线，亨通光电涨停后再冲+5%确认CPO右侧，长鑫科技续跌逼近40元整数关口，港股复牌后科技股明显走弱与A股分化"
     },
     {
       "public": true,

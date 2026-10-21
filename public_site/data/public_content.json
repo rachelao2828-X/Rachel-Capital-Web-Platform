@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T02:02:43.453466+00:00",
+  "generated_at": "2026-10-21T04:21:08.509626+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-21_科技动向日报.md",
       "excerpt": "AI资产定价从\\\"叙事驱动\\\"转向\\\"盈利验证\\\"：韩国Elice上市首日暴跌逾30%、亚太科技股集体重挫，同时中美AI摩擦由芯片算力向应用与服务层延伸，美股指数分化、资金转向医疗与工业等非AI板块。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-21 午间复盘",
+      "date": "2026-10-21",
+      "slug": "2026-10-21_2026-10-21-午间复盘",
+      "summary": "宁德时代三季报增收不增利引爆AH双杀跌超10%，拖累创业板指跌超1%与沪指分化；数据要素/算力租赁/创新药接力走强，硬算力切向软数据信号初现",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-21_2026-10-21-午间复盘.md",
+      "excerpt": "宁德时代三季报增收不增利引爆AH双杀跌超10%，拖累创业板指跌超1%与沪指分化；数据要素/算力租赁/创新药接力走强，硬算力切向软数据信号初现"
     },
     {
       "public": true,

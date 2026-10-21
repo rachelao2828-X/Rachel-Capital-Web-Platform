@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-21T12:46:24.887496+00:00",
+  "generated_at": "2026-10-21T22:24:17.107763+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-22 科技动向日报",
+      "date": "2026-10-22",
+      "summary": "中美科技摩擦升级至知识产权领域、美方制裁五家中企，与中央最高层级定调文章及三季度经济数据超预期形成内外对冲，A股短期承压但政策底预期升温",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-22_科技动向日报.md",
+      "excerpt": "中美科技摩擦升级至知识产权领域、美方制裁五家中企，与中央最高层级定调文章及三季度经济数据超预期形成内外对冲，A股短期承压但政策底预期升温"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

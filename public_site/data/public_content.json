@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-22T12:50:00.295096+00:00",
+  "generated_at": "2026-10-22T22:19:18.461990+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-23 科技动向日报",
+      "date": "2026-10-23",
+      "summary": "AI基础设施交易全面降温：费半指数跌6.72%、存储与光通信板块集体重挫，纳指跌2.6%，资金轮动至道指消费防御股，AI资本开支与信贷风险担忧升温",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-23_科技动向日报.md",
+      "excerpt": "AI基础设施交易全面降温：费半指数跌6.72%、存储与光通信板块集体重挫，纳指跌2.6%，资金轮动至道指消费防御股，AI资本开支与信贷风险担忧升温"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

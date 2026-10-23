@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-23T12:47:18.796558+00:00",
+  "generated_at": "2026-10-23T22:22:27.440197+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-10-24 科技动向日报",
+      "date": "2026-10-24",
+      "summary": "全球AI资本开支担忧引发美股科技与芯片股重挫、避险资金涌向国债与防御板块，而国内A股科技成长方向放量大涨并叠加中央最高层级政策定调信号，内外科技资产走势明显背离",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-10/2026-10-24_科技动向日报.md",
+      "excerpt": "全球AI资本开支担忧引发美股科技与芯片股重挫、避险资金涌向国债与防御板块，而国内A股科技成长方向放量大涨并叠加中央最高层级政策定调信号，内外科技资产走势明显背离"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

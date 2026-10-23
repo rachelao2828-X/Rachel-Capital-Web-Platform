@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T01:58:50.320752+00:00",
+  "generated_at": "2026-10-23T04:19:30.369280+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-10/2026-10-23_科技动向日报.md",
       "excerpt": "AI基础设施交易全面降温：费半指数跌6.72%、存储与光通信板块集体重挫，纳指跌2.6%，资金轮动至道指消费防御股，AI资本开支与信贷风险担忧升温"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-23 午间复盘",
+      "date": "2026-10-23",
+      "slug": "2026-10-23_2026-10-23-午间复盘",
+      "summary": "创业板盘中跌破2500后国家队ETF脉冲托底引发反弹，A股与港股严重劈叉，光模块续跌但恐慌衰减，宁德时代逆势反弹+3.36%，人形机器人兆威机电5天3板确认新主线",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-23_2026-10-23-午间复盘.md",
+      "excerpt": "创业板盘中跌破2500后国家队ETF脉冲托底引发反弹，A股与港股严重劈叉，光模块续跌但恐慌衰减，宁德时代逆势反弹+3.36%，人形机器人兆威机电5天3板确认新主线"
     },
     {
       "public": true,

@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-10-26T12:46:59.816652+00:00",
+  "generated_at": "2026-10-27T04:20:22.399697+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-27 午间复盘",
+      "date": "2026-10-27",
+      "slug": "2026-10-27_2026-10-27-午间复盘",
+      "summary": "长鑫科技纳入科创综指首日+3.47%居成交额之首，光模块/F5G结束四连跌反弹（中际旭创+1.51%主力净买入超6亿），但科创50跌超1%+超3700股下跌显示市场整体偏弱",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-27_2026-10-27-午间复盘.md",
+      "excerpt": "长鑫科技纳入科创综指首日+3.47%居成交额之首，光模块/F5G结束四连跌反弹（中际旭创+1.51%主力净买入超6亿），但科创50跌超1%+超3700股下跌显示市场整体偏弱"
+    },
     {
       "public": true,
       "type": "market_radar",

@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-10-27T12:46:14.913424+00:00",
+  "generated_at": "2026-10-28T04:19:41.624235+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-28 午间复盘",
+      "date": "2026-10-28",
+      "slug": "2026-10-28_2026-10-28-午间复盘",
+      "summary": "昨日暴跌后V型反弹，创业板+3%收复昨日大部分跌幅，半导体/光模块/存储全线大涨，A股与美股半导体背离开始修复",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-28_2026-10-28-午间复盘.md",
+      "excerpt": "昨日暴跌后V型反弹，创业板+3%收复昨日大部分跌幅，半导体/光模块/存储全线大涨，A股与美股半导体背离开始修复"
+    },
     {
       "public": true,
       "type": "market_radar",

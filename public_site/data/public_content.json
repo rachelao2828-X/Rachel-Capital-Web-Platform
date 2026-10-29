@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-10-28T12:40:27.921061+00:00",
+  "generated_at": "2026-10-29T04:18:42.014759+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-29 午间复盘",
+      "date": "2026-10-29",
+      "slug": "2026-10-29_2026-10-29-午间复盘",
+      "summary": "三大利空共振(Alphabet业绩miss+三星净利低于预期+美联储偏鹰)，昨日科技暴涨变今日全线溃败，创业板-3.63%回吐昨日涨幅，CPO三剑客集体暴跌",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-29_2026-10-29-午间复盘.md",
+      "excerpt": "三大利空共振(Alphabet业绩miss+三星净利低于预期+美联储偏鹰)，昨日科技暴涨变今日全线溃败，创业板-3.63%回吐昨日涨幅，CPO三剑客集体暴跌"
+    },
     {
       "public": true,
       "type": "market_radar",

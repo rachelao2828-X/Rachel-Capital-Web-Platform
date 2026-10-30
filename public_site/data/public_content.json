@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-10-29T12:46:06.351230+00:00",
+  "generated_at": "2026-10-30T04:17:51.775049+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-30 午间复盘",
+      "date": "2026-10-30",
+      "slug": "2026-10-30_2026-10-30-午间复盘",
+      "summary": "中际旭创三季报超预期催化盘中拉升但冲高回落，兆易创新Q3净利增729%但环比降22%遭主力抛售，港股大幅反弹恒指+1.64%",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-30_2026-10-30-午间复盘.md",
+      "excerpt": "中际旭创三季报超预期催化盘中拉升但冲高回落，兆易创新Q3净利增729%但环比降22%遭主力抛售，港股大幅反弹恒指+1.64%"
+    },
     {
       "public": true,
       "type": "market_radar",

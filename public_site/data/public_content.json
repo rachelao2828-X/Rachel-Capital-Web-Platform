@@ -1,7 +1,30 @@
 {
-  "generated_at": "2026-10-30T12:48:18.148714+00:00",
+  "generated_at": "2026-10-31T01:09:59.293244+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-10-31 周度复盘",
+      "date": "2026-10-31",
+      "slug": "2026-10-31_2026-10-31-周度复盘",
+      "summary": "全球科技财报杀连环引爆——谷歌miss→英特尔暴跌28.58%→亚马逊FCF负424亿，A股CPO业绩高增却越跌越凶，科创50周跌13.72%月跌24%，创业板自高点跌超44%。极致反差：白酒涨停潮+红利月线新高+国家队ETF三周净流入500亿，筹码出清最后阶段非基本面崩塌",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-10/2026-10-31_2026-10-31-周度复盘.md",
+      "excerpt": "全球科技财报杀连环引爆——谷歌miss→英特尔暴跌28.58%→亚马逊FCF负424亿，A股CPO业绩高增却越跌越凶，科创50周跌13.72%月跌24%，创业板自高点跌超44%。极致反差：白酒涨停潮+红利月线新高+国家队ETF三周净流入500亿，筹码出清最后阶段非基本面崩塌"
+    },
     {
       "public": true,
       "type": "market_radar",

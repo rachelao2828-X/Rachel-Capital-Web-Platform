@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-10-31T01:09:59.293244+00:00",
+  "generated_at": "2026-11-01T22:19:09.016172+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-02 科技动向日报",
+      "date": "2026-11-02",
+      "summary": "大型科技股财报与AI资本开支回报担忧升温，全球科技股回调、A股科创成长同步承压",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-02_科技动向日报.md",
+      "excerpt": "大型科技股财报与AI资本开支回报担忧升温，全球科技股回调、A股科创成长同步承压"
+    },
     {
       "public": true,
       "type": "market_radar",

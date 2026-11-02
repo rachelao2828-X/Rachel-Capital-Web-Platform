@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-02T12:48:21.964193+00:00",
+  "generated_at": "2026-11-02T22:19:46.421975+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-03 科技动向日报",
+      "date": "2026-11-03",
+      "summary": "AI资本开支与融资担忧压制美股科技，A股科创50逆势领涨，科技风险偏好呈内外分化。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-03_科技动向日报.md",
+      "excerpt": "AI资本开支与融资担忧压制美股科技，A股科创50逆势领涨，科技风险偏好呈内外分化。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

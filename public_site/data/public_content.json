@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T04:01:33.662773+00:00",
+  "generated_at": "2026-11-03T04:18:12.872281+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-11/2026-11-03_科技动向日报.md",
       "excerpt": "AI资本开支与融资担忧压制美股科技，A股科创50逆势领涨，科技风险偏好呈内外分化。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-03 午间复盘",
+      "date": "2026-11-03",
+      "slug": "2026-11-03_2026-11-03-午间复盘",
+      "summary": "昨日科技反弹昙花一现——美股纳指续跌+Marvell收购Lumentum引爆光通信估值重估恐慌，A股CPO/半导体全面崩塌，资金加速向电池/固态电池切换",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-03_2026-11-03-午间复盘.md",
+      "excerpt": "昨日科技反弹昙花一现——美股纳指续跌+Marvell收购Lumentum引爆光通信估值重估恐慌，A股CPO/半导体全面崩塌，资金加速向电池/固态电池切换"
     },
     {
       "public": true,

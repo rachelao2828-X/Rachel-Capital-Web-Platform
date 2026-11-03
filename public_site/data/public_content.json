@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-03T12:46:13.465178+00:00",
+  "generated_at": "2026-11-03T22:21:53.842549+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-04 科技动向日报",
+      "date": "2026-11-04",
+      "summary": "美股科技/AI链主导结构性反弹、费城半导体涨2.64%，但中美半导体管制未松、A股科创50重挫3.81%，全球风险偏好呈「外强内弱」分化",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-04_科技动向日报.md",
+      "excerpt": "美股科技/AI链主导结构性反弹、费城半导体涨2.64%，但中美半导体管制未松、A股科创50重挫3.81%，全球风险偏好呈「外强内弱」分化"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

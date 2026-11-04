@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T03:18:21.921336+00:00",
+  "generated_at": "2026-11-04T04:21:49.332556+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-11/2026-11-04_科技动向日报.md",
       "excerpt": "美股科技/AI链主导结构性反弹、费城半导体涨2.64%，但中美半导体管制未松、A股科创50重挫3.81%，全球风险偏好呈「外强内弱」分化"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-04 午间复盘",
+      "date": "2026-11-04",
+      "slug": "2026-11-04_2026-11-04-午间复盘",
+      "summary": "CPO恐慌暂缓但分歧加大——中际旭创澄清+新易盛回购带动高开后冲高回落；资金转向半导体设备/国产替代，东山精密主力净流出8.65亿全市场居首；寒武纪临时停牌",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-04_2026-11-04-午间复盘.md",
+      "excerpt": "CPO恐慌暂缓但分歧加大——中际旭创澄清+新易盛回购带动高开后冲高回落；资金转向半导体设备/国产替代，东山精密主力净流出8.65亿全市场居首；寒武纪临时停牌"
     },
     {
       "public": true,

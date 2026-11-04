@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-04T12:48:24.752148+00:00",
+  "generated_at": "2026-11-04T22:20:26.134927+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-05 科技动向日报",
+      "date": "2026-11-05",
+      "summary": "全球科技股分化加剧：AI算力硬件承压、A股科创成长与国产替代获资金加仓，对华芯片管制现边际调整但不确定性仍高",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-05_科技动向日报.md",
+      "excerpt": "全球科技股分化加剧：AI算力硬件承压、A股科创成长与国产替代获资金加仓，对华芯片管制现边际调整但不确定性仍高"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

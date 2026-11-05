@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T03:44:03.681457+00:00",
+  "generated_at": "2026-11-05T04:18:14.127518+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-11/2026-11-05_科技动向日报.md",
       "excerpt": "全球科技股分化加剧：AI算力硬件承压、A股科创成长与国产替代获资金加仓，对华芯片管制现边际调整但不确定性仍高"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-05 午间复盘",
+      "date": "2026-11-05",
+      "slug": "2026-11-05_2026-11-05-午间复盘",
+      "summary": "蓝色交易启动——中期选举民主党夺回国会后资金从AI硬件轮出至清洁能源，CPO龙头中际旭创-7.34%直接失守530元，光伏板块30+股涨停",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-05_2026-11-05-午间复盘.md",
+      "excerpt": "蓝色交易启动——中期选举民主党夺回国会后资金从AI硬件轮出至清洁能源，CPO龙头中际旭创-7.34%直接失守530元，光伏板块30+股涨停"
     },
     {
       "public": true,

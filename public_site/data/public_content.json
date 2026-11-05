@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-05T12:45:25.289873+00:00",
+  "generated_at": "2026-11-05T22:19:35.245680+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-06 科技动向日报",
+      "date": "2026-11-06",
+      "summary": "美股AI算力与半导体链遭遇系统性重挫，同时美国收紧对华AI芯片租用路径、中国强化国产替代，科技板块进入风险重定价与政策博弈交织阶段。",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-06_科技动向日报.md",
+      "excerpt": "美股AI算力与半导体链遭遇系统性重挫，同时美国收紧对华AI芯片租用路径、中国强化国产替代，科技板块进入风险重定价与政策博弈交织阶段。"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

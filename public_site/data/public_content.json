@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-06T12:44:25.639541+00:00",
+  "generated_at": "2026-11-06T22:17:02.802515+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-07 科技动向日报",
+      "date": "2026-11-07",
+      "summary": "纳指单日反弹1.09%领涨、科技与半导体超跌修复，但连续第四周下跌并进入技术性回调，强劲非农压制降息预期，反弹与中期调整压力并存",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-07_科技动向日报.md",
+      "excerpt": "纳指单日反弹1.09%领涨、科技与半导体超跌修复，但连续第四周下跌并进入技术性回调，强劲非农压制降息预期，反弹与中期调整压力并存"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

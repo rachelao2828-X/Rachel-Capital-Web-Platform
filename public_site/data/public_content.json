@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T03:39:46.643225+00:00",
+  "generated_at": "2026-11-06T04:21:36.809702+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
     {
@@ -25,6 +25,28 @@
       ],
       "path": "daily/2026/2026-11/2026-11-06_科技动向日报.md",
       "excerpt": "美股AI算力与半导体链遭遇系统性重挫，同时美国收紧对华AI芯片租用路径、中国强化国产替代，科技板块进入风险重定价与政策博弈交织阶段。"
+    },
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-06 午间复盘",
+      "date": "2026-11-06",
+      "slug": "2026-11-06_2026-11-06-午间复盘",
+      "summary": "隔夜费城半导体暴跌12.25%引发全球AI硬件恐慌性杀跌，易中天7家科技龙头午间集体发布回购公告政策托底，北方华创V型反转验证国产替代独立逻辑",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-06_2026-11-06-午间复盘.md",
+      "excerpt": "隔夜费城半导体暴跌12.25%引发全球AI硬件恐慌性杀跌，易中天7家科技龙头午间集体发布回购公告政策托底，北方华创V型反转验证国产替代独立逻辑"
     },
     {
       "public": true,

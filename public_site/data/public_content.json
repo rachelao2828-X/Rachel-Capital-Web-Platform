@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-07T05:47:19.497244+00:00",
+  "generated_at": "2026-11-08T22:14:47.756953+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-09 科技动向日报",
+      "date": "2026-11-09",
+      "summary": "美股AI硬件链周四历史性杀跌、周五仅技术性修复，中期选举改变AI监管预期叠加微软收敛算力外包，A股科技成长同时承受外部冲击与内部调仓压力",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-09_科技动向日报.md",
+      "excerpt": "美股AI硬件链周四历史性杀跌、周五仅技术性修复，中期选举改变AI监管预期叠加微软收敛算力外包，A股科技成长同时承受外部冲击与内部调仓压力"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

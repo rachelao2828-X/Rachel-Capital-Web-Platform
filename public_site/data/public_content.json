@@ -1,7 +1,31 @@
 {
-  "generated_at": "2026-11-09T12:44:08.192228+00:00",
+  "generated_at": "2026-11-09T22:26:25.737128+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "daily_intelligence",
+      "title": "2026-11-10 科技动向日报",
+      "date": "2026-11-10",
+      "summary": "美股全面反弹带动AI算力链（半导体、光通信）大涨，但英伟达治理风波与中资半导体跨境控制权诉讼构成结构性扰动",
+      "source": "coze",
+      "ecosystem": [
+        "综合"
+      ],
+      "companies": [],
+      "tags": [
+        "科技动向",
+        "投研日报",
+        "AI芯片",
+        "液冷",
+        "先进封装",
+        "核聚变",
+        "固态电池",
+        "商业航天"
+      ],
+      "path": "daily/2026/2026-11/2026-11-10_科技动向日报.md",
+      "excerpt": "美股全面反弹带动AI算力链（半导体、光通信）大涨，但英伟达治理风波与中资半导体跨境控制权诉讼构成结构性扰动"
+    },
     {
       "public": true,
       "type": "daily_intelligence",

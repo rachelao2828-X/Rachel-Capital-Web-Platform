@@ -1,7 +1,30 @@
 {
-  "generated_at": "2026-11-13T12:44:45.021376+00:00",
+  "generated_at": "2026-11-14T01:15:22.055896+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-14 周度复盘",
+      "date": "2026-11-14",
+      "slug": "2026-11-14_2026-11-14-周度复盘",
+      "summary": "英伟达黄仁勋辞任CEO引爆AI产业链巨震，国产算力替代前半周狂飙后半周急退，美联储加息预期升温压制成长股估值，银行红利趋势确认",
+      "source": "coze",
+      "review_type": "周度复盘",
+      "markets": [
+        "A股",
+        "港股",
+        "美股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "周度复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-14_2026-11-14-周度复盘.md",
+      "excerpt": "英伟达黄仁勋辞任CEO引爆AI产业链巨震，国产算力替代前半周狂飙后半周急退，美联储加息预期升温压制成长股估值，银行红利趋势确认"
+    },
     {
       "public": true,
       "type": "market_radar",

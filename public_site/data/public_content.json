@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-14T01:15:22.055896+00:00",
+  "generated_at": "2026-11-16T04:20:23.138007+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-16 午间复盘",
+      "date": "2026-11-16",
+      "slug": "2026-11-16_2026-11-16-午间复盘",
+      "summary": "黄仁勋回归悬念vs财长10天通牒双向拉扯，A股CPO/光模块继续杀跌创新低，中际旭创盘中创年内新低424元并临时停牌，寒武纪高开低走大幅回落",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-16_2026-11-16-午间复盘.md",
+      "excerpt": "黄仁勋回归悬念vs财长10天通牒双向拉扯，A股CPO/光模块继续杀跌创新低，中际旭创盘中创年内新低424元并临时停牌，寒武纪高开低走大幅回落"
+    },
     {
       "public": true,
       "type": "market_radar",

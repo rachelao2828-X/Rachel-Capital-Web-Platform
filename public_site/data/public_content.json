@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-16T12:47:03.188344+00:00",
+  "generated_at": "2026-11-17T04:18:47.918957+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-17 午间复盘",
+      "date": "2026-11-17",
+      "slug": "2026-11-17_2026-11-17-午间复盘",
+      "summary": "半导体产业链集体反弹，科创50从跌超1%V型反转至+3.31%，芯片概念半日净流入42亿居首，寒武纪收复900至约949，但CPO易中天仍分化下跌，中际旭创盘中跌破400至385后拉回407",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-17_2026-11-17-午间复盘.md",
+      "excerpt": "半导体产业链集体反弹，科创50从跌超1%V型反转至+3.31%，芯片概念半日净流入42亿居首，寒武纪收复900至约949，但CPO易中天仍分化下跌，中际旭创盘中跌破400至385后拉回407"
+    },
     {
       "public": true,
       "type": "market_radar",

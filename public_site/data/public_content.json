@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-17T12:45:38.079300+00:00",
+  "generated_at": "2026-11-18T04:17:17.818965+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-18 午间复盘",
+      "date": "2026-11-18",
+      "slug": "2026-11-18_2026-11-18-午间复盘",
+      "summary": "英伟达财报全线超预期但A股CPO利好不涨冲高回落，资金从半导体设备切向算力租赁+算力芯片",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-18_2026-11-18-午间复盘.md",
+      "excerpt": "英伟达财报全线超预期但A股CPO利好不涨冲高回落，资金从半导体设备切向算力租赁+算力芯片"
+    },
     {
       "public": true,
       "type": "market_radar",

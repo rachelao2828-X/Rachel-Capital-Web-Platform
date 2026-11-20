@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-19T12:47:37.611239+00:00",
+  "generated_at": "2026-11-20T04:19:51.666845+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-20 午间复盘",
+      "date": "2026-11-20",
+      "slug": "2026-11-20_2026-11-20-午间复盘",
+      "summary": "昨日半导体自主可控还是唯一避风港，今日全线补跌(北方华创-4%/通富微电跌停)，叠加网易财报暴雷引爆港股科技杀跌+亚洲市场暴跌(日经-4%/韩国-5%)，市场从分化转为普跌，国家队宽基ETF继续放量但托底力度不足",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-20_2026-11-20-午间复盘.md",
+      "excerpt": "昨日半导体自主可控还是唯一避风港，今日全线补跌(北方华创-4%/通富微电跌停)，叠加网易财报暴雷引爆港股科技杀跌+亚洲市场暴跌(日经-4%/韩国-5%)，市场从分化转为普跌，国家队宽基ETF继续放量但托底力度不足"
+    },
     {
       "public": true,
       "type": "market_radar",

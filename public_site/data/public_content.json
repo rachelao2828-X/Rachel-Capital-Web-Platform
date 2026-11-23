@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-21T01:10:22.911546+00:00",
+  "generated_at": "2026-11-23T04:19:07.547808+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-23 午间复盘",
+      "date": "2026-11-23",
+      "slug": "2026-11-23_2026-11-23-午间复盘",
+      "summary": "美股黑色星期五冲击A股大幅低开探底，创业板午盘翻红CPO光模块逆势暴涨，周末三箭齐发托底初显但沪指仍跌破3500点",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-23_2026-11-23-午间复盘.md",
+      "excerpt": "美股黑色星期五冲击A股大幅低开探底，创业板午盘翻红CPO光模块逆势暴涨，周末三箭齐发托底初显但沪指仍跌破3500点"
+    },
     {
       "public": true,
       "type": "market_radar",

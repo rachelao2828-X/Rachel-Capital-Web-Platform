@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-23T12:48:33.622101+00:00",
+  "generated_at": "2026-11-24T04:17:51.485266+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-24 午间复盘",
+      "date": "2026-11-24",
+      "slug": "2026-11-24_2026-11-24-午间复盘",
+      "summary": "英伟达暴涨31%引爆A股AI硬件高开，但盘中全面冲高回落，CPO龙头中际旭创从+11%回落至+4%，港股恒科由涨转跌，市场情绪冲高兑现特征明显",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-24_2026-11-24-午间复盘.md",
+      "excerpt": "英伟达暴涨31%引爆A股AI硬件高开，但盘中全面冲高回落，CPO龙头中际旭创从+11%回落至+4%，港股恒科由涨转跌，市场情绪冲高兑现特征明显"
+    },
     {
       "public": true,
       "type": "market_radar",

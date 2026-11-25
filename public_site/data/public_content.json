@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-24T12:47:35.035728+00:00",
+  "generated_at": "2026-11-25T04:18:30.941519+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-25 午间复盘",
+      "date": "2026-11-25",
+      "slug": "2026-11-25_2026-11-25-午间复盘",
+      "summary": "半导体集体杀跌+风格极端切换，北方华创破540员工持股成本，CPO分化（天孚涨停vs中际旭创险守400）",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-25_2026-11-25-午间复盘.md",
+      "excerpt": "半导体集体杀跌+风格极端切换，北方华创破540员工持股成本，CPO分化（天孚涨停vs中际旭创险守400）"
+    },
     {
       "public": true,
       "type": "market_radar",

@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-11-26T04:17:26.962548+00:00",
+  "generated_at": "2026-11-27T04:19:19.576551+00:00",
   "source_vault": "/home/runner/work/Rachel-Capital-Web-Platform/Rachel-Capital-Web-Platform/obsidian-vault",
   "items": [
+    {
+      "public": true,
+      "type": "market_radar",
+      "title": "2026-11-27 午间复盘",
+      "date": "2026-11-27",
+      "slug": "2026-11-27_2026-11-27-午间复盘",
+      "summary": "科技全线V型反攻——半导体设备端暴涨，CPO三龙头继续领涨，广东算力规划+国家数据局AI训练新规双催化，资金从防御板块大幅涌入科技赛道",
+      "source": "coze",
+      "review_type": "午间复盘",
+      "markets": [
+        "A股",
+        "港股"
+      ],
+      "ecosystem": [],
+      "companies": [],
+      "tags": [
+        "市场雷达",
+        "午间复盘"
+      ],
+      "path": "market-radar/2026/2026-11/2026-11-27_2026-11-27-午间复盘.md",
+      "excerpt": "科技全线V型反攻——半导体设备端暴涨，CPO三龙头继续领涨，广东算力规划+国家数据局AI训练新规双催化，资金从防御板块大幅涌入科技赛道"
+    },
     {
       "public": true,
       "type": "market_radar",
